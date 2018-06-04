@@ -26,7 +26,8 @@ DIR_OBJS = tmp
 
 HEADERS = includes
 
-SRCS = main.c
+SRCS =	main.c \
+		utils.c
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
 
@@ -34,13 +35,13 @@ all: tmp $(NAME)
 
 $(NAME): $(OBJS)
 		@make -C $(DIR_LIBFT)
-		@$(CC) $(CFLAGS) -L $(DIR_LIBFT) -lft -o $@ $^ $(SDLFLAGS) -framework OpenGL
+		$(CC) $(CFLAGS) -L $(DIR_LIBFT) -lft -o $@ $^ $(SDLFLAGS) -framework OpenGL
 
 tmp:
 		@mkdir -p tmp
 
-$(DIR_OBJS)/%.o: $(DIR_SRCS)/%.c # $(HEADERS)/$(NAME).h
-		@$(CC) $(CFLAGS) -I $(HEADERS) -c $< -o $@
+$(DIR_OBJS)/%.o: $(DIR_SRCS)/%.c $(HEADERS)/$(NAME).h
+		$(CC) $(CFLAGS) -I $(HEADERS) -I/Users/fsidler/.brew/include/ -D_THREAD_SAFE -c $< -o $@
 
 norme:
 		@make norme -C $(DIR_LIBFT)
