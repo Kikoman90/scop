@@ -22,3 +22,22 @@ void    LogError(const char *msg)
 {
     printf("ERROR: %s\n", msg);
 }
+
+typedef struct  s_shader
+{
+    unsigned int id;
+    
+}               t_shader;
+
+typedef struct s_gameObject
+{
+
+}              t_gameObject;
+
+//gameObject =
+
+//rendering properties
+//physics properties
+//audio properties
+//behaviour(s)
+

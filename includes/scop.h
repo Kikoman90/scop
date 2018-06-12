@@ -14,7 +14,8 @@
 #ifndef SCOP_H
 # define SCOP_H
 
-# include "../libft/includes/libft.h"
+# include "../libs/libft/includes/libft.h"
+# include "../libs/libmath/includes/libmath.h"
 # include <time.h>
 # include <SDL2/SDL.h>
 # include <OpenGL/gl3.h>
@@ -44,15 +45,29 @@ typedef struct		s_env
 	t_parser		*parser;
 }					t_env;
 
+typedef struct		s_gameObject
+{
+	t_mat4x4		transformat;
+
+}					t_gameObject;
+
+typedef struct		s_color
+{
+	
+}					t_color;                                                                                                                                        
+
 void*				LogErrorNull(const char *msg);
 void				LogError(const char *msg);
 
 // what i want : 
+// * close button triggers SDL_QUIT 🤠 event
 // * import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
 // * input handler !
 // * showFPS
 // * float field and toggle for fps capping (e.g. toggle[/] and [60fps])
 // * 3d textures and tetrahedrons eventually
 // * error logger
+
+// vector / math libraries in c++ with operators lh +(rh) lh =(rh)
 
 #endif
