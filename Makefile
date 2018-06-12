@@ -6,7 +6,7 @@
 #    By: fsidler <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/05/31 16:48:48 by fsidler          ###   ########.fr        #
+#    Updated: 2018/06/12 19:46:11 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ CFLAGS = -Wall -Wextra -Werror -g
 
 SDLFLAGS = $(shell sdl2-config --libs --cflags)
 
-DIR_LIBFT = libft
+DIR_LIBFT = libs/libft
 
 DIR_SRCS = sources
 
