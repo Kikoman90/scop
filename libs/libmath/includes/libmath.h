@@ -15,12 +15,16 @@
 
 # include <math.h>
 
-# define M_PI 3.14159265358979323846
 # define MAT_ID 0x7FFFFFFF
+
+typedef union   u_mat4 {
+    float       m[16];
+    t_vec4      v[4];
+}               t_mat4;
 
 typedef struct  s_mat4x4
 {
-    float       m[16];
+    t_mat4      mat;
     /*float       m00;
     float       m01;
     float       m02;

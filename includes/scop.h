@@ -17,6 +17,10 @@
 # include "../libs/libft/includes/libft.h"
 # include "../libs/libmath/includes/libmath.h"
 # include <time.h>
+# include <fcntl.h>
+# include <errno.h>
+//# include <math.h>
+
 # include <SDL2/SDL.h>
 # include <OpenGL/gl3.h>
 
@@ -27,37 +31,48 @@
 # define SDL_INIT_ERROR "failed to initialize sdl"
 # define WIN_CREATE_ERROR "failed to create window"
 
-typedef struct		s_sdl
-{
-	SDL_Window		*win;
-	SDL_GLContext	*glContext;
-}					t_sdl;
-
 typedef struct		s_parser	
 {
 	const char**	errorLogs;
 }					t_parser;
 
-typedef struct		s_env
+typedef struct		s_camera
 {
-	int				loop; // 1 = runLoop / 0 = breakLoop and exit
-	t_sdl			*sdl;
-	t_parser		*parser;
-}					t_env;
+	t_mat4x4		transform;
+	float			fov;
+}
 
 typedef struct		s_gameObject
 {
-	t_mat4x4		transformat;
+	t_mat4x4		transform;
+	t_vec3			*vertices;
+	long int		*indices; // short int ?
 
 }					t_gameObject;
 
-typedef struct		s_color
+typedef struct		s_goNode {
+	t_gameObject	go;
+	struct s_goNode	*next;
+}					t_goNode;
+
+typedef struct		s_env
 {
-	
-}					t_color;                                                                                                                                        
+	int				loop; // 1 = runLoop / 0 = breakLoop and exit // ??
+	SDL_Window		*window;
+	SDL_GLContext	glContext;
+	t_parser		*parser;
+	t_cam			camera;
+	t_goNode		*objList;
+}					t_env;
 
 void*				LogErrorNull(const char *msg);
 void				LogError(const char *msg);
+
+/*typedef struct		s_color
+{
+	
+}					t_color;*/                                                                                                                                     
+
 
 // what i want : 
 // * close button triggers SDL_QUIT 🤠 event

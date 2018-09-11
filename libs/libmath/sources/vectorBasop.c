@@ -24,32 +24,26 @@ t_vec3      vecInit(float x, float y, float z)
 
 t_vec3      vecScale(t_vec3 v, float s)
 {
-    t_vec3  res;
-
-    res.x = v.x * s;
-    res.y = v.y * s;
-    res.z = v.z * s;
-    return (res);
+    v.x *= s;
+    v.y *= s;
+    v.z *= s;
+    return (v);
 }
 
 t_vec3      vecAdd(t_vec3 a, t_vec3 b)
 {
-    t_vec3  res;
-
-    res.x = a.x + b.x;
-    res.y = a.y + b.y;
-    res.z = a.z + b.z;
-    return (res);
+    a.x += b.x;
+    a.y += b.y;
+    a.z += b.z;
+    return (a);
 }
 
 t_vec3      vecSub(t_vec3 a, t_vec3 b)
 {
-    t_vec3  res;
-
-    res.x = a.x - b.x;
-    res.y = a.y - b.y;
-    res.z = a.z - b.z;
-    return (res);
+    a.x -= b.x;
+    a.y -= b.y;
+    a.z -= b.z;
+    return (a);
 }
 
 float       vecLength(t_vec3 v)

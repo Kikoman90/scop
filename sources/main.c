@@ -46,7 +46,7 @@ void	loop(t_env *env) {
 		SDL_PollEvent(&event);
 		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			env->loop = 0;
-		DrawTriangle();
+		//DrawTriangle();
 		SDL_GL_SwapWindow(env->sdl->win);
 	} while (env->loop == 1);
 
@@ -83,19 +83,36 @@ t_env	*init_env(char **argv)
 	return (env);
 }
 
+int		readFile(char *file)
+{
+	int	fd;
+
+	if (BUFF_SIZE < 1)
+	{
+		ft_putendl("error: BUFF_SIZE must be greater than 0\n");
+		return (-1);
+	}
+	if ((fd = open(file, O_RDONLY)) == -1)
+	{
+		ft_putendl(ft_strjoin("error: ", strerror(errno)));
+		return (-1); // delete
+	}
+	
+	return (1); // return (fd);
+}
+
 int		main(int argc, char **argv)
 {
 	t_env	*env;
-
-	//
-	(void)argc;
-	(void)argv;
-	//
 
 	if (!(env = init_env(argv)))
 		return (0);
 	glClearColor(0.19, 0.27, 0.41, 1);
 	glViewport(0, 0, WIN_W, WIN_H);
+
+	//opening obj file
+	if (argc == 2)
+		readFile(argv[1]);
 
 	// main loop
 	loop(env);
