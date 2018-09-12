@@ -6,38 +6,66 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:51:02 by fsidler           #+#    #+#             */
-/*   Updated: 2018/06/04 15:51:03 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/12 21:23:43 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-int     fileSize(int fd) {
-   struct stat  s;
-
-   if (fstat(fd, &s) == -1)
-   {
-       char *errorMsg = ft_strjoin("error: ", strerror(errno));
-       ft_putendl(errorMsg);
-       free(errorMsg);
-       return(-1);
-   }
-   return(s.st_size);
-}
-
-void    *LogErrorNull(const char *msg)
+const char		*file_name(const char *path)
 {
-    printf("ERROR: %s\n", msg);
-    return (NULL);
+	int		i;
+	int		j;
+	char	*name;
+
+	i = ft_strlen(path) - 1;
+	j = 0;
+	while (path[i] && path[i] != '/')
+		i--;
+	i++;
+	name = ft_strnew(ft_strlen(path) - i);
+	while (path[i])
+		name[j++] = path[i++];
+	return (name);
 }
 
-void    LogError(const char *msg)
+int				file_size(int fd)
 {
-    printf("ERROR: %s\n", msg);
+	struct stat	s;
+
+	if (fstat(fd, &s) == -1)
+	{
+		log_error(strerror(errno));
+		return (-1);
+	}
+	return (s.st_size);
 }
 
-/* gameObject =
- * rendering properties
- * physics properties
- * audio properties
- * behaviour(s) */
+void			*log_error_null(const char *msg)
+{
+	char	*error_msg;
+
+	error_msg = ft_strjoin("ERROR: ", msg);
+	ft_putendl(error_msg);
+	free(error_msg);
+	return (NULL);
+}
+
+void			log_error(const char *msg)
+{
+	char	*error_msg;
+
+	error_msg = ft_strjoin("ERROR: ", msg);
+	ft_putendl(error_msg);
+	free(error_msg);
+}
+
+void			log_error_free(char *msg)
+{
+	char	*error_msg;
+
+	error_msg = ft_strjoin("ERROR: ", msg);
+	ft_putendl(error_msg);
+	free(msg);
+	free(error_msg);
+}

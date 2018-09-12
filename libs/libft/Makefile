@@ -71,6 +71,8 @@ SRCS = 	ft_isascii.c \
 	  	ft_strmapi.c \
 	  	ft_strsub.c \
 	  	ft_strjoin.c \
+		ft_strjoin2.c \
+		ft_strjoin3.c \
 	  	ft_strtrim.c \
 		ft_strword.c \
 	  	ft_itoa.c \

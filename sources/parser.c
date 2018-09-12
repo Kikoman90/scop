@@ -1,80 +1,99 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
+/*   Updated: 2018/09/12 21:27:57 by fsidler          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "scop.h"
-#include <stdio.h> //rem me
 
-static int  readFile(const char *file, int *fd)
+static int	read_file(const char *file, int *fd)
 {
-    if ((*fd = open(file, O_RDWR)) == -1)
+	if ((*fd = open(file, O_RDWR)) == -1)
 	{
-        char *errorMsg = ft_strjoin("open error: ", strerror(errno));
-		ft_putendl(errorMsg);
-        free(errorMsg);
+		log_error_free(ft_strjoin("(open) ", strerror(errno)));
 		return (-1);
 	}
-	
 	return (*fd);
 }
 
-static void parseWavefrontObj(char *data, size_t size, unsigned int seed)
+static void	skip_line(char *data, int *seed)
 {
-    (void)size;
-    char    *cur;
-    cur = ft_strword(data, &seed);
-    ft_putendl(cur);
-    printf("%d\n", seed);
-    free(cur);
-    /*while (seed < size && data[seed])
-    {
-
-        if (data[seed] == '#')
-        {
-            //comment
-        } else if (data[seed] == 'o')
-        {
-            //create object, get indices
-        }
-
-        while (data[seed] != '\n' || data[seed] != '\0') {
-            seed++;
-        }
-        seed++;
-    }*/
-    // groups
-    // get vertices
-    // get triangles -> build index list
-    // get materials and link them to objects
-
+	while (data[*seed] && data[*seed] != '\n')
+		*seed += 1;
+	if (data[*seed] == '\n')
+		*seed += 1;
 }
 
-void        parseFile(const char *path)
+static void	prefix_error(const char *fname, unsigned int fline)
 {
-    int     fd;
-    size_t  fsize;
-    char    *data;
+	char	*line_number;
+	char	*error_msg;
 
-    if (readFile(path, &fd) != -1 && (fsize = fileSize(fd)) != -1)
-    {
-        if ((data = (char *)mmap(NULL, fsize, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-        {
-            char *errorMsg = ft_strjoin("mmap error: ", strerror(errno));
-		    ft_putendl(errorMsg);
-            free(errorMsg);
-        }
-        else
-        {
-            data[fsize - 1] = '\0';
-            ft_putendl(data);
-            parseWavefrontObj(data, fsize, 0);
-            if (munmap(data, fsize) == -1)
-            {
-                char *errorMsg = ft_strjoin("munmap error: ", strerror(errno));
-		        ft_putendl(errorMsg);
-                free(errorMsg);
-            }
-        }
-        close(fd);
-    }
+	line_number = ft_strjoin2(ft_strjoin3(" (line ", ft_itoa(fline)), ")");
+	error_msg = ft_strjoin2(ft_strjoin(FILE_PREFIX_ERROR, "'"), \
+			ft_strjoin2(ft_strjoin(fname, "'"), line_number));
+	free(line_number);
+	log_error_free(error_msg);
 }
 
+static void	parse_wavefrontobj(t_env *env, int seed, const char *fname)
+{
+	char	*w;
 
-// flat and smooth shading. -> no need for 1 normal per vertex, need for 1 normal per triangle
+	while (seed < env->parser->fsize && env->parser->data[seed])
+	{
+		w = ft_strword(env->parser->data, &seed);
+		if (ft_strcmp(w, "#") == 0)
+			skip_line(env->parser->data, &seed);
+		else if (ft_strcmp(w, "o") == 0)
+			printf("objectname\n");
+		else if (ft_strcmp(w, "v") == 0)
+			printf("vertex\n");
+		else if (ft_strcmp(w, "f") == 0)
+		{
+			//add indices to indexbuffer
+		}
+		else if (ft_strcmp(w, "mtllib") == 0)
+		{
+			//load Mtlfile
+		}
+		else if (ft_strcmp(w, "usemtl") == 0)
+		{
+			//fetch mtl
+		}
+		else
+		{
+			prefix_error(fname, env->parser->fline);
+			skip_line(env->parser->data, &seed);
+		}
+		env->parser->fline++;
+	}
+}
+
+void		parse_file(t_env *env, const char *path)
+{
+	int	fd;
+
+	if (read_file(path, &fd) != -1 && \
+		(env->parser->fsize = file_size(fd)) != -1)
+	{
+		if ((env->parser->data = (char *)mmap(NULL, env->parser->fsize, \
+			PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+			log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
+		else
+		{
+			env->parser->data[env->parser->fsize - 1] = '\0';
+			parse_wavefrontobj(env, 0, file_name(path));
+			if (munmap(env->parser->data, env->parser->fsize) == -1)
+				log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
+			env->parser->data = NULL;
+		}
+		close(fd);
+	}
+}

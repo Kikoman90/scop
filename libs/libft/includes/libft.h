@@ -103,8 +103,10 @@ char				*ft_strmap(char const *s, char (*f)(char));
 char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char				*ft_strsub(char const *s, unsigned int start, size_t len);
 char				*ft_strjoin(char const *s1, char const *s2);
+char				*ft_strjoin2(char *s1, char *s2);
+char				*ft_strjoin3(char *s1, char *s2);
 char				*ft_strtrim(char const *s);
-char				*ft_strword(char *s, unsigned int *offset);
+char				*ft_strword(char *s, int *offset);
 
 char				*ft_itoa(int n);
 

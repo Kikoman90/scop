@@ -1,0 +1,19 @@
+remove this file before finishing the project
+remove .vscode before finishing the project
+libmath is not clean (norminette, unixcase...)
+norminette on all
+check 42 headers
+check scop leaks
+check everything
+
+// what i want : 
+// * close button triggers SDL_QUIT 🤠 event
+// * import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
+// * input handler !
+// * showFPS
+// * float field and toggle for fps capping (e.g. toggle[/] and [60fps])
+// * 3d textures and tetrahedrons eventually
+// * error logger
+// * vector / math libraries in c++ with operators lh +(rh) lh =(rh)
+
+// gameObject = { rendering properties, physics properties, audio properties, behaviour(s), matter properties etc. };
