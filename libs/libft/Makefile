@@ -25,6 +25,7 @@ HEADERS = includes
 SRCS = 	ft_isascii.c \
   		ft_isprint.c \
   		ft_isalpha.c \
+		ft_isblank.c \
   		ft_isdigit.c \
 	  	ft_isalnum.c \
 	  	ft_tolower.c \
@@ -71,6 +72,7 @@ SRCS = 	ft_isascii.c \
 	  	ft_strsub.c \
 	  	ft_strjoin.c \
 	  	ft_strtrim.c \
+		ft_strword.c \
 	  	ft_itoa.c \
 	  	ft_strsplit.c \
 	  	ft_strequ.c \

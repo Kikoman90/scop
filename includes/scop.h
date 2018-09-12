@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef SCOP_H
 # define SCOP_H
 
@@ -34,7 +33,7 @@ typedef struct		s_parser
 {
 	unsigned int	fline;
 	unsigned int	fsize;
-	
+
 	const char**	errorLogs;
 }					t_parser;
 

@@ -1,5 +1,6 @@
 
 #include "scop.h"
+#include <stdio.h> //rem me
 
 static int  readFile(const char *file, int *fd)
 {
@@ -16,7 +17,12 @@ static int  readFile(const char *file, int *fd)
 
 static void parseWavefrontObj(char *data, size_t size, unsigned int seed)
 {
-    ft_strword(data, &seed);
+    (void)size;
+    char    *cur;
+    cur = ft_strword(data, &seed);
+    ft_putendl(cur);
+    printf("%d\n", seed);
+    free(cur);
     /*while (seed < size && data[seed])
     {
 

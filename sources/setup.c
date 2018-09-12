@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "scop.h"
-#include <stdio.h>
+#include <stdio.h> //rem me
 
 t_env	*init_scop(t_env **env, int argc, char **argv)
 {
@@ -44,7 +44,7 @@ t_env	*init_scop(t_env **env, int argc, char **argv)
 	i = 0;
 	while (++i < argc)
 	{
-		printf("%d\n", i);
+		printf("%d\n", i); // remove stdio and printf, check all 42 headers, norminette on all .c .h files of all folders...
 		parseFile(argv[i]);
 	}
 	return (*env);
