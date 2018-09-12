@@ -12,10 +12,23 @@
 
 #include "scop.h"
 
-void*   LogErrorNull(const char *msg)
+int     fileSize(int fd) {
+   struct stat  s;
+
+   if (fstat(fd, &s) == -1)
+   {
+       char *errorMsg = ft_strjoin("error: ", strerror(errno));
+       ft_putendl(errorMsg);
+       free(errorMsg);
+       return(-1);
+   }
+   return(s.st_size);
+}
+
+void    *LogErrorNull(const char *msg)
 {
     printf("ERROR: %s\n", msg);
-    return (NULL);    
+    return (NULL);
 }
 
 void    LogError(const char *msg)
@@ -23,21 +36,8 @@ void    LogError(const char *msg)
     printf("ERROR: %s\n", msg);
 }
 
-/*typedef struct  s_shader
-{
-    unsigned int id;
-    
-}               t_shader;
-
-typedef struct s_gameObject
-{
-
-}              t_gameObject;*/
-
-//gameObject =
-
-//rendering properties
-//physics properties
-//audio properties
-//behaviour(s)
-
+/* gameObject =
+ * rendering properties
+ * physics properties
+ * audio properties
+ * behaviour(s) */

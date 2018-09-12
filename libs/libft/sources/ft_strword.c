@@ -1,31 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strtrim.c                                       :+:      :+:    :+:   */
+/*   ft_strword.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/12/21 18:50:27 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/12 17:39:55 by fsidler          ###   ########.fr       */
+/*   Created: 2018/09/12 17:39:13 by fsidler           #+#    #+#             */
+/*   Updated: 2018/09/12 17:41:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strtrim(char const *s)
+char		*ft_strword(char *s, unsigned int *offset)
 {
-	long	start;
-	long	end;
+	char	*word;
 
-	if (!s)
-		return (NULL);
-	start = 0;
-	end = (int)ft_strlen(s) - 1;
-	while ((s[start] == ' ' || s[start] == '\t' || s[start] == '\n') &&
-			s[start])
-		start++;
-	while ((s[end] == ' ' || s[end] == '\t' || s[end] == '\n') && s[end] &&
-			end > start)
-		end--;
-	return (ft_strsub(s, start, (end - start + 1)));
+	while (ft_isblank(*s) && (*s != '\0' && *s != '\n'))
+	{
+		*offset++;
+		s++;
+	}
+	word = ft_strsub(s, 0, word_length(s));
+	return (word);
+}
+
+static int	word_length(char *s)
+{
+	int	len;
+
+	len = 0;
+	while (!ft_isblank(*s) && *s != '\0' && *s != '\n')
+	{
+		len++;
+		s++;
+	}
+	return (len);
 }

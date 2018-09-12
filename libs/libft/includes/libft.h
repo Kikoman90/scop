@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2015/12/21 18:44:23 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/12 17:43:44 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@
 # include <string.h>
 # include <unistd.h>
 
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <sys/mman.h>
+# include <fcntl.h>
+
 # define UC unsigned char
 
 typedef struct		s_list
@@ -25,6 +30,16 @@ typedef struct		s_list
 	size_t			content_size;
 	struct s_list	*next;
 }					t_list;
+
+typedef struct		s_info
+{
+	double			a;
+	int				e;
+	int				c;
+	int				sign;
+	int				i;
+	int				count;
+}					t_info;
 
 int					ft_isascii(int c);
 int					ft_isprint(int c);
@@ -37,6 +52,7 @@ int					ft_tolower(int c);
 int					ft_toupper(int c);
 
 int					ft_atoi(char *str);
+float				ft_atof(char *s);
 
 void				ft_bzero(void *s, size_t n);
 
@@ -87,6 +103,7 @@ char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char				*ft_strsub(char const *s, unsigned int start, size_t len);
 char				*ft_strjoin(char const *s1, char const *s2);
 char				*ft_strtrim(char const *s);
+char				*ft_strword(char *s, unsigned int *offset);
 
 char				*ft_itoa(int n);
 

@@ -17,7 +17,6 @@
 # include "../libs/libft/includes/libft.h"
 # include "../libs/libmath/includes/libmath.h"
 # include <time.h>
-# include <fcntl.h>
 # include <errno.h>
 //# include <math.h>
 
@@ -33,6 +32,9 @@
 
 typedef struct		s_parser	
 {
+	unsigned int	fline;
+	unsigned int	fsize;
+	
 	const char**	errorLogs;
 }					t_parser;
 
@@ -40,14 +42,14 @@ typedef struct		s_camera
 {
 	t_mat4x4		transform;
 	float			fov;
-}
+}					t_camera;
 
 typedef struct		s_gameObject
 {
 	t_mat4x4		transform;
 	t_vec3			*vertices;
-	long int		*indices; // short int ?
-
+	unsigned int	*indices; // short int ?
+	const char		*name;
 }					t_gameObject;
 
 typedef struct		s_goNode {
@@ -61,10 +63,15 @@ typedef struct		s_env
 	SDL_Window		*window;
 	SDL_GLContext	glContext;
 	t_parser		*parser;
-	t_cam			camera;
+	t_camera		camera;
 	t_goNode		*objList;
 }					t_env;
 
+t_env				*init_scop(t_env **env, int argc, char **argv);
+
+void        		parseFile(const char *path);
+
+int     			fileSize(int fd);
 void*				LogErrorNull(const char *msg);
 void				LogError(const char *msg);
 

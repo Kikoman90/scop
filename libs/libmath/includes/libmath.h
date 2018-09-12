@@ -17,6 +17,21 @@
 
 # define MAT_ID 0x7FFFFFFF
 
+typedef struct  s_vec3
+{
+    float       x;
+    float       y;
+    float       z;
+}               t_vec3;
+
+typedef struct  s_vec4
+{
+    float       x;
+    float       y;
+    float       z;
+    float       w;
+}               t_vec4;
+
 typedef union   u_mat4 {
     float       m[16];
     t_vec4      v[4];
@@ -42,21 +57,6 @@ typedef struct  s_mat4x4
     float       m32;
     float       m33;*/
 }               t_mat4x4;
-
-typedef struct  s_vec3
-{
-    float       x;
-    float       y;
-    float       z;
-}               t_vec3;
-
-typedef struct  s_vec4
-{
-    float       x;
-    float       y;
-    float       z;
-    float       w;
-}               t_vec4;
 
 typedef struct  s_quaternion
 {

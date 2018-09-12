@@ -27,6 +27,8 @@ DIR_OBJS = tmp
 HEADERS = includes
 
 SRCS =	main.c \
+		setup.c \
+		parser.c \
 		utils.c
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
