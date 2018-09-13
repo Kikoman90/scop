@@ -42,17 +42,63 @@ static void	prefix_error(const char *fname, unsigned int fline)
 	log_error_free(error_msg);
 }
 
-static void	parse_wavefrontobj(t_env *env, int seed, const char *fname)
+t_gameobject	*create_go(const char *name)
 {
-	char	*w;
+	t_gameobject	*go;
 
+	if (!(go = (t_gameobject*)malloc(sizeof(t_gameobject))))
+		return (log_error_null(MALLOC_ERROR));
+	go->transform = NULL; //go->transform = identityMatrix();
+	go->vertices = NULL;
+	go->indices = NULL;
+	go->mtl = NULL;
+	go->name = name;
+	return (go);
+}
+
+t_go_node		*create_go_node(const char *name)
+{
+	t_go_node	*node;
+
+	if (!(node = (t_go_node*)malloc(sizeof(t_go_node))))
+		return (log_error_null(MALLOC_ERROR));
+	node->go = create_go(name);
+	node->next = NULL;
+	return (node);
+}
+
+t_gameobject	*add_gameobject(t_go_node *list, const char *go_name)
+{
+	t_go_node	*tmp;
+
+	if (!list)
+	{
+		list = create_go_node(go_name);
+		tmp = list;
+	}
+	else
+	{
+		tmp = list;
+		while (tmp)
+			tmp = tmp->next;
+		tmp = create_go_node(go_name);
+	}
+	return (tmp->go);
+}
+
+static void	parse_wavefrontobj(t_env *env, int seed)
+{
+	char			*w;
+	t_gameobject	*bound_go;
+
+	bound_go = NULL;
 	while (seed < env->parser->fsize && env->parser->data[seed])
 	{
 		w = ft_strword(env->parser->data, &seed);
 		if (ft_strcmp(w, "#") == 0)
 			skip_line(env->parser->data, &seed);
 		else if (ft_strcmp(w, "o") == 0)
-			printf("objectname\n");
+			bound_go = add_gameobject(env->obj_list, w);
 		else if (ft_strcmp(w, "v") == 0)
 			printf("vertex\n");
 		else if (ft_strcmp(w, "f") == 0)
@@ -69,7 +115,7 @@ static void	parse_wavefrontobj(t_env *env, int seed, const char *fname)
 		}
 		else
 		{
-			prefix_error(fname, env->parser->fline);
+			prefix_error(env->parser->fname, env->parser->fline);
 			skip_line(env->parser->data, &seed);
 		}
 		env->parser->fline++;
@@ -89,7 +135,7 @@ void		parse_file(t_env *env, const char *path)
 		else
 		{
 			env->parser->data[env->parser->fsize - 1] = '\0';
-			parse_wavefrontobj(env, 0, file_name(path));
+			parse_wavefrontobj(env, 0);
 			if (munmap(env->parser->data, env->parser->fsize) == -1)
 				log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
 			env->parser->data = NULL;

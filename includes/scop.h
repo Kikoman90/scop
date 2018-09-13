@@ -29,10 +29,19 @@
 # define WIN_CREATE_ERROR "failed to create window"
 # define FILE_PREFIX_ERROR "invalid prefix in file "
 
+enum clean_flags
+{
+	CLEAN_SDL = 1 << 0,
+	CLEAN_PARSER = 1 << 1,
+	CLEAN_OBJ_LIST = 1 << 2,
+	CLEAN_ALL = 1 << 3
+};
+
 typedef struct			s_parser
 {
 	unsigned int		fline;
 	int					fsize;
+	const char			*fname;
 	char				*data;
 }						t_parser;
 
@@ -42,12 +51,21 @@ typedef struct			s_camera
 	float				fov;
 }						t_camera;
 
+typedef struct			s_material
+{
+	int					id;
+	const char			*name;
+}						t_material;
+
 typedef struct			s_gameobject
 {
 	t_mat4x4			transform;
 	t_vec3				*vertices;
 	unsigned int		*indices;
-	const char			*name;
+	t_material			mtl;
+	// this is TBD (a pointer to a mtl, or a mtlID would make more sense)
+	// only one instance of a material, used by all the go sharing that mat.
+	const char			*name; // idk ?
 }						t_gameobject;
 
 typedef struct			s_go_node {
@@ -71,6 +89,9 @@ void					parse_file(t_env *env, const char *path);
 
 const char				*file_name(const char *path);
 int						file_size(int fd);
+
+void					clean_scop(t_env *env, clean_flags f);
+
 void					*log_error_null(const char *msg);
 void					log_error(const char *msg);
 void					log_error_free(char *msg);

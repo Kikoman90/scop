@@ -29,7 +29,9 @@ HEADERS = includes
 SRCS =	main.c \
 		setup.c \
 		parser.c \
-		utils.c
+		utils.c \
+		cleanup.c \
+		error.c
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
 

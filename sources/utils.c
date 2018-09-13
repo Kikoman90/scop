@@ -40,32 +40,3 @@ int				file_size(int fd)
 	}
 	return (s.st_size);
 }
-
-void			*log_error_null(const char *msg)
-{
-	char	*error_msg;
-
-	error_msg = ft_strjoin("ERROR: ", msg);
-	ft_putendl(error_msg);
-	free(error_msg);
-	return (NULL);
-}
-
-void			log_error(const char *msg)
-{
-	char	*error_msg;
-
-	error_msg = ft_strjoin("ERROR: ", msg);
-	ft_putendl(error_msg);
-	free(error_msg);
-}
-
-void			log_error_free(char *msg)
-{
-	char	*error_msg;
-
-	error_msg = ft_strjoin("ERROR: ", msg);
-	ft_putendl(error_msg);
-	free(msg);
-	free(error_msg);
-}

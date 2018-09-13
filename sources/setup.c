@@ -12,16 +12,6 @@
 
 #include "scop.h"
 
-t_parser	*init_parser(t_env *env)
-{
-	if (!((env->parser) = (t_parser*)malloc(sizeof(t_parser))))
-		return (log_error_null(MALLOC_ERROR));
-	env->parser->fline = 1;
-	env->parser->fsize = 0;
-	env->parser->data = NULL;
-	return (env->parser);
-}
-
 void		*init_sdl_gl(t_env *env)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
@@ -36,20 +26,36 @@ void		*init_sdl_gl(t_env *env)
 		return (log_error_null(WIN_CREATE_ERROR));
 	if (!(env->gl_context = SDL_GL_CreateContext(env->window)))
 		return (log_error_null(SDL_GetError()));
+	glClearColor(0.19, 0.27, 0.41, 1);
+	glViewport(0, 0, WIN_W, WIN_H);
 	return ((void*)1);
 }
 
 t_env		*init_scop(t_env *env, int argc, char **argv)
 {
+	// init_null -> window = NULL, gl_context = null, parser = null ??????? IS IT NECESSARY ?
 	if (!(env = (t_env*)malloc(sizeof(t_env))))
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
-		return (NULL);
-	env->loop = 1;
-	if (!init_parser(env))
-		return (NULL);
+		return (clean_scop(env, CLEAN_SDL));
+	if (!((env->parser) = (t_parser*)malloc(sizeof(t_parser))))
+	{
+		clean_scop(env, CLEAN_SDL);
+		return (log_error_null(MALLOC_ERROR));
+	}
 	//init_cam, init serializer
+	env->obj_list = NULL;
+	// this need to be its own function
 	while (argc-- > 1)
-		parse_file(env, argv[argc]);
+	{
+		if (!parse_file(env, argv[argc]))
+			return (clean_scop(env, CLEAN_SDL | CLEAN_PARSER));
+	}
+	// this need to be its own function
+	env->loop = 1;
 	return (env);
 }
+
+// clean(env, CLEAN_SDL | CLEAN_PARSER | CLEAN_OBJ_LIST);
+// clean(env, CLEAN_ALL);
+// THIS IS WHAT I WANT

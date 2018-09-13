@@ -12,15 +12,6 @@
 
 #include "scop.h"
 
-void	clean_scop(t_env *env)
-{
-	SDL_GL_DeleteContext(env->gl_context);
-	SDL_DestroyWindow(env->window);
-	free(env->parser);
-	free(env);
-	env = NULL;
-}
-
 void	loop(t_env *env)
 {
 	SDL_Event	event;
@@ -31,7 +22,7 @@ void	loop(t_env *env)
 		SDL_PollEvent(&event);
 		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			env->loop = 0;
-		// DrawTriangle();
+		// DrawObjList(env); ou DrawObjList(env->obj_list, env->camera); ...
 		SDL_GL_SwapWindow(env->window);
 	}
 }
@@ -42,14 +33,8 @@ int		main(int argc, char **argv)
 
 	env = NULL;
 	if (!(env = init_scop(env, argc, argv)))
-	{
-		printf("delme: SYSTEM FAILURE\n"); //del me
 		return (0);
-	}
-	glClearColor(0.19, 0.27, 0.41, 1);
-	glViewport(0, 0, WIN_W, WIN_H);
 	loop(env);
-	clean_scop(env);
-	SDL_Quit();
+	clean_scop(env, CLEAN_ALL);
 	return (0);
 }
