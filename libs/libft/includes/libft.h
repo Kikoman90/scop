@@ -52,8 +52,8 @@ int					ft_isblank(int c);
 int					ft_tolower(int c);
 int					ft_toupper(int c);
 
-int					ft_atoi(char *str);
-float				ft_atof(char *s);
+int					ft_atoi(const char *str);
+float				ft_atof(const char *s);
 
 void				ft_bzero(void *s, size_t n);
 

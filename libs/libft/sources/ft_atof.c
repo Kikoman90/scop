@@ -21,7 +21,7 @@ static void	init_value(t_info *env)
 	env->count = 0;
 }
 
-static void	check_power(t_info *env, char *s)
+static void	check_power(t_info *env, const char *s)
 {
 	if (env->c == '.')
 		while ((env->c = *s++) != '\0' && ft_isdigit(env->c))
@@ -65,7 +65,7 @@ float		find_float(t_info *env)
 	return (env->a);
 }
 
-float		ft_atof(char *s)
+float		ft_atof(const char *s)
 {
 	t_info	*env;
 	float	res;

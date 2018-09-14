@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/14 15:06:49 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/14 15:10:39 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,40 @@ static void	prefix_error(const char *fname, unsigned int fline)
 	log_error_free(error_msg);
 }
 
+void		send_vertex_cmpnts(const char *x, const char *y, const char *z)
+{
+	printf("x : %f\ny : %f\nz : %f\n", ft_atof(x), ft_atof(y), ft_atof(z));
+}
+
 static void	parse_wavefrontobj(t_env *env, int seed)
 {
 	char			*w;
 	t_gameobject	*bound_go;
+	//s_vec3[] vertices;
+	//int[] indices;
+
+	int vertexStartSeed;
+	int vertexEndSeed;
+	int vertexCount;
+
+	int primitiveStartSeed;
+	int primitiveEndSeed;
+	int primitiveCount; // triangles instead of faces
 
 	bound_go = NULL;
 	while (seed < env->parser->fsize && env->parser->data[seed])
 	{
 		w = ft_strword(env->parser->data, &seed);
-		if (ft_strcmp(w, "#") == 0)
-			skip_line(env->parser->data, &seed);
-		else if (ft_strcmp(w, "o") == 0)
-			bound_go = add_gameobject(env->obj_list, w);
+		if (ft_strcmp(w, "o") == 0)
+		{
+			//printf("object name: '%s' of length %zu || found line %d\n", remove_me, ft_strlen(remove_me), env->parser->fline);	
+			bound_go = add_gameobject(env->obj_list, ft_strword(env->parser->data, &seed));
+		}
 		else if (ft_strcmp(w, "v") == 0)
+		{
+			send_vertex_cmpnts(ft_strword(env->parser->data, &seed), ft_strword(env->parser->data, &seed), ft_strword(env->parser->data, &seed));
 			printf("vertex\n");
+		}
 		else if (ft_strcmp(w, "f") == 0)
 		{
 			//add indices to indexbuffer
@@ -59,11 +78,9 @@ static void	parse_wavefrontobj(t_env *env, int seed)
 		{
 			//fetch mtl
 		}
-		else
-		{
+		else if (ft_strcmp(w, "#") != 0 && ft_strcmp(w, "s") != 0)
 			prefix_error(env->parser->fname, env->parser->fline);
-			skip_line(env->parser->data, &seed);
-		}
+		skip_line(env->parser->data, &seed);
 		env->parser->fline++;
 	}
 }

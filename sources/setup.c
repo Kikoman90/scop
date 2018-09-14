@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/14 15:05:56 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/14 15:08:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,14 @@ int			init_parser(t_parser *parser, const char *path, int *fd)
 		log_error_free(ft_strjoin("(open) ", strerror(errno)));
 		return (-1);
 	}
-	if (fstat(fd, &s) == -1)
+	if (fstat(*fd, &s) == -1)
 	{
 		log_error_free(ft_strjoin("(fstat) ", strerror(errno)));
 		return (-1);
 	}
 	parser->fsize = s.st_size;
 	parser->fname = strrchr(path, '/') + 1;
-	parser->fline = 0;
+	parser->fline = 1;
 	parser->data = NULL;
 	return (0);
 }
