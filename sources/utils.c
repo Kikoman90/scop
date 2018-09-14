@@ -6,37 +6,52 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:51:02 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/12 21:23:43 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/14 15:04:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-const char		*file_name(const char *path)
+static t_gameobject	*create_go(const char *name)
 {
-	int		i;
-	int		j;
-	char	*name;
+	t_gameobject	*go;
 
-	i = ft_strlen(path) - 1;
-	j = 0;
-	while (path[i] && path[i] != '/')
-		i--;
-	i++;
-	name = ft_strnew(ft_strlen(path) - i);
-	while (path[i])
-		name[j++] = path[i++];
-	return (name);
+	if (!(go = (t_gameobject*)malloc(sizeof(t_gameobject))))
+		return (log_error_null(MALLOC_ERROR));
+	// go->transform = identityMatrix();
+	go->vertices = NULL;
+	go->indices = NULL;
+	go->mtl = NULL;
+	go->name = name;
+	return (go);
 }
 
-int				file_size(int fd)
+static t_go_node	*create_go_node(const char *name)
 {
-	struct stat	s;
+	t_go_node	*node;
 
-	if (fstat(fd, &s) == -1)
+	if (!(node = (t_go_node*)malloc(sizeof(t_go_node))))
+		return (log_error_null(MALLOC_ERROR));
+	node->go = create_go(name);
+	node->next = NULL;
+	return (node);
+}
+
+t_gameobject		*add_gameobject(t_go_node *list, const char *go_name)
+{
+	t_go_node	*tmp;
+
+	if (!list)
 	{
-		log_error(strerror(errno));
-		return (-1);
+		list = create_go_node(go_name);
+		tmp = list;
 	}
-	return (s.st_size);
+	else
+	{
+		tmp = list;
+		while (tmp)
+			tmp = tmp->next;
+		tmp = create_go_node(go_name);
+	}
+	return (tmp->go);
 }

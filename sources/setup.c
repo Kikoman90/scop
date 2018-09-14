@@ -6,13 +6,34 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/12 21:18:49 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/14 15:05:56 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void		*init_sdl_gl(t_env *env)
+int			init_parser(t_parser *parser, const char *path, int *fd)
+{
+	struct stat	s;
+
+	if ((*fd = open(path, O_RDWR)) == -1)
+	{
+		log_error_free(ft_strjoin("(open) ", strerror(errno)));
+		return (-1);
+	}
+	if (fstat(fd, &s) == -1)
+	{
+		log_error_free(ft_strjoin("(fstat) ", strerror(errno)));
+		return (-1);
+	}
+	parser->fsize = s.st_size;
+	parser->fname = strrchr(path, '/') + 1;
+	parser->fline = 0;
+	parser->data = NULL;
+	return (0);
+}
+
+static void	*init_sdl_gl(t_env *env)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 		return (log_error_null(SDL_INIT_ERROR));
@@ -33,7 +54,6 @@ void		*init_sdl_gl(t_env *env)
 
 t_env		*init_scop(t_env *env, int argc, char **argv)
 {
-	// init_null -> window = NULL, gl_context = null, parser = null ??????? IS IT NECESSARY ?
 	if (!(env = (t_env*)malloc(sizeof(t_env))))
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
@@ -45,17 +65,8 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 	}
 	//init_cam, init serializer
 	env->obj_list = NULL;
-	// this need to be its own function
 	while (argc-- > 1)
-	{
-		if (!parse_file(env, argv[argc]))
-			return (clean_scop(env, CLEAN_SDL | CLEAN_PARSER));
-	}
-	// this need to be its own function
+		parse_file(env, argv[argc]);
 	env->loop = 1;
 	return (env);
 }
-
-// clean(env, CLEAN_SDL | CLEAN_PARSER | CLEAN_OBJ_LIST);
-// clean(env, CLEAN_ALL);
-// THIS IS WHAT I WANT

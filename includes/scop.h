@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/12 21:17:57 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/14 14:58:29 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,12 @@
 # define WIN_CREATE_ERROR "failed to create window"
 # define FILE_PREFIX_ERROR "invalid prefix in file "
 
-enum clean_flags
+typedef enum			e_clean_flags
 {
 	CLEAN_SDL = 1 << 0,
 	CLEAN_PARSER = 1 << 1,
-	CLEAN_OBJ_LIST = 1 << 2,
-	CLEAN_ALL = 1 << 3
-};
+	CLEAN_ALL = 1 << 2
+}						t_clean_flags;
 
 typedef struct			s_parser
 {
@@ -62,14 +61,14 @@ typedef struct			s_gameobject
 	t_mat4x4			transform;
 	t_vec3				*vertices;
 	unsigned int		*indices;
-	t_material			mtl;
+	t_material			*mtl;
 	// this is TBD (a pointer to a mtl, or a mtlID would make more sense)
 	// only one instance of a material, used by all the go sharing that mat.
-	const char			*name; // idk ?
+	const char			*name;
 }						t_gameobject;
 
 typedef struct			s_go_node {
-	t_gameobject		go;
+	t_gameobject		*go;
 	struct s_go_node	*next;
 }						t_go_node;
 
@@ -83,14 +82,15 @@ typedef struct			s_env
 	t_go_node			*obj_list;
 }						t_env;
 
+int						init_parser(t_parser *parser, const char *path, \
+						int *fd);
 t_env					*init_scop(t_env *env, int argc, char **argv);
 
 void					parse_file(t_env *env, const char *path);
 
-const char				*file_name(const char *path);
-int						file_size(int fd);
+void					*clean_scop(t_env *env, t_clean_flags f);
 
-void					clean_scop(t_env *env, clean_flags f);
+t_gameobject			*add_gameobject(t_go_node *list, const char *go_name);
 
 void					*log_error_null(const char *msg);
 void					log_error(const char *msg);
