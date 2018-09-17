@@ -31,7 +31,9 @@ SRCS = 	ft_isascii.c \
 	  	ft_tolower.c \
 	  	ft_toupper.c \
 	  	ft_atoi.c \
+		ft_atoi_f.c \
 		ft_atof.c \
+		ft_atof_f.c \
 	 	ft_bzero.c \
 	  	ft_memccpy.c \
 	  	ft_memcpy.c \
@@ -71,8 +73,9 @@ SRCS = 	ft_isascii.c \
 	  	ft_strmapi.c \
 	  	ft_strsub.c \
 	  	ft_strjoin.c \
-		ft_strjoin2.c \
-		ft_strjoin3.c \
+		ft_strjoin_bf.c \
+		ft_strjoin_lf.c \
+		ft_strjoin_rf.c \
 	  	ft_strtrim.c \
 		ft_strword.c \
 	  	ft_itoa.c \
@@ -91,6 +94,7 @@ SRCS = 	ft_isascii.c \
 	  	ft_round.c \
 	  	ft_copysign.c \
 	  	ft_signbit.c \
+		ft_wordoffset.c \
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
 

@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/12 17:43:44 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/17 16:31:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,9 @@ int					ft_tolower(int c);
 int					ft_toupper(int c);
 
 int					ft_atoi(const char *str);
+int					ft_atoi_f(char *str);
 float				ft_atof(const char *s);
+float				ft_atof_f(char *s);
 
 void				ft_bzero(void *s, size_t n);
 
@@ -103,10 +105,13 @@ char				*ft_strmap(char const *s, char (*f)(char));
 char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char				*ft_strsub(char const *s, unsigned int start, size_t len);
 char				*ft_strjoin(char const *s1, char const *s2);
-char				*ft_strjoin2(char *s1, char *s2);
-char				*ft_strjoin3(char *s1, char *s2);
+char				*ft_strjoin_bf(char *s1, char *s2);
+char				*ft_strjoin_lf(char *s1, char const *s2);
+char				*ft_strjoin_rf(char const *s1, char *s2);
 char				*ft_strtrim(char const *s);
-char				*ft_strword(char *s, int *offset);
+char				*ft_strword(char const *s, int *offset);
+
+int					ft_wordoffset(char const *s, int offset);
 
 char				*ft_itoa(int n);
 

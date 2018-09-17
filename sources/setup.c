@@ -65,6 +65,7 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 	}
 	//init_cam, init serializer
 	env->obj_list = NULL;
+	env->obj_count = 0;
 	while (argc-- > 1)
 		parse_file(env, argv[argc]);
 	env->loop = 1;

@@ -6,18 +6,18 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 17:39:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/12 18:12:30 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/17 16:35:06 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t	word_length(char *s)
+static size_t	word_length(char const *s)
 {
 	int	len;
 
 	len = 0;
-	while (!ft_isblank(*s) && *s != '\0' && *s != '\n')
+	while (*s && !ft_isblank(*s) && *s != '\0' && *s != '\n')
 	{
 		len++;
 		s++;
@@ -25,24 +25,26 @@ static size_t	word_length(char *s)
 	return (len);
 }
 
-char			*ft_strword(char *s, int *offset)
+char			*ft_strword(char const *s, int *offset)
 {
 	char	*word;
 	size_t	wsize;
 
 	s += *offset;
+	word = NULL;
 	if (*s != '\0' && *s == '\n')
 	{
-		s++;
 		*offset += 1;
+		s++;
 	}
-	while (ft_isblank(*s) && (*s != '\0' && *s != '\n'))
+	while (*s && ft_isblank(*s) && (*s != '\0' && *s != '\n'))
 	{
 		*offset += 1;
 		s++;
 	}
 	wsize = word_length(s);
-	word = ft_strsub(s, 0, wsize);
 	*offset += wsize;
+	if (wsize > 0)
+		word = ft_strsub(s, 0, wsize);
 	return (word);
 }

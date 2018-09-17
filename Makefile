@@ -30,7 +30,9 @@ SRCS =	main.c \
 		setup.c \
 		parser.c \
 		utils.c \
+		clean_go.c \
 		cleanup.c \
+		display.c \
 		error.c
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))

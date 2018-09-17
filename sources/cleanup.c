@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/14 15:03:12 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/17 17:12:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,22 +37,6 @@ static void	clean_parser(t_env *env)
 	}
 }
 
-static void	clean_obj(t_gameobject *go)
-{
-	if (go->vertices)
-	{
-		free(go->vertices);
-		go->vertices = NULL;
-	}
-	if (go->indices)
-	{
-		free(go->indices);
-		go->indices = NULL;
-	}
-	free(go);
-	go = NULL;
-}
-
 static void	clean_obj_list(t_env *env)
 {
 	t_go_node	*tmp;
@@ -64,10 +48,8 @@ static void	clean_obj_list(t_env *env)
 		while (tmp)
 		{
 			tmp2 = tmp->next;
-			clean_obj(tmp->go);
-			tmp->next = NULL;
-			free(tmp);
-			tmp = NULL;
+			clean_go_node(tmp);
+			env->obj_count--;
 			tmp = tmp2;
 		}
 		env->obj_list = NULL;

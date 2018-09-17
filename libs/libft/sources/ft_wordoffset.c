@@ -1,42 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin2.c                                      :+:      :+:    :+:   */
+/*   ft_wordoffset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/05/05 17:06:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/12 21:08:00 by fsidler          ###   ########.fr       */
+/*   Created: 2018/09/17 12:45:09 by fsidler           #+#    #+#             */
+/*   Updated: 2018/09/17 16:32:13 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strjoin2(char *s1, char *s2)
+static size_t	word_length(char const *s)
 {
-	char	*n;
-	int		i[2];
+	int	len;
 
-	i[0] = 0;
-	while (s1[i[0]])
-		i[0]++;
-	i[1] = 0;
-	while (s2[i[1]])
-		i[1]++;
-	n = (char *)malloc(sizeof(char) * (i[0] + i[1] + 1));
-	i[0] = 0;
-	while (s1[i[0]])
+	len = 0;
+	while (!ft_isblank(*s) && *s != '\0' && *s != '\n')
 	{
-		n[i[0]] = s1[i[0]];
-		i[0]++;
+		len++;
+		s++;
 	}
-	free(s1);
-	i[1] = 0;
-	while (s2[i[1]])
+	return (len);
+}
+
+int				ft_wordoffset(char const *s, int offset)
+{
+	size_t	wsize;
+
+	s += offset;
+	if (*s != '\0' && *s == '\n')
 	{
-		n[i[0] + i[1]] = s2[i[1]];
-		i[1]++;
+		s++;
+		offset += 1;
 	}
-	n[i[0] + i[1]] = '\0';
-	return (n);
+	while (ft_isblank(*s) && (*s != '\0' && *s != '\n'))
+	{
+		offset += 1;
+		s++;
+	}
+	wsize = word_length(s);
+	offset += wsize;
+	return (offset);
 }

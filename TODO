@@ -1,9 +1,14 @@
+test the parsing (multiple objects, no objects... etc)
+IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
+IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)
+
+
 remove this file before finishing the project
 remove .vscode before finishing the project
 libmath is not clean (norminette, unixcase...)
 norminette on all
 check 42 headers
-check scop leaks
+check scop LEAKS (try different setup interruptions...)
 check everything
 
 // what i want : 
