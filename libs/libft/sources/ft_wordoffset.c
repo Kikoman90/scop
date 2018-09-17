@@ -30,11 +30,6 @@ int				ft_wordoffset(char const *s, int offset)
 	size_t	wsize;
 
 	s += offset;
-	if (*s != '\0' && *s == '\n')
-	{
-		s++;
-		offset += 1;
-	}
 	while (ft_isblank(*s) && (*s != '\0' && *s != '\n'))
 	{
 		offset += 1;

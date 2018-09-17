@@ -45,49 +45,67 @@ int			check_idx_count(char *data, int seed)
 	return (count);
 }
 
-t_go_node	*process_go(t_env *env, char *data, t_go_node *node, t_seed *vis)
+t_gameobject	*vtx_feed(t_gameobject *go, char *data, t_seed vtx_seed)
 {
 	int	i;
-	int icount;
 	int seed;
 
-	node->go->vtx_count = vis[0].count;
-	node->go->idx_count = vis[1].count;
-	if (!(node->go->vertices = (t_vec3*)malloc(sizeof(t_vec3) * vis[0].count)) || \
-	!(node->go->indices = (unsigned int*)malloc(sizeof(unsigned int) * vis[1].count)))
-	{
-		clean_go_node(node);
-		return (log_error_null(MALLOC_ERROR));
-	}
 	i = 0;
-	seed = vis[0].beginseed;
-	while (seed < vis[0].endseed && i < vis[0].count && data[seed])
+	seed = vtx_seed.beginseed;
+	while (seed < vtx_seed.endseed && i < vtx_seed.count && data[seed])
 	{
-		node->go->vertices[i].x = ft_atof_f(ft_strword(data, &seed));
-		node->go->vertices[i].y = ft_atof_f(ft_strword(data, &seed));
-		node->go->vertices[i].z = ft_atof_f(ft_strword(data, &seed));
+		go->vertices[i].x = ft_atof_f(ft_strword(data, &seed));
+		go->vertices[i].y = ft_atof_f(ft_strword(data, &seed));
+		go->vertices[i].z = ft_atof_f(ft_strword(data, &seed));
 		seed = skip_line(data, seed);
 		seed = ft_wordoffset(data, seed);
 		i++;
 	}
+	return (go);
+}
+
+t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
+{
+	int	i;
+	int seed;
+	int	icount;
+
 	i = 0;
-	seed = vis[1].beginseed;
-	while (seed < vis[1].endseed && i < vis[1].count && data[seed])
+	seed = idx_seed.beginseed;
+	while (seed < idx_seed.endseed && i < idx_seed.count && data[seed])
 	{
 		icount = check_idx_count(data, seed);
-		node->go->indices[i] = ft_atoi_f(ft_strword(data, &seed)) - 1;
-		node->go->indices[i + 1] = ft_atoi_f(ft_strword(data, &seed)) - 1;
-		node->go->indices[i + 2] = ft_atoi_f(ft_strword(data, &seed)) - 1;
+		go->indices[i] = ft_atoi_f(ft_strword(data, &seed)) - 1;
+		go->indices[i + 1] = ft_atoi_f(ft_strword(data, &seed)) - 1;
+		go->indices[i + 2] = ft_atoi_f(ft_strword(data, &seed)) - 1;
 		if (icount == 6)
 		{
-			node->go->indices[i + 3] = node->go->indices[i + 2];
-			node->go->indices[i + 4] = node->go->indices[i + 1];
-			node->go->indices[i + 5] = ft_atoi_f(ft_strword(data, &seed)) - 1;
+			go->indices[i + 3] = go->indices[i + 2];
+			go->indices[i + 4] = go->indices[i + 1];
+			go->indices[i + 5] = ft_atoi_f(ft_strword(data, &seed)) - 1;
 		}
 		seed = skip_line(data, seed);
 		seed = ft_wordoffset(data, seed);
 		i += icount;
 	}
+	return (go);
+}
+
+t_go_node	*process_go(t_env *env, char *data, t_go_node *node, t_seed *vis)
+{
+	t_gameobject	*go;
+
+	go = node->go;
+	go->vtx_count = vis[0].count;
+	go->idx_count = vis[1].count;
+	if (!(go->vertices = (t_vec3*)malloc(sizeof(t_vec3) * vis[0].count)) || \
+	!(go->indices = (unsigned int*)malloc(sizeof(unsigned int) * vis[1].count)))
+	{
+		clean_go_node(node);
+		return (log_error_null(MALLOC_ERROR));
+	}
+	go = vtx_feed(go, data, vis[0]);
+	go = idx_feed(go, data, vis[1]);
 	env->obj_list = add_go_node(env, node);
 	return (node);
 }
@@ -103,9 +121,9 @@ static void	parse_wavefrontobj(t_env *env, int seed)
 	while (seed < env->parser->fsize && env->parser->data[seed])
 	{
 		w = ft_strword(env->parser->data, &seed);
-		if (ft_strcmp(w, "o") == 0)
+		if (w && ft_strcmp(w, "o") == 0)
 		{
-			if (vi_seed[0].count > 0 && vi_seed[1].count > 0 && vi_seed[1].count % 3 == 0)
+			if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
 			{
 				if (!bound_go)
 					bound_go = create_go_node(generate_go_name(env->obj_count));
@@ -114,36 +132,36 @@ static void	parse_wavefrontobj(t_env *env, int seed)
 			bound_go = create_go_node(ft_strword(env->parser->data, &seed));
 			init_seeds(&(vi_seed[0]), &(vi_seed[1]));
 		}
-		else if (ft_strcmp(w, "v") == 0)
+		else if (w && ft_strcmp(w, "v") == 0)
 		{
 			vi_seed[0].beginseed = (vi_seed[0].beginseed > -1) ? vi_seed[0].beginseed : seed;
 			vi_seed[0].endseed = (vi_seed[0].endseed > seed) ? vi_seed[0].endseed : skip_line(env->parser->data, seed);
 			vi_seed[0].count++;
 		}
-		else if (ft_strcmp(w, "f") == 0)
+		else if (w && ft_strcmp(w, "f") == 0)
 		{
 			vi_seed[1].beginseed = (vi_seed[1].beginseed > -1) ? vi_seed[1].beginseed : seed;
 			vi_seed[1].endseed = (vi_seed[1].endseed > seed) ? vi_seed[1].endseed : skip_line(env->parser->data, seed);
 			vi_seed[1].count += check_idx_count(env->parser->data, seed);
 		}
-		else if (ft_strcmp(w, "mtllib") == 0)
+		else if (w && ft_strcmp(w, "mtllib") == 0)
 		{
 			ft_putendl("MTLLIB");
 			//load Mtlfile
 		}
-		else if (ft_strcmp(w, "usemtl") == 0)
+		else if (w && ft_strcmp(w, "usemtl") == 0)
 		{
 			ft_putendl("USEMTL");
 			//fetch mtl
 		}
-		else if (ft_strcmp(w, "#") != 0 && ft_strcmp(w, "s") != 0)
+		else if (w && ft_strcmp(w, "#") != 0 && ft_strcmp(w, "s") != 0)
 			prefix_error(env->parser->fname, env->parser->fline);
 		seed = skip_line(env->parser->data, seed);
 		env->parser->fline++;
 		if (w)
 			free(w);
 	}
-	if (vi_seed[0].count > 0 && vi_seed[1].count > 0 && vi_seed[1].count % 3 == 0)
+	if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
 	{
 		if (!bound_go)
 			bound_go = create_go_node(generate_go_name(env->obj_count));

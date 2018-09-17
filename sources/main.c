@@ -34,7 +34,7 @@ int		main(int argc, char **argv)
 	env = NULL;
 	if (!(env = init_scop(env, argc, argv)))
 		return (0);
-	//display_obj_list(env->obj_list);
+	display_obj_list(env->obj_list);
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
 	return (0);

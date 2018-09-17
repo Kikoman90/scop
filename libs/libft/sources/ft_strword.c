@@ -32,11 +32,6 @@ char			*ft_strword(char const *s, int *offset)
 
 	s += *offset;
 	word = NULL;
-	if (*s != '\0' && *s == '\n')
-	{
-		*offset += 1;
-		s++;
-	}
 	while (*s && ft_isblank(*s) && (*s != '\0' && *s != '\n'))
 	{
 		*offset += 1;
