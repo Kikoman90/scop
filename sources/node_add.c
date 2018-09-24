@@ -1,38 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   clean_go.c                                         :+:      :+:    :+:   */
+/*   node_add.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/17 11:31:07 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/17 17:11:50 by fsidler          ###   ########.fr       */
+/*   Created: 2018/09/24 19:25:09 by fsidler           #+#    #+#             */
+/*   Updated: 2018/09/24 19:41:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void	clean_obj(t_gameobject *go)
+t_go_node			*add_go_node(t_go_node *dest, t_go_node *node)
 {
-	if (go->vertices)
-	{
-		free(go->vertices);
-		go->vertices = NULL;
-	}
-	if (go->indices)
-	{
-		free(go->indices);
-		go->indices = NULL;
-	}
-	free(go->name);
-	free(go);
-	go = NULL;
+	t_go_node	*head;
+
+	head = dest;
+	if (head == NULL)
+		return (node);
+	while (dest->next)
+		dest = dest->next;
+	dest->next = node;
+	return (head);
 }
 
-void	clean_go_node(t_go_node *node)
+t_mtl_node			*add_mtl_node(t_mtl_node *dest, t_mtl_node *node)
 {
-	clean_obj(node->go);
-	node->next = NULL;
-	free(node);
-	node = NULL;
+	t_mtl_node	*head;
+
+	head = dest;
+	if (head == NULL)
+		return (node);
+	while (dest->next)
+		dest = dest->next;
+	dest->next = node;
+	return (head);
 }

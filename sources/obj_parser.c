@@ -12,39 +12,6 @@
 
 #include "scop.h"
 
-static int	skip_line(char *data, int seed)
-{
-	while (data[seed] && data[seed] != '\n')
-		seed += 1;
-	if (data[seed] && data[seed] == '\n')
-		seed += 1;
-	return (seed);
-}
-
-static void	prefix_error(const char *fname, unsigned int fline)
-{
-	char	*line_number;
-	char	*error_msg;
-
-	line_number = ft_strjoin_lf(ft_strjoin_rf(" (line ", ft_itoa(fline)), ")");
-	error_msg = ft_strjoin_bf(ft_strjoin(FILE_PREFIX_ERROR, "'"), \
-			ft_strjoin_bf(ft_strjoin(fname, "'"), line_number));
-	log_error_free(error_msg);
-}
-
-int			check_idx_count(char *data, int seed)
-{
-	int count;
-
-	count = 0;
-	while (data[seed] != '\n' && data[seed] != '\0' && \
-		(seed = ft_wordoffset(data, seed)) > -1)
-		count++;
-	if (count == 4)
-		count = 6;
-	return (count);
-}
-
 t_gameobject	*vtx_feed(t_gameobject *go, char *data, t_seed vtx_seed)
 {
 	int	i;
@@ -52,11 +19,9 @@ t_gameobject	*vtx_feed(t_gameobject *go, char *data, t_seed vtx_seed)
 
 	i = 0;
 	seed = vtx_seed.beginseed;
-	while (seed < vtx_seed.endseed && i < vtx_seed.count && data[seed])
+	while (seed < vtx_seed.endseed && i < (int)vtx_seed.count && data[seed])
 	{
-		go->vertices[i].x = ft_atof_f(ft_strword(data, &seed));
-		go->vertices[i].y = ft_atof_f(ft_strword(data, &seed));
-		go->vertices[i].z = ft_atof_f(ft_strword(data, &seed));
+		go->vertices[i] = vec3_atof(data, &seed);
 		seed = skip_line(data, seed);
 		seed = ft_wordoffset(data, seed);
 		i++;
@@ -72,9 +37,9 @@ t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
 
 	i = 0;
 	seed = idx_seed.beginseed;
-	while (seed < idx_seed.endseed && i < idx_seed.count && data[seed])
+	while (seed < idx_seed.endseed && i < (int)idx_seed.count && data[seed])
 	{
-		icount = check_idx_count(data, seed);
+		icount = check_idx_count(data, seed, 1);
 		go->indices[i] = ft_atoi_f(ft_strword(data, &seed)) - 1;
 		go->indices[i + 1] = ft_atoi_f(ft_strword(data, &seed)) - 1;
 		go->indices[i + 2] = ft_atoi_f(ft_strword(data, &seed)) - 1;
@@ -91,7 +56,18 @@ t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
 	return (go);
 }
 
-t_go_node	*process_go(t_env *env, char *data, t_go_node *node, t_seed *vis)
+t_gameobject	*process_go(char *data, t_go_node *node, t_seed *vis, unsigned int mtl_id)
+{
+	t_gameobject	*go;
+
+	go = node->go;	
+	go = vtx_feed(go, data, vis[0]); // keep this line
+	go = idx_feed(go, data, vis[1]); // keep this line
+	//env->go_list = add_go_node(env->go_list, node); //WRONG NOT WHAT I WANT TO DO
+	return (node);
+}
+
+/*t_go_node	*process_go(char *data, t_go_node *node, t_seed *vis, unsigned int mtl_id)
 {
 	t_gameobject	*go;
 
@@ -106,85 +82,83 @@ t_go_node	*process_go(t_env *env, char *data, t_go_node *node, t_seed *vis)
 	}
 	go = vtx_feed(go, data, vis[0]);
 	go = idx_feed(go, data, vis[1]);
-	env->obj_list = add_go_node(env, node);
+	env->go_list = add_go_node(env, node);
 	return (node);
+}*/
+
+t_go_node	*parse_objects(char *data, )
+{
+	t_go_node	*obj_list;
+
+
+
+
+	return (obj_list);
 }
 
-static void	parse_wavefrontobj(t_env *env, int seed)
+// split into two functions
+void		parse_wavefrontobj(t_env *env, t_parser *parser, int seed)
 {
 	char			*w;
 	t_go_node		*bound_go;
 	t_seed			vi_seed[2];
+	unsigned int	mtl_id;
 
 	bound_go = NULL;
 	init_seeds(&(vi_seed[0]), &(vi_seed[1]));
-	while (seed < env->parser->fsize && env->parser->data[seed])
+	mtl_id = 0;
+	while (seed < parser->fsize && parser->data[seed])
 	{
-		w = ft_strword(env->parser->data, &seed);
+		w = ft_strword(parser->data, &seed);
+		//here
 		if (w && ft_strcmp(w, "o") == 0)
 		{
 			if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
 			{
 				if (!bound_go)
-					bound_go = create_go_node(generate_go_name(env->obj_count));
-				process_go(env, env->parser->data, bound_go, vi_seed);
+					bound_go = create_go_node(generate_name(GO_NAME, env->go_count));
+				process_go(env, parser->data, bound_go, vi_seed);
+				bound_go->go->mtl_id = mtl_id;
 			}
-			bound_go = create_go_node(ft_strword(env->parser->data, &seed));
+			bound_go = create_go_node(ft_strword(parser->data, &seed));
 			init_seeds(&(vi_seed[0]), &(vi_seed[1]));
+			mtl_id = 0;
 		}
 		else if (w && ft_strcmp(w, "v") == 0)
 		{
 			vi_seed[0].beginseed = (vi_seed[0].beginseed > -1) ? vi_seed[0].beginseed : seed;
-			vi_seed[0].endseed = (vi_seed[0].endseed > seed) ? vi_seed[0].endseed : skip_line(env->parser->data, seed);
+			vi_seed[0].endseed = (vi_seed[0].endseed > seed) ? vi_seed[0].endseed : skip_line(parser->data, seed);
 			vi_seed[0].count++;
 		}
 		else if (w && ft_strcmp(w, "f") == 0)
 		{
 			vi_seed[1].beginseed = (vi_seed[1].beginseed > -1) ? vi_seed[1].beginseed : seed;
-			vi_seed[1].endseed = (vi_seed[1].endseed > seed) ? vi_seed[1].endseed : skip_line(env->parser->data, seed);
-			vi_seed[1].count += check_idx_count(env->parser->data, seed);
+			vi_seed[1].endseed = (vi_seed[1].endseed > seed) ? vi_seed[1].endseed : skip_line(parser->data, seed);
+			vi_seed[1].count += check_idx_count(parser->data, seed, 1);
 		}
 		else if (w && ft_strcmp(w, "mtllib") == 0)
 		{
-			ft_putendl("MTLLIB");
-			//load Mtlfile
+			free(w);
+			w = ft_strjoin(parser->fpath, ft_strword(parser->data, &seed));
+			parse_file(env, w, parse_wavefrontmtl);
 		}
 		else if (w && ft_strcmp(w, "usemtl") == 0)
 		{
-			ft_putendl("USEMTL");
-			//fetch mtl
+			//mtl_id 0 is default mtl
+			//mtl_id = get_mtl_id(ft_strword(parser->data, &seed));
 		}
 		else if (w && ft_strcmp(w, "#") != 0 && ft_strcmp(w, "s") != 0)
-			prefix_error(env->parser->fname, env->parser->fline);
-		seed = skip_line(env->parser->data, seed);
-		env->parser->fline++;
+			prefix_error(parser->fname, parser->fline);
+		seed = skip_line(parser->data, seed);
+		parser->fline++;
 		if (w)
 			free(w);
 	}
 	if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
 	{
 		if (!bound_go)
-			bound_go = create_go_node(generate_go_name(env->obj_count));
-		process_go(env, env->parser->data, bound_go, vi_seed);
-	}
-}
-
-void		parse_file(t_env *env, const char *path)
-{
-	int	fd;
-
-	if (init_parser(env->parser, path, &fd) != -1)
-	{
-		if ((env->parser->data = (char *)mmap(NULL, env->parser->fsize, \
-			PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-			log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
-		else
-		{
-			env->parser->data[env->parser->fsize] = '\0';
-			parse_wavefrontobj(env, 0);
-			if (munmap(env->parser->data, env->parser->fsize) == -1)
-				log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
-		}
-		close(fd);
+			bound_go = create_go_node(generate_name(GO_NAME, env->go_count));
+		process_go(env, parser->data, bound_go, vi_seed);
+		bound_go->go->mtl_id = mtl_id;
 	}
 }

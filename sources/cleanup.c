@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/17 17:12:21 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/18 14:04:23 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,32 +27,41 @@ static void	clean_sdl(t_env *env)
 	SDL_Quit();
 }
 
-static void	clean_parser(t_env *env)
+static void	clean_mtl_list(t_env *env)
 {
-	if (env->parser)
+	t_mtl_node	*tmp;
+	t_mtl_node	*tmp2;
+
+	if (env->mtl_list)
 	{
-		env->parser->data = NULL;
-		free(env->parser);
-		env->parser = NULL;
+		tmp = env->mtl_list;
+		while (tmp)
+		{
+			tmp2 = tmp->next;
+			clean_mtl_node(tmp);
+			env->mtl_count--;
+			tmp = tmp2;
+		}
+		env->mtl_list = NULL;
 	}
 }
 
-static void	clean_obj_list(t_env *env)
+static void	clean_go_list(t_env *env)
 {
 	t_go_node	*tmp;
 	t_go_node	*tmp2;
 
-	if (env->obj_list)
+	if (env->go_list)
 	{
-		tmp = env->obj_list;
+		tmp = env->go_list;
 		while (tmp)
 		{
 			tmp2 = tmp->next;
 			clean_go_node(tmp);
-			env->obj_count--;
+			env->go_count--;
 			tmp = tmp2;
 		}
-		env->obj_list = NULL;
+		env->go_list = NULL;
 	}
 }
 
@@ -61,19 +70,14 @@ void		*clean_scop(t_env *env, t_clean_flags f)
 	if (f & CLEAN_ALL)
 	{
 		clean_sdl(env);
-		clean_parser(env);
-		clean_obj_list(env);
+		clean_go_list(env);
+		clean_mtl_list(env);
 	}
-	else
+	else if (f & CLEAN_SDL)
 	{
-		if (f & CLEAN_SDL)
-			clean_sdl(env);
-		if (f & CLEAN_PARSER)
-			clean_parser(env);
+		clean_sdl(env);
 	}
 	free(env);
 	env = NULL;
 	return (NULL);
 }
-// need to test everything with all flags. need to include material cleanup
-// LEAK COMMAND

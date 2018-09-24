@@ -1,12 +1,16 @@
+obj_parser.c and mtl_parser.c !!
+mtl_id : good idea, bad idea ??
+
 test the parsing (multiple objects, no objects... etc)
 IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
 IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)
-
+SERIALIZATION !
+env->go_count++ and env->mtl_count++ when adding nodes
 
 remove this file before finishing the project
 remove .vscode before finishing the project
 libmath is not clean (norminette, unixcase...)
-norminette on all
+norminette on all (EVERYTHING)
 check 42 headers
 check scop LEAKS (try different setup interruptions...)
 check everything
@@ -22,3 +26,5 @@ check everything
 // * vector / math libraries in c++ with operators lh +(rh) lh =(rh)
 
 // gameObject = { rendering properties, physics properties, audio properties, behaviour(s), matter properties etc. };
+
+// SELECTION BUFFER -> one color associated with every object for selection picking

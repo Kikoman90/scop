@@ -12,7 +12,7 @@
 
 #include "scop.h"
 
-void	loop(t_env *env)
+static void	loop(t_env *env)
 {
 	SDL_Event	event;
 
@@ -23,19 +23,21 @@ void	loop(t_env *env)
 		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			env->loop = 0;
 		// DrawObjList(env); ou DrawObjList(env->obj_list, env->camera); ...
+		// draw by material (material affinities... high-lvl low-lvl) ...
 		SDL_GL_SwapWindow(env->window);
 	}
 }
 
-int		main(int argc, char **argv)
+int			main(int argc, char **argv)
 {
 	t_env	*env;
 
 	env = NULL;
 	if (!(env = init_scop(env, argc, argv)))
 		return (0);
-	display_obj_list(env->obj_list);
+	display_go_list(env->go_list);
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
+	//keep looping and see if clean_scop leaves no leaks.
 	return (0);
 }

@@ -21,6 +21,7 @@ void		display_gameobject(t_gameobject *obj)
 
 	i = 0;
 	printf("display object (name : %s)\n", obj->name);
+	printf("material id : %d\n", obj->mtl_id);
 	while (i < obj->vtx_count)
 	{
 		printf("vertex %d = (%f, %f, %f)\n", i, obj->vertices[i].x, obj->vertices[i].y, obj->vertices[i].z);
@@ -34,7 +35,7 @@ void		display_gameobject(t_gameobject *obj)
 	}
 }
 
-void		display_obj_list(t_go_node *list)
+void		display_go_list(t_go_node *list)
 {
 	t_go_node	*tmp;
 
