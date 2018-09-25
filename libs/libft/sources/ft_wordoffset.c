@@ -14,7 +14,7 @@
 
 static size_t	word_length(char const *s)
 {
-	int	len;
+	size_t	len;
 
 	len = 0;
 	while (!ft_isblank(*s) && *s != '\0' && *s != '\n')
@@ -25,7 +25,7 @@ static size_t	word_length(char const *s)
 	return (len);
 }
 
-int				ft_wordoffset(char const *s, int offset)
+unsigned int	ft_wordoffset(char const *s, unsigned int offset)
 {
 	size_t	wsize;
 

@@ -12,30 +12,8 @@
 
 #include "scop.h"
 
-static int	init_parser(t_parser *parser, const char *path, int *fd)
-{
-	struct stat	s;
-
-	if ((*fd = open(path, O_RDWR)) == -1)
-	{
-		log_error_free(ft_strjoin("(open) ", strerror(errno)));
-		return (-1);
-	}
-	if (fstat(*fd, &s) == -1)
-	{
-		close(*fd);
-		log_error_free(ft_strjoin("(fstat) ", strerror(errno)));
-		return (-1);
-	}
-	parser->fsize = (size_t)s.st_size;
-	parser->fname = ft_strrchr(path, '/') + 1;
-	parser->fpath = ft_strsub(path, 0, ft_strlen(path) - ft_strlen(parser->fname));
-	parser->fline = 1;
-	parser->data = NULL;
-	return (0);
-}
-
-void		parse_file(t_env *env, const char *path, void (*ft_parsing)(t_env*, t_parser*, int))
+void		parse_file(t_env *env, const char *path, \
+						void (*ft_parsing)(t_env*, t_parser*, char*))
 {
 	t_parser	*parser;
 	int			fd;
@@ -50,7 +28,7 @@ void		parse_file(t_env *env, const char *path, void (*ft_parsing)(t_env*, t_pars
 		else
 		{
 			parser->data[parser->fsize] = '\0';
-			ft_parsing(env, parser, 0);
+			ft_parsing(env, parser, NULL);
 			if (munmap(parser->data, parser->fsize) == -1)
 				log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
 			parser->data = NULL;

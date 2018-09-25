@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/14 15:05:20 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/25 17:13:39 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@ static void	loop(t_env *env)
 		SDL_PollEvent(&event);
 		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			env->loop = 0;
-		// DrawObjList(env); ou DrawObjList(env->obj_list, env->camera); ...
-		// draw by material (material affinities... high-lvl low-lvl) ...
 		SDL_GL_SwapWindow(env->window);
 	}
 }
@@ -38,6 +36,5 @@ int			main(int argc, char **argv)
 	display_go_list(env->go_list);
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
-	//keep looping and see if clean_scop leaves no leaks.
 	return (0);
 }

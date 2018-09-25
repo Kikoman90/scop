@@ -28,6 +28,7 @@ HEADERS = includes
 
 SRCS =	main.c \
 		setup.c \
+		init_parser.c \
 		obj_parser.c \
 		mtl_parser.c \
 		utils_parser.c \

@@ -6,23 +6,20 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/24 19:25:21 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/25 17:11:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-// create vtx frag shaders, create matrix functions and clean libmath
-// write rendering functions, vao vbo and ibo (idx buffer object). drawElements();
-
-static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, size_t vc, size_t ic)
+static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
+										size_t vc, size_t ic)
 {
 	t_gameobject	*go;
 
 	if (!(go = (t_gameobject*)malloc(sizeof(t_gameobject))))
 		return (log_error_null(MALLOC_ERROR));
-	// go->transform = identityMatrix();
-	go->transform = NULL;
+// go->transform = identityMatrix();
 	go->vtx_count = vc;
 	go->idx_count = ic;
 	if (!(go->vertices = (t_vec3*)malloc(sizeof(t_vec3) * vc)) || \
@@ -44,7 +41,8 @@ static t_material	*create_material(char *name, unsigned int id)
 	return (mtl);
 }
 
-t_go_node			*create_go_node(char *name, unsigned int mtl_id, size_t vc, size_t ic)
+t_go_node			*create_go_node(char *name, unsigned int mtl_id, \
+									size_t vc, size_t ic)
 {
 	t_go_node	*node;
 

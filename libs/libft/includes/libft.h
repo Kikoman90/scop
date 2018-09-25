@@ -109,9 +109,9 @@ char				*ft_strjoin_bf(char *s1, char *s2);
 char				*ft_strjoin_lf(char *s1, char const *s2);
 char				*ft_strjoin_rf(char const *s1, char *s2);
 char				*ft_strtrim(char const *s);
-char				*ft_strword(char const *s, int *offset);
+char				*ft_strword(char const *s, unsigned int *offset);
 
-int					ft_wordoffset(char const *s, int offset);
+unsigned int		ft_wordoffset(char const *s, unsigned int offset);
 
 char				*ft_itoa(int n);
 

@@ -13,16 +13,21 @@
 #include "scop.h"
 
 // split into two functions
-void        parse_wavefrontmtl(t_env *env, t_parser *parser, int seed)
+void        parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 {
-    char			*w;
 	t_mtl_node		*bound_mtl;
 
-    (void)w;
-    (void)env;
-    (void)parser;
-    (void)seed;
 	bound_mtl = NULL;
+	while (parser->fseed < parser->fsize && parser->data[parser->fseed])
+	{
+		word = ft_strword(parser->data, &parser->fseed);
+		if (word && ft_strcmp(word, "newmtl") == 0)
+		{
+			if (bound_mtl)
+				env->mtl_list = add_mtl_node(env, bound_mtl);
+			bound_mtl = create_mtl_node(generate_name(ft_strword(parser->data, &parser->fseed), MTL_NAME, env->mtl_count));
+		}
+	}
 	/*while (seed < parser->fsize && parser->data[seed])
 	{
 		w = ft_strword(parser->data, &seed);

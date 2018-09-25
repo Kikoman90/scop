@@ -25,7 +25,7 @@ static size_t	word_length(char const *s)
 	return (len);
 }
 
-char			*ft_strword(char const *s, int *offset)
+char			*ft_strword(char const *s, unsigned int *offset)
 {
 	char	*word;
 	size_t	wsize;
