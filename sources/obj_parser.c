@@ -12,7 +12,7 @@
 
 #include "scop.h"
 
-t_gameobject	*vtx_feed(t_gameobject *go, char *data, t_seed vtx_seed)
+static t_gameobject	*vtx_feed(t_gameobject *go, char *data, t_seed vtx_seed)
 {
 	int	i;
 	int seed;
@@ -29,7 +29,7 @@ t_gameobject	*vtx_feed(t_gameobject *go, char *data, t_seed vtx_seed)
 	return (go);
 }
 
-t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
+static t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
 {
 	int	i;
 	int seed;
@@ -56,82 +56,55 @@ t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
 	return (go);
 }
 
-t_gameobject	*process_go(char *data, t_go_node *node, t_seed *vis, unsigned int mtl_id)
-{
-	t_gameobject	*go;
-
-	go = node->go;	
-	go = vtx_feed(go, data, vis[0]); // keep this line
-	go = idx_feed(go, data, vis[1]); // keep this line
-	//env->go_list = add_go_node(env->go_list, node); //WRONG NOT WHAT I WANT TO DO
-	return (node);
+static void			*process_go(t_env *env, char *data, t_go_node *node, t_seed *vis)
+{	
+	node->go = vtx_feed(node->go, data, vis[0]);
+	node->go = idx_feed(node->go, data, vis[1]);
+	env->go_list = add_go_node(env->go_list, node);
+	env->go_count++;
 }
 
-/*t_go_node	*process_go(char *data, t_go_node *node, t_seed *vis, unsigned int mtl_id)
-{
-	t_gameobject	*go;
+//obj_parser.c and obj_feeder.c
 
-	go = node->go;
-	go->vtx_count = vis[0].count;
-	go->idx_count = vis[1].count;
-	if (!(go->vertices = (t_vec3*)malloc(sizeof(t_vec3) * vis[0].count)) || \
-	!(go->indices = (unsigned int*)malloc(sizeof(unsigned int) * vis[1].count)))
-	{
-		clean_go_node(node);
-		return (log_error_null(MALLOC_ERROR));
-	}
-	go = vtx_feed(go, data, vis[0]);
-	go = idx_feed(go, data, vis[1]);
-	env->go_list = add_go_node(env, node);
-	return (node);
-}*/
-
-t_go_node	*parse_objects(char *data, )
-{
-	t_go_node	*obj_list;
-
-
-
-
-	return (obj_list);
-}
+t_seed				parse_seed(t_seed seed, )
 
 // split into two functions
-void		parse_wavefrontobj(t_env *env, t_parser *parser, int seed)
+void				parse_wavefrontobj(t_env *env, t_parser *parser, int fseed, t_go_node *bound_go)
 {
+	//t_go_node		*bound_go;
 	char			*w;
-	t_go_node		*bound_go;
-	t_seed			vi_seed[2];
+	char			*name;
 	unsigned int	mtl_id;
+	t_seed			vi_seed[2];
 
-	bound_go = NULL;
-	init_seeds(&(vi_seed[0]), &(vi_seed[1]));
+	//bound_go = NULL;
+	name = NULL;
 	mtl_id = 0;
+	init_seeds(&(vi_seed[0]), &(vi_seed[1]));
 	while (seed < parser->fsize && parser->data[seed])
 	{
 		w = ft_strword(parser->data, &seed);
-		//here
 		if (w && ft_strcmp(w, "o") == 0)
 		{
 			if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
 			{
-				if (!bound_go)
-					bound_go = create_go_node(generate_name(GO_NAME, env->go_count));
+				bound_go = create_go_node(name, mtl_id, vi_seed[0].count, vi_seed[1].count);
 				process_go(env, parser->data, bound_go, vi_seed);
-				bound_go->go->mtl_id = mtl_id;
 			}
-			bound_go = create_go_node(ft_strword(parser->data, &seed));
+			name = generate_name(ft_strword(parser->data, &seed), GO_NAME, env->go_count);
 			init_seeds(&(vi_seed[0]), &(vi_seed[1]));
 			mtl_id = 0;
 		}
 		else if (w && ft_strcmp(w, "v") == 0)
 		{
+			vi_seed[0] = parse_seed(vi_seed[0], parser->data, seed, VERTEX_SEED);
 			vi_seed[0].beginseed = (vi_seed[0].beginseed > -1) ? vi_seed[0].beginseed : seed;
 			vi_seed[0].endseed = (vi_seed[0].endseed > seed) ? vi_seed[0].endseed : skip_line(parser->data, seed);
 			vi_seed[0].count++;
 		}
 		else if (w && ft_strcmp(w, "f") == 0)
 		{
+			vi_seed[1] = parse_seed(vi_seed[1], parser->data, seed, INDEX_SEED);
 			vi_seed[1].beginseed = (vi_seed[1].beginseed > -1) ? vi_seed[1].beginseed : seed;
 			vi_seed[1].endseed = (vi_seed[1].endseed > seed) ? vi_seed[1].endseed : skip_line(parser->data, seed);
 			vi_seed[1].count += check_idx_count(parser->data, seed, 1);
@@ -139,12 +112,11 @@ void		parse_wavefrontobj(t_env *env, t_parser *parser, int seed)
 		else if (w && ft_strcmp(w, "mtllib") == 0)
 		{
 			free(w);
-			w = ft_strjoin(parser->fpath, ft_strword(parser->data, &seed));
-			parse_file(env, w, parse_wavefrontmtl);
+			w = ft_strjoin_rf(parser->fpath, ft_strword(parser->data, &seed));
+			//parse_file(env, w, parse_wavefrontmtl);
 		}
 		else if (w && ft_strcmp(w, "usemtl") == 0)
 		{
-			//mtl_id 0 is default mtl
 			//mtl_id = get_mtl_id(ft_strword(parser->data, &seed));
 		}
 		else if (w && ft_strcmp(w, "#") != 0 && ft_strcmp(w, "s") != 0)
@@ -156,9 +128,7 @@ void		parse_wavefrontobj(t_env *env, t_parser *parser, int seed)
 	}
 	if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
 	{
-		if (!bound_go)
-			bound_go = create_go_node(generate_name(GO_NAME, env->go_count));
+		bound_go = create_go_node(name, mtl_id, vi_seed[0].count, vi_seed[1].count);
 		process_go(env, parser->data, bound_go, vi_seed);
-		bound_go->go->mtl_id = mtl_id;
 	}
 }

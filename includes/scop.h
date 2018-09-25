@@ -39,6 +39,12 @@ typedef enum			e_clean_flags
 	CLEAN_ALL = 1 << 1
 }						t_clean_flags;
 
+typedef enum			e_seed_flags
+{
+	VERTEX_SEED = 1 << 0,
+	INDEX_SEED = 1 << 1
+}						t_seed_flags;
+
 typedef struct			s_seed
 {
 	int					beginseed;
@@ -107,10 +113,10 @@ void					parse_file(t_env *env, const char *path, void (*ft_parsing)(t_env*, t_p
 t_env					*init_scop(t_env *env, int argc, char **argv);
 
 /* obj_parser.c			=> IDK YET YEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET*/ //lel
-void					parse_wavefrontobj(t_env *env, t_parser *parser, int seed);
+void					parse_wavefrontobj(t_env *env, t_parser *parser, int fseed, t_go_node *bound_go);
 
 /* mtl_parser.c			=> IDK YET YEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET*/ //lel
-void					parse_wavefrontmtl(t_env *env, t_parser *parser, int seed);
+void					parse_wavefrontmtl(t_env *env, t_parser *parser, int fseed, t_mtl_node *bound_mtl);
 
 /* utils_parser.c		=> 5 functions */
 t_vec3      			vec3_atof(char *data, int *seed);

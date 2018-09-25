@@ -54,8 +54,10 @@ void		init_seeds(t_seed *vtx_seed, t_seed *idx_seed)
 	idx_seed->count = 0;
 }
 
-char		*generate_name(const char *typename, size_t count)
+char		*generate_name(char *name, const char *typename, size_t count)
 {
+	if (name)
+		return (name);
 	count++;
 	return (ft_strjoin_rf(typename, ft_itoa((int)count)));
 }
