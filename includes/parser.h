@@ -49,7 +49,10 @@ t_obj_parser_var	*init_obj_parser_var(t_obj_parser_var *opv, char *name, \
 										unsigned int mtl_offset);
 int					init_parser(t_parser *parser, const char *path, int *fd);
 
-t_vec3				vec3_atof(char *data, unsigned int *seed);
+int					iclamp(int value, int min, int max);
+float				fclamp(float value, float min, float max);
+
+t_vec3				vec3_atof(char *data, unsigned int *seed, int clamp01);
 unsigned int		skip_line(char *data, unsigned int seed);
 unsigned int		check_idx_count(char *data, unsigned int seed, int idx);
 char				*generate_name(char *name, const char *typename, \

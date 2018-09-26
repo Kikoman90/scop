@@ -30,13 +30,12 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 	return (go);
 }
 
-static t_material	*create_material(char *name, unsigned int id)
+static t_material	*create_material(char *name)
 {
 	t_material	*mtl;
 
 	if (!(mtl = (t_material*)malloc(sizeof(t_material))))
 		return (log_error_null(MALLOC_ERROR));
-	mtl->id = id;
 	mtl->name = name;
 	return (mtl);
 }
@@ -60,7 +59,7 @@ t_go_node			*create_go_node(char *name, unsigned int mtl_id, \
 	return (node);
 }
 
-t_mtl_node			*create_mtl_node(char *name, unsigned int id)
+t_mtl_node			*create_mtl_node(char *name)
 {
 	t_mtl_node	*node;
 
@@ -69,7 +68,7 @@ t_mtl_node			*create_mtl_node(char *name, unsigned int id)
 		free(name);
 		return (log_error_null(MALLOC_ERROR));
 	}
-	if (!(node->mtl = create_material(name, id)))
+	if (!(node->mtl = create_material(name)))
 	{
 		clean_mtl_node(node);
 		return (NULL);

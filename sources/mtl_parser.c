@@ -12,7 +12,6 @@
 
 #include "scop.h"
 
-// split into two functions
 void        parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 {
 	t_mtl_node		*bound_mtl;
@@ -27,55 +26,24 @@ void        parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 				env->mtl_list = add_mtl_node(env, bound_mtl);
 			bound_mtl = create_mtl_node(generate_name(ft_strword(parser->data, &parser->fseed), MTL_NAME, env->mtl_count));
 		}
-	}
-	/*while (seed < parser->fsize && parser->data[seed])
-	{
-		w = ft_strword(parser->data, &seed);
-		//here
-		if (w && ft_strcmp(w, "newmtl") == 0)
-		{
-			if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
-			{
-				if (!bound_go)
-					bound_go = create_go_node(generate_go_name(env->obj_count));
-				process_go(env, parser->data, bound_go, vi_seed);
-			}
-			bound_go = create_go_node(ft_strword(parser->data, &seed));
-			init_seeds(&(vi_seed[0]), &(vi_seed[1]));
-		}
-		else if (w && ft_strcmp(w, "Ka") == 0)
-		{
-
-		}
-		else if (w && ft_strcmp(w, "f") == 0)
-		{
-			vi_seed[1].beginseed = (vi_seed[1].beginseed > -1) ? vi_seed[1].beginseed : seed;
-			vi_seed[1].endseed = (vi_seed[1].endseed > seed) ? vi_seed[1].endseed : skip_line(parser->data, seed);
-			vi_seed[1].count += check_idx_count(parser->data, seed, 1);
-		}
-		else if (w && ft_strcmp(w, "mtllib") == 0)
-		{
-			free(w);
-			w = ft_strjoin(parser->fpath, ft_strword(parser->data, &seed));
-			parse_file(env, w, parse_wavefrontobj);
-			free(w);
-		}
-		else if (w && ft_strcmp(w, "usemtl") == 0)
-		{
-			ft_putendl("USEMTL");
-			//fetch mtl
-		}
-		else if (w && ft_strcmp(w, "#") != 0)
+		else if (word && ft_strcmp(word, "Ns") == 0)
+			bound_mtl->mtl->expnt_spc = fclamp(ft_atof_f(ft_strword(parser->data, &parser->fseed)), 0, 100);
+		else if (word && ft_strcmp(word, "Ka") == 0)
+			bound_mtl->mtl->clr_amb = vec3_atof(parser->data, &parser->fseed, 1);
+		else if (word && ft_strcmp(word, "Kd") == 0)
+			bound_mtl->mtl->clr_dif = vec3_atof(parser->data, &parser->fseed, 1);
+		else if (word && ft_strcmp(word, "Ks") == 0)
+			bound_mtl->mtl->clr_spc = vec3_atof(parser->data, &parser->fseed, 1);
+		else if (word && ft_strcmp(word, "d") == 0)
+			bound_mtl->mtl->transparency = fclamp(ft_atof_f(ft_strword(parser->data, &parser->fseed)), 0, 1);
+		else if (word && ft_strcmp(word, "#") != 0 && ft_strcmp(word, "Ni") != 0 && ft_strcmp(word, "illum") != 0)
 			prefix_error(parser->fname, parser->fline);
-		seed = skip_line(parser->data, seed);
+		parser->fseed = skip_line(parser->data, parser->fseed);
 		parser->fline++;
-		if (w)
-			free(w);
+		if (word)
+			free(word);
 	}
-	if (vi_seed[0].count > 0 && vi_seed[1].count > 0)
-	{
-		if (!bound_go)
-			bound_go = create_go_node(generate_go_name(env->obj_count));
-		process_go(env, parser->data, bound_go, vi_seed);
-	}*/
+	if (bound_mtl)
+		env->mtl_list = add_mtl_node(env, bound_mtl);
+	printf("ok done sir come again\n");
 }

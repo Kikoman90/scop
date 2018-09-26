@@ -21,7 +21,7 @@ static t_gameobject	*vtx_feed(t_gameobject *go, char *data, t_seed vtx_seed)
 	seed = vtx_seed.beginseed;
 	while (seed < vtx_seed.endseed && i < vtx_seed.count && data[seed])
 	{
-		go->vertices[i] = vec3_atof(data, &seed);
+		go->vertices[i] = vec3_atof(data, &seed, 0);
 		seed = skip_line(data, seed);
 		seed = ft_wordoffset(data, seed);
 		i++;
@@ -40,14 +40,14 @@ static t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
 	while (seed < idx_seed.endseed && i < idx_seed.count && data[seed])
 	{
 		idx_count = check_idx_count(data, seed, 1);
-		go->indices[i] = ft_atoi_f(ft_strword(data, &seed)) - 1;
-		go->indices[i + 1] = ft_atoi_f(ft_strword(data, &seed)) - 1;
-		go->indices[i + 2] = ft_atoi_f(ft_strword(data, &seed)) - 1;
+		go->indices[i] = iclamp(ft_atoi_f(ft_strword(data, &seed)) - 1, 0, idx_seed.count - 1);
+		go->indices[i + 1] = iclamp(ft_atoi_f(ft_strword(data, &seed)) - 1, 0, idx_seed.count - 1);
+		go->indices[i + 2] = iclamp(ft_atoi_f(ft_strword(data, &seed)) - 1, 0, idx_seed.count - 1);
 		if (idx_count == 6)
 		{
 			go->indices[i + 3] = go->indices[i + 2];
 			go->indices[i + 4] = go->indices[i + 1];
-			go->indices[i + 5] = ft_atoi_f(ft_strword(data, &seed)) - 1;
+			go->indices[i + 5] = iclamp(ft_atoi_f(ft_strword(data, &seed)) - 1, 0, idx_seed.count - 1);
 		}
 		seed = skip_line(data, seed);
 		seed = ft_wordoffset(data, seed);
@@ -70,7 +70,7 @@ t_seed				parse_attr(t_seed seed, char *data, \
 	return (seed);
 }
 
-void				parse_mtllib(t_env *env, t_parser *parser, char *word)
+char				*parse_mtllib(t_env *env, t_parser *parser, char *word)
 {
 	if (word)
 	{
@@ -82,6 +82,7 @@ void				parse_mtllib(t_env *env, t_parser *parser, char *word)
 	parse_file(env, word, parse_wavefrontmtl);
 	free(word);
 	word = NULL;
+	return (word);
 }
 
 void				parse_go(t_env *env, t_parser *parser, \
@@ -118,9 +119,9 @@ void				parse_wavefrontobj(t_env *env, t_parser *parser, char *word)
 		else if (word && ft_strcmp(word, "f") == 0)
 			opv->idx_seed = parse_attr(opv->idx_seed, parser->data, parser->fseed, 1);
 		else if (word && ft_strcmp(word, "mtllib") == 0)
-			;//parse_mtllib(env, parser, word);
+			word = parse_mtllib(env, parser, word);
 		else if (word && ft_strcmp(word, "usemtl") == 0)
-			opv->mtl_id = 0;//get_mtl_id(env, ft_strword(parser->data, &parser->fseed), opv->mtl_offset);
+			opv->mtl_id = get_mtl_id(env, ft_strword(parser->data, &parser->fseed), opv->mtl_offset);
 		else if (word && ft_strcmp(word, "#") != 0 && ft_strcmp(word, "s") != 0)
 			prefix_error(parser->fname, parser->fline);
 		parser->fseed = skip_line(parser->data, parser->fseed);

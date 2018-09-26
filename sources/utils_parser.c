@@ -12,13 +12,54 @@
 
 #include "scop.h"
 
-t_vec3			vec3_atof(char *data, unsigned int *seed)
+unsigned int	get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset)
+{
+	unsigned int	i;
+	t_mtl_node		*mtl_list;
+
+	i = 0;
+	mtl_list = env->mtl_list;
+	while (mtl_list)
+	{
+		if (i >= mtl_offset && ft_strcmp(mtl_name, mtl_list->mtl->name) == 0)
+			return (i);
+		i++;
+		mtl_list = mtl_list->next;
+	}
+	return (0);
+}
+
+int				iclamp(int value, const int min, const int max)
+{
+	if (value < min)
+		value = min;
+	else if (value > max)
+		value = max;
+	return (value); 
+}
+
+float			fclamp(float value, const float min, const float max)
+{
+	if (value < min)
+		value = min;
+	else if (value > max)
+		value = max;
+	return (value);
+}
+
+t_vec3			vec3_atof(char *data, unsigned int *seed, int clamp01)
 {
 	t_vec3	res;
 
 	res.x = ft_atof_f(ft_strword(data, seed));
 	res.y = ft_atof_f(ft_strword(data, seed));
 	res.z = ft_atof_f(ft_strword(data, seed));
+	if (clamp01 == 1)
+	{
+		res.x = fclamp(res.x, 0, 1);
+		res.y = fclamp(res.y, 0, 1);
+		res.z = fclamp(res.z, 0, 1);		
+	}
 	return (res);
 }
 

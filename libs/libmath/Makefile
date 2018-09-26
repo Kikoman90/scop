@@ -22,7 +22,10 @@ DIR_OBJS = tmp
 
 HEADERS = includes
 
-SRCS = 
+SRCS =	vector.c \
+		vector_advop.c \
+		vector_basop.c \
+		matrix.c \
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
 

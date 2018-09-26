@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vectorAdvop.c                                      :+:      :+:    :+:   */
+/*   vector_advop.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/06/12 18:05:28 by fsidler           #+#    #+#             */
-/*   Updated: 2018/06/12 18:05:30 by fsidler          ###   ########.fr       */
+/*   Created: 2018/09/26 14:52:58 by fsidler           #+#    #+#             */
+/*   Updated: 2018/09/26 14:53:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libmath.h"
 
-t_vec3      vecCross(t_vec3 a, t_vec3 b)
+t_vec3      vec_cross(t_vec3 a, t_vec3 b)
 {
     t_vec3 res;
 
@@ -22,7 +22,7 @@ t_vec3      vecCross(t_vec3 a, t_vec3 b)
     return (res);
 }
 
-t_vec3      vecNorm(t_vec3 v)
+t_vec3      vec_norm(t_vec3 v)
 {
     t_vec3  res;
     double	n;
@@ -34,7 +34,7 @@ t_vec3      vecNorm(t_vec3 v)
 	return (res);
 }
 
-float       vecDot(t_vec3 a, t_vec3 b)
+float       vec_dot(t_vec3 a, t_vec3 b)
 {
     float	res;
 

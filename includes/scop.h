@@ -39,8 +39,12 @@ typedef enum			e_clean_flags
 
 typedef struct			s_material
 {
-	unsigned int		id;
 	char				*name;
+	t_vec3				clr_amb;
+	t_vec3				clr_dif;
+	t_vec3				clr_spc;
+	float				expnt_spc;
+	float				transparency;
 }						t_material;
 
 typedef struct			s_gameobject
@@ -94,9 +98,11 @@ void					parse_wavefrontobj(t_env *env, t_parser *parser, \
 void					parse_wavefrontmtl(t_env *env, t_parser *parser, \
 										char *word);
 
+unsigned int			get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset);
+
 t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
 										size_t vc, size_t ic);
-t_mtl_node				*create_mtl_node(char *name, unsigned int id);
+t_mtl_node				*create_mtl_node(char *name);
 
 t_go_node				*add_go_node(t_env *env, t_go_node *node);
 t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
@@ -112,8 +118,12 @@ void					*log_error_null(const char *msg);
 void					prefix_error(const char *fname, unsigned int fline);
 
 //
+void					display_vec3(const char *p, t_vec3 v);
 void					display_gameobject(t_gameobject *obj);
 void					display_go_list(t_go_node *list);
+void					display_material(t_material *mtl);
+void					display_mtl_list(t_mtl_node *list);
+
 //
 
 #endif

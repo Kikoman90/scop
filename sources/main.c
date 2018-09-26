@@ -34,6 +34,7 @@ int			main(int argc, char **argv)
 	if (!(env = init_scop(env, argc, argv)))
 		return (0);
 	display_go_list(env->go_list);
+	display_mtl_list(env->mtl_list);
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
 	return (0);
