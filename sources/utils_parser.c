@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/24 19:43:17 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/26 19:15:53 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int				iclamp(int value, const int min, const int max)
 		value = min;
 	else if (value > max)
 		value = max;
-	return (value); 
+	return (value);
 }
 
 float			fclamp(float value, const float min, const float max)
@@ -58,7 +58,7 @@ t_vec3			vec3_atof(char *data, unsigned int *seed, int clamp01)
 	{
 		res.x = fclamp(res.x, 0, 1);
 		res.y = fclamp(res.y, 0, 1);
-		res.z = fclamp(res.z, 0, 1);		
+		res.z = fclamp(res.z, 0, 1);
 	}
 	return (res);
 }

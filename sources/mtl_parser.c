@@ -6,13 +6,13 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:14:23 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/18 12:14:24 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/26 19:13:54 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void        parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
+void		parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 {
 	t_mtl_node		*bound_mtl;
 
@@ -45,5 +45,4 @@ void        parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 	}
 	if (bound_mtl)
 		env->mtl_list = add_mtl_node(env, bound_mtl);
-	printf("ok done sir come again\n");
 }

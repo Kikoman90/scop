@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/26 14:56:31 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/09/26 19:15:11 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ static void	*init_sdl_gl(t_env *env)
 		return (log_error_null(SDL_GetError()));
 	glClearColor(0.19, 0.27, 0.41, 1);
 	glViewport(0, 0, WIN_W, WIN_H);
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LESS);
 	return ((void*)1);
 }
 

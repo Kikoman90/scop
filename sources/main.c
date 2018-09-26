@@ -12,6 +12,9 @@
 
 #include "scop.h"
 
+void __attribute__((constructor)) begin();
+void __attribute__((destructor)) end();
+
 static void	loop(t_env *env)
 {
 	SDL_Event	event;
