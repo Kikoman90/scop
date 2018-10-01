@@ -1,6 +1,8 @@
 obj_parser.c and mtl_parser.c !!
 mtl_id : good idea, bad idea ??
 
+ability to lock on a gameobject (camera rotates around it)
+
 test the parsing (multiple objects, no objects... etc)
 IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
 IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)

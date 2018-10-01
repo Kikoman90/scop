@@ -15,7 +15,16 @@
 
 # include <math.h>
 
-# define MAT_ID 0x7FFFFFFF
+# define IDENTITY_MATRIX3 {\
+	{1.0f, 0.0f, 0.0f,\
+	0.0f, 1.0f, 0.0f,\
+	0.0f, 0.0f, 1.0f}}
+
+# define IDENTITY_MATRIX4 {\
+	{1.0f, 0.0f, 0.0f, 0.0f,\
+	0.0f, 1.0f, 0.0f, 0.0f,\
+	0.0f, 0.0f, 1.0f, 0.0f,\
+	0.0f, 0.0f, 0.0f, 1.0f}}
 
 typedef struct	s_vec3
 {
@@ -48,26 +57,37 @@ typedef struct  s_quaternion
     t_vec3      v;
 }               t_quaternion;
 
-t_vec3          vec_init_f(float f);
-t_vec3          vec_init_xyz(float x, float y, float z);
+t_vec3          vec3_init_f(float f);
+t_vec3          vec3_init_xyz(float x, float y, float z);
 
-t_vec3          vec_scale(t_vec3 v, float s);
-t_vec3          vec_add(t_vec3 a, t_vec3 b);
-t_vec3          vec_sub(t_vec3 a, t_vec3 b);
-float           vec_length(t_vec3 v);
+t_vec4			vec4_init_f(float f);
+t_vec4			vec4_init_xyzw(float x, float y, float z, float w);
+t_vec3			vec4_init_v3w(t_vec3 v3, float w);
 
-t_vec3          vec_cross(t_vec3 a, t_vec3 b);
-t_vec3          vec_norm(t_vec3 v);
-float           vec_dot(t_vec3 a, t_vec3 b);
+t_vec3          vec3_scale(t_vec3 v, float s);
+t_vec3          vec3_add(t_vec3 a, t_vec3 b);
+t_vec3          vec3_sub(t_vec3 a, t_vec3 b);
+float           vec3_length(t_vec3 v);
 
-t_mat4x4        mat_init_f(t_mat4x4 mat, float f);
-t_mat4x4        mat_add(t_mat4x4 a, t_mat4x4 b);
-t_mat4x4        mat_sub(t_mat4x4 a, t_mat4x4 b);
+t_vec3          vec3_cross(t_vec3 a, t_vec3 b);
+t_vec3          vec3_norm(t_vec3 v);
+float           vec3_dot(t_vec3 a, t_vec3 b);
 
-/*t_quaternion    quat_init(float theta, t_vec3 v);
-t_quaternion    quat_inv(t_quaternion q);
+
+
+t_mat4x4        mat4x4_init();
+t_mat4x4		mat4x4_init_trs(t_vec3 t, t_vec3 r, t_vec3 s);
+//t_mat4x4        mat_init_f(t_mat4x4 mat, float f);
+t_mat4x4        mat4x4_add(t_mat4x4 a, t_mat4x4 b);
+t_mat4x4        mat4x4_sub(t_mat4x4 a, t_mat4x4 b);
+t_mat4x4		mat4x4_translate(t_mat4x4, t_vec3 t);
+t_mat4x4		mat4x4_transpose(t_mat4x4 mat);
+t_mat4x4		quat_to_mat4x4(t_quaternion q);
+
+t_quaternion    quat_init(float theta, t_vec3 v);
+//t_quaternion    quat_inv(t_quaternion q);
 t_quaternion    quat_mult(t_quaternion a, t_quaternion b);
-t_vec3          vector_rot(t_quaternion q, t_vec3 v);*/
+t_vec3          vector_rot(t_quaternion q, t_vec3 v);
 
 
 

@@ -24,6 +24,11 @@ static void	clean_go(t_gameobject *go)
 		free(go->indices);
 		go->indices = NULL;
 	}
+	if (go->gl_stack)
+	{
+		free(go->gl_stack);
+		go->gl_stack = NULL;
+	}
 	free(go->name);
 	free(go);
 	go = NULL;

@@ -27,6 +27,7 @@
 # define MALLOC_ERROR "memory allocation failure"
 # define SDL_INIT_ERROR "failed to initialize sdl"
 # define WIN_CREATE_ERROR "failed to create window"
+# define SHADER_CREATE_ERROR "failed to create shader ("
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
@@ -36,6 +37,28 @@ typedef enum			e_clean_flags
 	CLEAN_SDL = 1 << 0,
 	CLEAN_ALL = 1 << 1
 }						t_clean_flags;
+
+typedef struct			s_transform
+{
+	t_vec3				position;
+	t_quaternion		rotation;
+	t_vec3				scale;
+}						t_transform;
+
+typedef struct			s_gl_stack
+{
+	GLuint				vao;
+	GLuint				vbo;
+	GLuint				ibo;
+}						t_gl_stack;
+
+typedef struct			s_shader
+{
+	const char			*name;
+	GLuint				vert_s;
+	GLuint				frag_s;
+	GLuint				prog;
+}						t_shader;
 
 typedef struct			s_material
 {
@@ -49,13 +72,14 @@ typedef struct			s_material
 
 typedef struct			s_gameobject
 {
-	t_mat4x4			transform;
+	t_transform			transform;
 	t_vec3				*vertices;
 	size_t				vtx_count;
 	unsigned int		*indices;
 	size_t				idx_count;
 	unsigned int		mtl_id;
 	char				*name;
+	t_gl_stack			*gl_stack;
 }						t_gameobject;
 
 typedef struct			s_mtl_node
@@ -72,8 +96,10 @@ typedef struct			s_go_node
 
 typedef struct			s_camera
 {
-	t_mat4x4			transform;
+	t_transform			transform;
 	float				fov;
+	float				znear;
+	float				zfar;
 }						t_camera;
 
 typedef struct			s_env
@@ -82,6 +108,9 @@ typedef struct			s_env
 	SDL_Window			*window;
 	SDL_GLContext		gl_context;
 	t_camera			camera;
+	t_mat4x4			view_mat;
+	t_mat4x4			proj_mat;
+	t_shader			def_shader;
 	t_go_node			*go_list;
 	t_mtl_node			*mtl_list;
 	size_t				go_count;

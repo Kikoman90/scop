@@ -12,7 +12,7 @@
 
 #include "libmath.h"
 
-/*t_quaternion    quat_init(float theta, t_vec3 v)
+t_quaternion    quat_init(float theta, t_vec3 v)
 {
     t_quaternion    q;
 
@@ -22,14 +22,14 @@
     return (q);
 }
 
-t_quaternion    quat_inv(t_quaternion q)
+/*t_quaternion    quat_inv(t_quaternion q)
 {
     t_quaternion    res;
     
     res.w = q.w;
-    res.v = vec_inv(q.v);
+    res.v = vec_inv(q.v);// WHERE IS VEC_INV (vec3_inv vec4_inv)
     return (res);
-}
+}*/
 
 t_quaternion    quat_mult(t_quaternion a, t_quaternion b)
 {
@@ -48,4 +48,4 @@ t_vec3          vector_rot(t_quaternion q, t_vec3 v)
     vcv = vec4_cross(q.v, v);
     res = vec_add(vec_add(v, vec_scale(vcv, 2 * q.w)), vec_scale(vec_cross(q.v, vcv), 2));
     return (res);
-}*/
+}

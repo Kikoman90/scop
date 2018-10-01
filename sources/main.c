@@ -19,6 +19,9 @@ static void	loop(t_env *env)
 {
 	SDL_Event	event;
 
+	// send uniforms and bind vaos in loop
+	// materials and shaders... look into that later
+	// once things are stable, simple sdl GUI (GUImp ?)
 	while (env->loop == 1)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
