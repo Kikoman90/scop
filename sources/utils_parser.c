@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_parser.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/26 19:15:53 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/02 19:45:34 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ unsigned int	get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset)
 	return (0);
 }
 
+// -> to libft ft_iclamp (clamp.c)
 int				iclamp(int value, const int min, const int max)
 {
 	if (value < min)
@@ -38,6 +39,7 @@ int				iclamp(int value, const int min, const int max)
 	return (value);
 }
 
+// -> to libft ft_fclamp (clamp.c)
 float			fclamp(float value, const float min, const float max)
 {
 	if (value < min)
@@ -47,6 +49,7 @@ float			fclamp(float value, const float min, const float max)
 	return (value);
 }
 
+// -> to libmath
 t_vec3			vec3_atof(char *data, unsigned int *seed, int clamp01)
 {
 	t_vec3	res;

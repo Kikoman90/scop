@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   setup.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/26 19:15:11 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/02 19:43:46 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,17 @@ static void	*init_sdl_gl(t_env *env)
 	return ((void*)1);
 }
 
-static void	init_default_mtl(t_material *mtl)
+static t_mtl_node	init_default_mtl(t_material *mtl)
 {
-	mtl->clr_amb = vec_init_f(0.2);
-	mtl->clr_dif = vec_init_f(0.6);
-	mtl->clr_spc = vec_init_f(0.3);
-	mtl->expnt_spc = 60.0;
-	mtl->transparency = 1.0;
+	t_mtl_node	*def_mtl;
+		
+	def_mtl = create_mtl_node(ft_strdup("default_mtl"));
+	def_mtl->clr_amb = vec_init_f(0.2);
+	def_mtl->clr_dif = vec_init_f(0.6);
+	def_mtl->clr_spc = vec_init_f(0.3);
+	def_mtl->expnt_spc = 60.0;
+	def_mtl->transparency = 1.0;
+	return (def_mtl);
 }
 
 static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
@@ -167,7 +171,7 @@ t_mat4x4	compute_view(t_camera cam)
 	//mat.data[14] = dot(f, position);
 }
 
-char		*read_shader(const char *path, int fd, size_t data_size)
+char		*read_shader_file(const char *path, size_t *data_size, int fd)
 {
 	struct stat	s;
 	char		*data;
@@ -183,8 +187,8 @@ char		*read_shader(const char *path, int fd, size_t data_size)
 		log_error_free(ft_strjoin("(fstat) ", strerror(errno)));
 		return (NULL);
 	}
-	data_size = (size_t)s.st_size;
-	if ((data = (char*)mmap(NULL, data_size, \
+	*data_size = (size_t)s.st_size;
+	if ((data = (char*)mmap(NULL, *data_size, \
 		PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 	{
 		log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
@@ -195,72 +199,91 @@ char		*read_shader(const char *path, int fd, size_t data_size)
 	return (data);
 }
 
-/*
-if ((parser->data = (char *)mmap(NULL, parser->fsize, \
-			PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-			log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
-		else
-		{
-			parser->data[parser->fsize] = '\0';
-			ft_parsing(env, parser, NULL);
-			if (munmap(parser->data, parser->fsize) == -1)
-				log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
-			parser->data = NULL;
-		}
-		close(fd);
-		*/
-
-t_shader	init_shader(const char *path)
+GLuint		create_shader(char *name, const GLchar **src, GLenum shader_type)
 {
-	//create_shader(path + '.extension', SHADER_TYPE, ...);
-	t_shader		shader;
-	const GLchar	*src[1];
-	GLint			lengths[1];
-	GLint			success;
-	GLchar			info_log[1024];
+	GLuint	sh;
+	GLint	success;
+	GLchar	info_log[1024];
 
-	shader.name = ft_strrchr(path, '/') + 1;
-	if ((src[0] = read_shader(path + ".vert", 0, 0)) == NULL)
-		return (NULL);
-	lengths[0] = ft_strlen((char*)src[0]);
-	if ((shader.vert_s = glCreateShader(GL_VERTEX_SHADER)) == 0)
+	if (!(*src[0]) || (sh = glCreateShader(shader_type)) == 0)
+		return (0);
+	glShaderSource(sh, 1, src, NULL); //, lengths);
+	glCompileShader(sh);
+	glGetShaderiv(sh, GL_COMPILE_STATUS, &success);
+	if (success == GL_FALSE)
 	{
-		log_error_free(ft_strjoin_auto((char**){SHADER_CREATE_ERROR, shader.name, "-", shader_type, ")"}, (int*){0, 0, 0, 0, 0}));
-		// WTF;
-		// need to clean stuff up; functions are jut scattered around files
-		// get a render then clean up
-		log_error_free(ft_strjoin_rf(SHADER_CREATE_ERROR, ft_strjoin_rf(shader.name, ft_strjoin_rf("-", ))))
+		glGetShaderInfoLog(sh, 1024, NULL, &info_log[0]);
+		glDeleteShader(sh);
+		return (shader_error(name, info_log, shader_type));
 	}
-	glShaderSource(shader.vert_s, 1, src, lengths);
+	return (sh);
+}
+	
+GLuint		init_shaders(t_shader *prg, const char *path)
+{
+	GLuint			shader;
+	const GLchar	*src[1];
+	size_t			fsize;
 
+	src[0] = (const GLchar*)read_shader_file(path + ".vert", &fsize, 0);
+	if ((prg->vtx_s = create_shader(shader.name, src, GL_VERTEX_SHADER)) == 0)
+		return (0);
+	if (munmap(src[0], fsize) == -1)
+		log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
+	src[0] = (const GLchar*)read_shader_file(path + ".frag", &fsize, 0);
+	if ((prg->frg_s = create_shader(shader.name, src, GL_FRAGMENT_SHADER)) == 0)
+	{
+		glDeleteShader(prg->vtx_s);
+		return (0);
+	}
+	if (munmap(src[0], fsize) == -1)
+		log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
+	return (1);
+}
+
+GLuint		init_program(t_shader *program, const char *path)
+{
+	GLint	success;
+	GLchar	info_log[1024];
+
+	program->name = ft_strrchr(path, '/') + 1;
+	if (init_shaders(program, path) == 0)
+		return (0);
+	program->prog = glCreateProgram();
+	glAttachShader(program->prog, program->vtx_s);
+	glAttachShader(program->prog, program->frg_s);
+	glLinkProgram(program->prog);
+	glGetProgramiv(program->prog, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		glGetProgramInfoLog(program->prog, 1024, NULL, &info_log[0]);
+		glDeleteProgram(program->prog);
+		glDeleteShader(program->vtx_s);
+		glDeleteShader(program->frag_s);
+		return (shader_error(name, info_log, shader_type));
+	}
+	glDetachShader(program->prog, program->vtx_s);
+	glDetachShader(program->prog, program->frag_s);
+	return (1);
 }
 
 t_env		*init_scop(t_env *env, int argc, char **argv)
 {
-	t_mtl_node	*def_mtl;
-
 	if (!(env = (t_env*)malloc(sizeof(t_env))))
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
 		return (clean_scop(env, CLEAN_SDL));
-	
 	env->camera = init_camera(vec3_init_xyz(0, 0, 3), 60, 0.1, 25);
-	//look_at(mat4x4_t(env->camera->transform), vec_init_f(0), vec_init_xyz(0, 1, 0));
-
 	env->projection_mat = compute_proj(env->camear.fov, \
 		WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
-
 	// not here
 	env->view_mat = compute_view(env->camera); // do this before each frame (if cam.transform.hasMoved())
-
-	env->def_shader = init_shader("resources/shaders/default");
-
+	if (init_program(&(env->def_shader), "resources/shaders/default") == 0)
+		return (clean_scop(env, CLEAN_SDL));
 	env->go_count = 0;
 	env->go_list = NULL;
 	env->mtl_count = 0;
-	def_mtl = create_mtl_node(ft_strdup("default_mtl"));
-	init_default_mtl(def_mtl->mtl);
-	env->mtl_list = add_mtl_node(env, def_mtl);
+	env->mtl_list = add_mtl_node(env, init_default_material("default_mtl"));
 	while (argc-- > 1)
 		parse_file(env, argv[argc], parse_wavefrontobj);
 	env->loop = 1;
