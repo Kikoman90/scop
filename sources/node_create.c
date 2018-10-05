@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   node_create.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/25 17:11:15 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/05 17:42:43 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void				gl_stack_feed(t_gameobject *go)
 
 	glGenBuffers(1, &go->gl_stack->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vector3) * go->vtx_count, go->vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, go->vertices, GL_STATIC_DRAW);
 	// (attribute location, size in bytes, type, normalized?, stride, offset)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);	
 	glEnableVertexAttribArray(0);
@@ -33,6 +33,16 @@ void				gl_stack_feed(t_gameobject *go)
 	glBindVertexArray(0);
 }
 
+t_transform			init_transform(void)
+{
+	t_transform	tr;
+
+	tr.position = vec3_f(0.0f);
+	tr.rotation = quat();
+	tr.scale = vec3_f(1.0f);
+	return (tr);
+}
+
 static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 										size_t vc, size_t ic)
 {
@@ -40,7 +50,7 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 
 	if (!(go = (t_gameobject*)malloc(sizeof(t_gameobject))))
 		return (log_error_null(MALLOC_ERROR));
-	go->transform = mat4x4_init();
+	go->transform = init_transform();
 	go->vtx_count = vc;
 	go->idx_count = ic;
 	if (!(go->vertices = (t_vec3*)malloc(sizeof(t_vec3) * vc)) || \

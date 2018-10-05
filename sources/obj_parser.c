@@ -6,7 +6,7 @@
 /*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/25 17:17:45 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/04 20:26:35 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void				parse_go(t_env *env, t_parser *parser, \
 								opv->vtx_seed.count, opv->idx_seed.count);
 		node->go = vtx_feed(node->go, parser->data, opv->vtx_seed);
 		node->go = idx_feed(node->go, parser->data, opv->idx_seed);
-		node->stack = gl_stack_feed(node->go);
+		gl_stack_feed(node->go);
 		env->go_list = add_go_node(env, node);
 	}
 	if (parser->fseed < parser->fsize && parser->data[parser->fseed])

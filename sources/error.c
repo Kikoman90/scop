@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 14:20:34 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/02 19:46:43 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/04 19:52:36 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void		prefix_error(const char *fname, unsigned int fline)
 	log_error_free(error_msg);
 }
 
-GLuint		shader_error(char *shader_name, char *info_log, GLenum shader_type)
+GLuint		shader_error(const char *shader_name, char *info_log, GLenum shader_type)
 {
 	(void)shader_name;
 	(void)info_log;

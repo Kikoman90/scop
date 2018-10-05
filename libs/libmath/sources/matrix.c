@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   matrix.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/06/12 19:23:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/05 19:42:07 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ t_mat4x4	quat_to_mat4x4(t_quaternion q)
 
 	t_mat4x4	mat;
 
-	mat = mat4x4_init();
+	mat = mat4x4();
 	mat.m[0] = 1 - (2 * (sqrtf(q.v.y) + sqrtf(q.v.z)));
 	mat.m[1] = 2 * (q.v.x * q.v.y - q.v.z * q.w);
 	mat.m[2] = 2 * (q.v.x * q.v.z + q.v.y * q.w);
@@ -57,19 +57,22 @@ t_mat4x4	quat_to_mat4x4(t_quaternion q)
 	return (mat);
 }
 
-t_mat4x4	mat4x4_init()
+t_mat4x4	mat4x4(void)
 {
 	return ((t_mat4x4)IDENTITY_MATRIX4);
 }
 
-t_mat4x4	mat4x4_init_trs(t_vec3 t, t_vec3 r, t_vec3 s) //quaternion r ?
+t_mat4x4	mat4x4_trs(t_vec3 t, t_vec3 r, t_vec3 s) //quaternion r ?
 {
 	t_mat4x4	mat;
 
-	mat = IDENTITY_MATRIX4;
-	mat.m[3] = t.x;
-	mat.m[7] = t.y;
-	mat.m[11] = t.z;
+	mat = (t_mat4x4)IDENTITY_MATRIX4;
+	//mat = mat4x4_translate(mat, t);
+	//mat = mat4x4_scale(mat, s);
+	//mat = mat4x4_rotate(mat, )
+	//mat.m[3] = t.x;
+	//mat.m[7] = t.y;
+	//mat.m[11] = t.z;
 	//...
 	return (mat);
 }
@@ -93,9 +96,9 @@ t_vec3		mat4x4_t(t_mat4x4 mat)
 {
 	t_vec3	t;
 
-	t.x = mat[3];
-	t.y = mat[7];
-	t.z = mat[11];
+	t.x = mat.m[3];
+	t.y = mat.m[7];
+	t.z = mat.m[11];
 	return (t);
 }
 
@@ -105,7 +108,7 @@ t_mat4x4    mat4x4_add(t_mat4x4 a, t_mat4x4 b)
 
 	i = -1;
 	while (++i < 16)
-		a.mat.m[i] += b.mat.m[i];
+		a.m[i] += b.m[i];
 	return (a);
 }
 
@@ -115,44 +118,65 @@ t_mat4x4    mat4x4_sub(t_mat4x4 a, t_mat4x4 b)
 
 	i = -1;
 	while (++i < 16)
-		a.mat.m[i] -= b.mat.m[i];
+		a.m[i] -= b.m[i];
 	return (a);
 }
 
 t_mat4x4	mat4x4_translate(t_mat4x4 mat, t_vec3 t)
 {
-	mat.m[3] = t.x;
-	mat.m[7] = t.y;
-	mat.m[11] = t.z;
+	mat.m[3] += t.x;
+	mat.m[7] += t.y;
+	mat.m[11] += t.z;
 	return (mat);
+}
+
+static void	swapf(float *a, float *b)
+{
+	float c;
+
+	c = *a;
+	*a = *b;
+	*b = c;
 }
 
 t_mat4x4	mat4x4_transpose(t_mat4x4 mat)
 {
-	float keeper;
-
-	keeper = mat.m[1];
-	mat.m[1] = mat.m[4];
-	mat.m[4] = keeper;
-	keeper = mat.m[2];
-	mat.m[2] = mat.m[8];
-	mat.m[8] = keeper;
-	keeper = mat.m[3];
-	mat.m[3] = mat.m[12];
-	mat.m[12] = keeper;
-	keeper = mat.m[6]
-	mat.m[6] = mat.m[9];
-	mat.m[9] = keeper;
-	keeper = mat.m[7];
-	mat.m[7] = mat.m[13];
-	mat.m[13] = keeper;
-	keeper = mat.m[11];
-	mat.m[11] = mat.m[14];
-	mat.m[14] = keeper;
+	swapf(&mat.m[1], &mat.m[4]);
+	swapf(&mat.m[2], &mat.m[8]);
+	swapf(&mat.m[3], &mat.m[12]);
+	swapf(&mat.m[6], &mat.m[9]);
+	swapf(&mat.m[7], &mat.m[13]);
+	swapf(&mat.m[11], &mat.m[14]);
 	return (mat);
 }
 
-/*t_mat4x4    mat_mult(t_mat4x4 a, t_mat4x4 b)
+t_vec4		prod_vec4(t_vec4 a, t_mat4x4 mat)
 {
-    
-}*/
+	unsigned int	i;
+	unsigned int	j;
+	t_vec4	res;
+
+	int j = 0;
+	while (j < 4)
+	{
+		i = 0;
+		while (i < 4)
+		{
+			res.v[j] += a.v[i] * mat.m[i * 4 + j];
+			i++;
+		}
+		j++;
+	}
+	return (res);
+}
+
+t_mat4x4    mat_mult(t_mat4x4 a, t_mat4x4 b)
+{
+	t_mat4x4	res;
+
+	res.v[0] = prod_vec4(a.v[0], b);
+	res.v[1] = prod_vec4(a.v[0], b);
+	res.v[2] = prod_vec4(a.v[0], b);
+	res.v[3] = prod_vec4(a.v[0], b);
+	return (res);
+}
