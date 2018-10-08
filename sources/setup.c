@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 17:08:33 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 18:59:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,15 +285,9 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 	env->go_list = NULL;
 	env->mtl_count = 0;
 	env->mtl_list = NULL;
-	ft_putendl("beneath the surface is voierd");
 	env->mtl_list = add_mtl_node(env, init_default_mtl());
-	ft_putendl("beneath the surface is void");
 	while (argc-- > 1)
-	{
-		ft_putendl("beneath the glock");
 		parse_file(env, argv[argc], parse_wavefrontobj);
-	}
 	env->loop = 1;
-	ft_putendl("done diddy done");
 	return (env);
 }

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 18:55:09 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 18:59:59 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 void __attribute__((constructor)) begin();
 void __attribute__((destructor)) end();
-
-// write draw function here, fill in uniforms, bind vao etc.
 
 t_mat4x4	compute_view(t_camera cam)
 {
@@ -48,41 +46,35 @@ static void	draw(t_env *env)
 	go_tmp = env->go_list;
 	def_mtl = env->mtl_list->mtl;
 	mvp = mat4x4_mult(env->proj_mat, compute_view(env->camera));
-	printf("go count: %zu\n", env->go_count);
-	//while (go_tmp)
-	//{
-		glUseProgram(env->def_shader.prog);
-		ft_putendl("NEIN NEIN NEEEEEIN");
+	while (go_tmp)
+	{
 		go_tr = go_tmp->go->transform;
 		mvp = mat4x4_mult(mvp, mat4x4_trs(go_tr.position, go_tr.rotation, go_tr.scale));
-		// transpose matrix ??
-		// mvp = mat4x4_transpose(mvp);
+
+		glUseProgram(env->def_shader.prog);
+		
 		glBindVertexArray(go_tmp->go->gl_stack->vao);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, go_tmp->go->gl_stack->ibo);
 		glEnableVertexAttribArray(0);
 
-		ft_putendl("mid");
 		uniform_loc = glGetUniformLocation(env->def_shader.prog, "mvp");
 		// void glUniformMatrix4fv(	GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 		glUniformMatrix4fv(uniform_loc, 1, GL_FALSE, mvp.m);
 		uniform_loc = glGetUniformLocation(env->def_shader.prog, "uAlpha");
 		glUniform1f(uniform_loc, 0.2);
 		
-		//glDrawArrays(GL_TRIANGLES, go_tmp->go->vtx_count, 0);
 		glDrawElements(GL_TRIANGLES, go_tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
 
 		//glUseProgram(0);
 		//glBindVertexArray(0);
-		ft_putendl("end");
-		//go_tmp = go_tmp->next;
-	//}
+		go_tmp = go_tmp->next;
+	}
 }
 
 static void	loop(t_env *env)
 {
 	SDL_Event	event;
 
-	// send uniforms and bind vaos in loop
 	// materials and shaders... look into that later
 	// once things are stable, simple sdl GUI (GUImp ?)
 	while (env->loop == 1)
@@ -103,9 +95,8 @@ int			main(int argc, char **argv)
 	env = NULL;
 	if (!(env = init_scop(env, argc, argv)))
 		return (0);
-	display_go_list(env->go_list);
-	display_mtl_list(env->mtl_list);
-	ft_putendl("tell me about it");
+	// display_go_list(env->go_list);
+	// display_mtl_list(env->mtl_list);
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
 	return (0);
