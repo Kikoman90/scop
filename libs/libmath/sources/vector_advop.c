@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/26 14:52:58 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/05 16:22:45 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 16:32:38 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,3 +41,11 @@ float       vec3_dot(t_vec3 a, t_vec3 b)
 	res = a.x * b.x + a.y * b.y + a.z * b.z;
 	return (res);
 }
+
+/*float       vec4_dot(t_vec4 a, t_vec4 b)
+{
+    float   res;
+
+    res = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+	return (res);
+}*/

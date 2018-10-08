@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 17:29:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/05 16:34:33 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 16:32:46 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ t_quaternion    quat_mult(t_quaternion a, t_quaternion b)
 {
     t_quaternion    res;
 
-    res.w = a.w * b.w - vec4_dot(a.v, b.v);
+    res.w = a.w * b.w - vec3_dot(a.v, b.v);
     res.v = vec3_add(vec3_add(vec3_scale(a.v, b.w), vec3_scale(b.v, a.w)), \
                         vec3_cross(a.v, b.v));
     return (res);

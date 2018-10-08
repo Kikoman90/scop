@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/05 18:27:02 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 17:08:33 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,9 @@ static t_mtl_node	*init_default_mtl(void)
 	t_mtl_node	*def_mtl;
 		
 	def_mtl = create_mtl_node(ft_strdup("default_mtl"));
-	def_mtl->mtl->clr_amb = vec3_init_f(0.2);
-	def_mtl->mtl->clr_dif = vec3_init_f(0.6);
-	def_mtl->mtl->clr_spc = vec3_init_f(0.3);
+	def_mtl->mtl->clr_amb = vec3_f(0.2);
+	def_mtl->mtl->clr_dif = vec3_f(0.6);
+	def_mtl->mtl->clr_spc = vec3_f(0.3);
 	def_mtl->mtl->expnt_spc = 60.0;
 	def_mtl->mtl->transparency = 1.0;
 	return (def_mtl);
@@ -78,8 +78,8 @@ static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
 	t_camera	cam;
 
 	cam.transform.position = pos;
-	cam.transform.rotation = quat_init(0, vec3_init_xyz(0, 0, -1));
-	cam.transform.scale = vec3_init_f(1);
+	cam.transform.rotation = quat_tv(0, vec3_xyz(0, 0, -1));
+	cam.transform.scale = vec3_f(1);
 	cam.fov = fov;
 	cam.znear = zn;
 	cam.zfar = zf;
@@ -96,13 +96,13 @@ t_mat4x4	compute_proj(float fov, float aspect, float zn, float zf)
 	f = 1 / tanf(fov / 2);
 	top = zn * tanf(fov * M_PI / 360.0);
 	right = top * aspect;
-	proj_mat = mat4x4_init();
-	proj_mat.mat.m[0] = f / aspect;
-	proj_mat.mat.m[5] = f;
-	proj_mat.mat.m[10] = (zf + zn) / (zn - zf);
-	proj_mat.mat.m[11] = (2 * zf * zn) / (zn - zf);
-	proj_mat.mat.m[14] = -1;
-	proj_mat.mat.m[15] = 0;
+	proj_mat = mat4x4();
+	proj_mat.m[0] = f / aspect;
+	proj_mat.m[5] = f;
+	proj_mat.m[10] = (zf + zn) / (zn - zf);
+	proj_mat.m[11] = (2 * zf * zn) / (zn - zf);
+	proj_mat.m[14] = -1;
+	proj_mat.m[15] = 0;
 	/*proj_mat.m[0] = (2 * zn) / (2 * right);
 	proj_mat.m[5] = (2 * zn) / (2 * top);
 	proj_mat.m[]
@@ -142,33 +142,14 @@ t_mat4x4	look_at(t_vec3 pos, t_vec3 target, t_vec3 up)
 	xaxis = vec3_norm(vec3_cross(up, zaxis));
 	yaxis = vec3_cross(zaxis, xaxis);
 
-	lookat = mat4x4_init();
-	lookat.mat.v[0] = vec4_init_xyzw(xaxis.x, yaxis.x, zaxis.x, 0);
-	lookat.mat.v[1] = vec4_init_xyzw(xaxis.y, yaxis.y, zaxis.y, 0);
-	lookat.mat.v[2] = vec4_init_xyzw(xaxis.z, yaxis.z, zaxis.z, 0);
-	lookat.mat.v[3] = vec4_init_xyzw(-vec3_dot(xaxis, pos), -vec3_dot(yaxis, pos)\
+	lookat = mat4x4();
+	lookat.v[0] = vec4_xyzw(xaxis.x, yaxis.x, zaxis.x, 0);
+	lookat.v[1] = vec4_xyzw(xaxis.y, yaxis.y, zaxis.y, 0);
+	lookat.v[2] = vec4_xyzw(xaxis.z, yaxis.z, zaxis.z, 0);
+	lookat.v[3] = vec4_xyzw(-vec3_dot(xaxis, pos), -vec3_dot(yaxis, pos)\
 								, -vec3_dot(zaxis, pos), 1);
 	//transpose ?? apparently opengl is column major
 	return (lookat);
-}
-
-t_mat4x4	compute_view(t_camera cam)
-{
-	t_mat4x4	view;
-	t_vec3		axis;
-
-	view = quat_to_mat4x4(cam.transform.rotation);
-	//view = mat4x4_inv(view);
-	axis = vec3_init_xyz(view.mat.m[0], view.mat.m[4], view.mat.m[8]);
-	view.mat.m[12] = -vec3_dot(axis, cam.transform.position);
-	axis = vec3_init_xyz(view.mat.m[1], view.mat.m[5], view.mat.m[9]);
-	view.mat.m[13] = -vec3_dot(axis, cam.transform.position);
-	axis = vec3_init_xyz(view.mat.m[2], view.mat.m[6], view.mat.m[10]);
-	view.mat.m[14] = -vec3_dot(axis, cam.transform.position);// or no sign
-	return (view);
-	//mat.data[12] = -dot(vec3_init_xyz(view.m[0], view.m[]), position);
-	//mat.data[13] = -dot(u, position);
-	//mat.data[14] = dot(f, position);
 }
 
 char		*read_shader_file(const char *path, size_t *data_size, int fd)
@@ -199,16 +180,18 @@ char		*read_shader_file(const char *path, size_t *data_size, int fd)
 	return (data);
 }
 
-GLuint		create_shader(const char *name, const GLchar **src, GLenum shader_type)
+GLuint		create_shader(const char *name, char *data, GLenum shader_type)
 {
 	GLuint	sh;
 	GLint	success;
 	GLchar	info_log[1024];
+	const GLchar	*src[1];
 	// PUT SIZE HERE AND ALLOC LOG TO THE RIGHT SIZE ??
 
-	if (!(*src[0]) || (sh = glCreateShader(shader_type)) == 0)
+	if (!data || (sh = glCreateShader(shader_type)) == 0)
 		return (0);
-	glShaderSource(sh, 1, src, NULL); //, lengths);
+	src[0] = (const GLchar*)data;
+	glShaderSource(sh, 1, src, NULL);
 	glCompileShader(sh);
 	glGetShaderiv(sh, GL_COMPILE_STATUS, &success);
 	if (success == GL_FALSE)
@@ -224,34 +207,34 @@ void		free_data_and_path(char *data, char *fpath, size_t fsize)
 {
 	free(fpath);
 	fpath = NULL;
-	if (munmap(data, fsize) == -1)
-		log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
-	data = NULL;
+	if (data)
+	{
+		if (munmap(data, fsize) == -1)
+			log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
+		data = NULL;
+	}
 }
 
 GLuint		init_shaders(t_shader *prg, const char *path)
 {
-	const GLchar	*src[1];
+	//const GLchar	*src[1];
 	char			*fullpath;
 	char			*fdata;
 	size_t			fsize;
 
-	fullpath = ft_strjoin(path, ".vtx");
+	fullpath = ft_strjoin(path, ".vert");
 	fdata = read_shader_file(fullpath, &fsize, 0);
-	src[0] = (const GLchar*)fdata;
-	//src[0] = (const GLchar*)read_shader_file(fullpath, &fsize, 0);
-	if ((prg->vtx_s = create_shader(prg->name, src, GL_VERTEX_SHADER)) == 0)
+	//src[0] = (const GLchar*)fdata;
+	if ((prg->vtx_s = create_shader(prg->name, fdata, GL_VERTEX_SHADER)) == 0)
 	{
 		free_data_and_path(fdata, fullpath, fsize);
 		return (0);
 	}
 	free_data_and_path(fdata, fullpath, fsize);
-	//printf("data" "path") see if they were really freed and if they are null
 	fullpath = ft_strjoin(path, ".frag");
 	fdata = read_shader_file(fullpath, &fsize, 0);
-	src[0] = (const GLchar*)fdata;
-	//src[0] = (const GLchar*)read_shader_file(fullpath, &fsize, 0);
-	if ((prg->frg_s = create_shader(prg->name, src, GL_FRAGMENT_SHADER)) == 0)
+	//src[0] = (const GLchar*)fdata;
+	if ((prg->frg_s = create_shader(prg->name, fdata, GL_FRAGMENT_SHADER)) == 0)
 	{
 		free_data_and_path(fdata, fullpath, fsize);
 		glDeleteShader(prg->vtx_s);
@@ -293,19 +276,24 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
 		return (clean_scop(env, CLEAN_SDL));
-	env->camera = init_camera(vec3_init_xyz(0, 0, 3), 60, 0.1, 25);
+	env->camera = init_camera(vec3_xyz(0, 0, 3), 60, 0.1, 25);
 	env->proj_mat = compute_proj(env->camera.fov, \
 		WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
-	// not here
-	env->view_mat = compute_view(env->camera); // do this before each frame (if cam.transform.hasMoved())
 	if (init_program(&(env->def_shader), "resources/shaders/default") == 0)
 		return (clean_scop(env, CLEAN_SDL));
 	env->go_count = 0;
 	env->go_list = NULL;
 	env->mtl_count = 0;
+	env->mtl_list = NULL;
+	ft_putendl("beneath the surface is voierd");
 	env->mtl_list = add_mtl_node(env, init_default_mtl());
+	ft_putendl("beneath the surface is void");
 	while (argc-- > 1)
+	{
+		ft_putendl("beneath the glock");
 		parse_file(env, argv[argc], parse_wavefrontobj);
+	}
 	env->loop = 1;
+	ft_putendl("done diddy done");
 	return (env);
 }

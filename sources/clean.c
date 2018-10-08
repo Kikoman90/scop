@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/18 16:48:53 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 16:04:01 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@ static void	clean_go(t_gameobject *go)
 	}
 	if (go->gl_stack)
 	{
+		glDeleteBuffers(1, &go->gl_stack->vbo);
+		glDeleteBuffers(1, &go->gl_stack->ibo);
+		glDeleteVertexArrays(1, &go->gl_stack->vao);
 		free(go->gl_stack);
 		go->gl_stack = NULL;
 	}

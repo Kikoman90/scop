@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/04 20:27:19 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 16:39:59 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
+
+# include <stdio.h> // REMOVE ME PLEASE
 
 typedef enum			e_clean_flags
 {
@@ -81,6 +83,13 @@ typedef struct			s_gameobject
 	char				*name;
 	t_gl_stack			*gl_stack;
 }						t_gameobject;
+// transform attributes
+// rendering properties (vao vbo ids, shaders)
+// physics properties
+// audio properties
+// behaviour
+
+// model matrix ??
 
 typedef struct			s_mtl_node
 {

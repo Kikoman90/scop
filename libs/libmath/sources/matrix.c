@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/05 19:42:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 16:25:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,46 +14,24 @@
 
 t_mat4x4	quat_to_mat4x4(t_quaternion q)
 {
-	/*xx      = X * X;
-    xy      = X * Y;
-    xz      = X * Z;
-    xw      = X * W;
-    yy      = Y * Y;
-    yz      = Y * Z;
-    yw      = Y * W;
-    zz      = Z * Z;
-    zw      = Z * W;
-    mat[0]  = 1 - 2 * ( yy + zz );
-    mat[1]  =     2 * ( xy - zw );
-    mat[2]  =     2 * ( xz + yw );
-    mat[4]  =     2 * ( xy + zw );
-    mat[5]  = 1 - 2 * ( xx + zz );
-    mat[6]  =     2 * ( yz - xw );
-    mat[8]  =     2 * ( xz - yw );
-    mat[9]  =     2 * ( yz + xw );
-    mat[10] = 1 - 2 * ( xx + yy );
-    mat[3]  = mat[7] = mat[11] = mat[12] = mat[13] = mat[14] = 0;
-    mat[15] = 1;
-
-  The resulting matrix uses the following positions:
-
-      � mat[0]  mat[4] mat[ 8] mat[12] �
-  M = � mat[1]  mat[5] mat[ 9] mat[13] �
-      � mat[2]  mat[6] mat[10] mat[14] �
-      � mat[3]  mat[7] mat[11] mat[15] �*/
-
 	t_mat4x4	mat;
+	float xx;
+	float yy;
+	float zz;
 
-	mat = mat4x4();
-	mat.m[0] = 1 - (2 * (sqrtf(q.v.y) + sqrtf(q.v.z)));
-	mat.m[1] = 2 * (q.v.x * q.v.y - q.v.z * q.w);
-	mat.m[2] = 2 * (q.v.x * q.v.z + q.v.y * q.w);
-	mat.m[4] = 2 * (q.v.x * q.v.y + q.v.z * q.w);
-	mat.m[5] = 1 - (2 * (sqrtf(q.v.x) + sqrtf(q.v.z)));
-	mat.m[6] = 2 * (q.v.y * q.v.z - q.v.x * q.w);
-	mat.m[8] = 2 * (q.v.x * q.v.z - q.v.y * q.w);
-	mat.m[9] = 2 * (q.v.y * q.v.z + q.v.x * q.w);
-	mat.m[10] = 1 - (2 * (sqrtf(q.v.x) + sqrtf(q.v.y)));
+	mat = (t_mat4x4)IDENTITY_MATRIX4;
+	xx = q.x * q.x;
+	yy = q.y * q.y;
+	zz = q.z * q.z;
+	mat.m[0] = 1 - (2 * (yy + zz));
+	mat.m[1] = 2 * (q.x * q.y - q.z * q.w);
+	mat.m[2] = 2 * (q.x * q.z + q.y * q.w);
+	mat.m[4] = 2 * (q.x * q.y + q.z * q.w);
+	mat.m[5] = 1 - (2 * (xx + zz));
+	mat.m[6] = 2 * (q.y * q.z - q.x * q.w);
+	mat.m[8] = 2 * (q.x * q.z - q.y * q.w);
+	mat.m[9] = 2 * (q.y * q.z + q.x * q.w);
+	mat.m[10] = 1 - (2 * (xx + yy));
 	return (mat);
 }
 
@@ -62,19 +40,43 @@ t_mat4x4	mat4x4(void)
 	return ((t_mat4x4)IDENTITY_MATRIX4);
 }
 
-t_mat4x4	mat4x4_trs(t_vec3 t, t_vec3 r, t_vec3 s) //quaternion r ?
+t_mat4x4	mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s) //quaternion r ?
 {
 	t_mat4x4	mat;
+	float xx;
+	float yy;
+	float zz;
 
 	mat = (t_mat4x4)IDENTITY_MATRIX4;
-	//mat = mat4x4_translate(mat, t);
-	//mat = mat4x4_scale(mat, s);
-	//mat = mat4x4_rotate(mat, )
-	//mat.m[3] = t.x;
-	//mat.m[7] = t.y;
-	//mat.m[11] = t.z;
-	//...
+	xx = r.x * r.x;
+	yy = r.y * r.y;
+	zz = r.z * r.z;
+	mat.m[0] = s.x - (2 * s.x * (yy + zz));
+	mat.m[1] = 2 * s.y * (r.x * r.y - r.z * r.w);
+	mat.m[2] = 2 * s.z * (r.x * r.z + r.y * r.w);
+	mat.m[3] = t.x;
+	mat.m[4] = 2 * s.x * (r.x * r.y + r.z * r.w);
+	mat.m[5] = s.y - (2 * s.y * (xx + zz));
+	mat.m[6] = 2 * s.z * (r.y * r.z - r.x * r.w);
+	mat.m[7] = t.y;
+	mat.m[8] = 2 * s.x * (r.x * r.z - r.y * r.w);
+	mat.m[9] = 2 * s.y * (r.y * r.z + r.x * r.w);
+	mat.m[10] = s.z - (2 * s.z * (xx + yy));
+	mat.m[11] = t.z;
+	
 	return (mat);
+	/* // mat = mat4x4_scale(mat, s);
+	mat.m[0] = s.x;
+	mat.m[5] = s.y;
+	mat.m[10] = s.z;
+
+	// mat = mat4x4_rotate(mat, r)
+
+
+	// mat = mat4x4_translate(mat, t);
+	mat.m[3] = t.x;
+	mat.m[7] = t.y;
+	mat.m[11] = t.z;*/
 }
 
 /*t_mat4x4    mat_init(t_mat4x4 mat, float f)
@@ -156,7 +158,7 @@ t_vec4		prod_vec4(t_vec4 a, t_mat4x4 mat)
 	unsigned int	j;
 	t_vec4	res;
 
-	int j = 0;
+	j = 0;
 	while (j < 4)
 	{
 		i = 0;
@@ -170,7 +172,7 @@ t_vec4		prod_vec4(t_vec4 a, t_mat4x4 mat)
 	return (res);
 }
 
-t_mat4x4    mat_mult(t_mat4x4 a, t_mat4x4 b)
+t_mat4x4    mat4x4_mult(t_mat4x4 a, t_mat4x4 b)
 {
 	t_mat4x4	res;
 

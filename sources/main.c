@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/02 19:48:06 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/08 18:55:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,67 @@ void __attribute__((constructor)) begin();
 void __attribute__((destructor)) end();
 
 // write draw function here, fill in uniforms, bind vao etc.
+
+t_mat4x4	compute_view(t_camera cam)
+{
+	t_mat4x4	view;
+	t_vec3		axis;
+
+	view = quat_to_mat4x4(cam.transform.rotation);
+	//view = mat4x4_inv(view);
+	axis = vec3_xyz(view.m[0], view.m[4], view.m[8]);
+	view.m[12] = -vec3_dot(axis, cam.transform.position);
+	axis = vec3_xyz(view.m[1], view.m[5], view.m[9]);
+	view.m[13] = -vec3_dot(axis, cam.transform.position);
+	axis = vec3_xyz(view.m[2], view.m[6], view.m[10]);
+	view.m[14] = -vec3_dot(axis, cam.transform.position);// or no sign
+	view = mat4x4_transpose(view); // ?
+	return (view);
+	//mat.data[12] = -dot(vec3_init_xyz(view.m[0], view.m[]), position);
+	//mat.data[13] = -dot(u, position);
+	//mat.data[14] = dot(f, position);
+}
+
+static void	draw(t_env *env)
+{
+	t_material	*def_mtl;
+	t_go_node	*go_tmp;
+	t_mat4x4	mvp;
+	t_transform	go_tr;
+	GLint 		uniform_loc;
+
+	go_tmp = env->go_list;
+	def_mtl = env->mtl_list->mtl;
+	mvp = mat4x4_mult(env->proj_mat, compute_view(env->camera));
+	printf("go count: %zu\n", env->go_count);
+	//while (go_tmp)
+	//{
+		glUseProgram(env->def_shader.prog);
+		ft_putendl("NEIN NEIN NEEEEEIN");
+		go_tr = go_tmp->go->transform;
+		mvp = mat4x4_mult(mvp, mat4x4_trs(go_tr.position, go_tr.rotation, go_tr.scale));
+		// transpose matrix ??
+		// mvp = mat4x4_transpose(mvp);
+		glBindVertexArray(go_tmp->go->gl_stack->vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, go_tmp->go->gl_stack->ibo);
+		glEnableVertexAttribArray(0);
+
+		ft_putendl("mid");
+		uniform_loc = glGetUniformLocation(env->def_shader.prog, "mvp");
+		// void glUniformMatrix4fv(	GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+		glUniformMatrix4fv(uniform_loc, 1, GL_FALSE, mvp.m);
+		uniform_loc = glGetUniformLocation(env->def_shader.prog, "uAlpha");
+		glUniform1f(uniform_loc, 0.2);
+		
+		//glDrawArrays(GL_TRIANGLES, go_tmp->go->vtx_count, 0);
+		glDrawElements(GL_TRIANGLES, go_tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
+
+		//glUseProgram(0);
+		//glBindVertexArray(0);
+		ft_putendl("end");
+		//go_tmp = go_tmp->next;
+	//}
+}
 
 static void	loop(t_env *env)
 {
@@ -30,6 +91,7 @@ static void	loop(t_env *env)
 		SDL_PollEvent(&event);
 		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			env->loop = 0;
+		draw(env);
 		SDL_GL_SwapWindow(env->window);
 	}
 }
@@ -43,6 +105,7 @@ int			main(int argc, char **argv)
 		return (0);
 	display_go_list(env->go_list);
 	display_mtl_list(env->mtl_list);
+	ft_putendl("tell me about it");
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
 	return (0);
