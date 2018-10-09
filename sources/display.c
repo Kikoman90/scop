@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 18:43:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/09 14:01:54 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,28 @@
 #include <stdio.h>
 
 // remove this file
+
+void		display_mat4x4(t_mat4x4 mat, const char *msg)
+{
+	unsigned int i;
+	unsigned int j;
+
+	i = 0;
+	ft_putendl(msg);
+	while (i < 4)
+	{
+		j = 0;
+		printf("| ");
+		while (j < 4)
+		{
+			printf("% 06.1f ", mat.m[4 * i + j]);
+			j++;
+		}
+		printf("|\n");
+		i++;
+	}
+	ft_putendl("-----------------");
+}
 
 void		display_vec3(const char *p, t_vec3 v)
 {

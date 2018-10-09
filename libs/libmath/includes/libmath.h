@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 16:34:43 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/09 17:39:41 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 # include <math.h>
 
 # define VEC3_ZERO {{0.0f, 0.0f, 0.0f}}
+# define VEC3_UP {{0.0f, 1.0f, 0.0f}}
 //# define VEC3_ONE {{1.0f, 1.0f, 1.0f}}
 //# define VEC3_RIGHT {{1.0f, 0.0f, 0.0f}}
-//# define VEC3_UP {{0.0f, 1.0f, 0.0f}}
 //# define VEC3_FRONT {{0.0f, 0.0f, 1.0f }} // OR -1 ?? comon man
 
 # define VEC4_ZERO {{0.0f, 0.0f, 0.0f, 0.0f}}
@@ -133,8 +133,13 @@ t_mat4x4			mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 
 t_mat4x4			mat4x4_add(t_mat4x4 a, t_mat4x4 b);
 t_mat4x4			mat4x4_sub(t_mat4x4 a, t_mat4x4 b);
-t_mat4x4			mat4x4_translate(t_mat4x4, t_vec3 t);
+t_mat4x4			mat4x4_translate(t_vec3 t);
+t_mat4x4			mat4x4_scale(t_vec3 s);
 t_mat4x4			mat4x4_transpose(t_mat4x4 mat);
+
+t_vec4				vec4_mat4x4_prod(t_vec4 v, t_mat4x4 mat);
+t_vec3				vec3_mat4x4_prod(t_vec3 v, t_mat4x4 mat);
+
 t_mat4x4			mat4x4_mult(t_mat4x4 a, t_mat4x4 b);
 
 t_mat4x4			quat_to_mat4x4(t_quaternion q);

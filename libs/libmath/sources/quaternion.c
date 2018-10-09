@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 17:29:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 16:32:46 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/09 17:17:41 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,23 +18,25 @@ t_quaternion    quat(void)
 
     q.w = 1;
     q.v = vec3_f(0);
-    return (q);
+    //return (q);
+    return (quat_norm(q));
 }
 
 t_quaternion    quat_tv(float theta, t_vec3 v) // flag parameter to normalize?
 {
     t_quaternion    q;
 
-	theta = theta / 360 * (float)M_PI * 2;
+	theta = theta * M_PI / 180.0f;
 	q.w = cos(theta/2);
     q.v = vec3_scale(v, sin(theta/2));
     return (q);
+    //return (quat_norm(q));
 }
 
 t_quaternion    quat_norm(t_quaternion q)
 {
     float mag;
-    
+
     mag = sqrtf(q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
     q.w /= mag;
     q.x /= mag;

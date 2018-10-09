@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 16:25:15 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/09 17:45:43 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,15 @@ t_mat4x4	quat_to_mat4x4(t_quaternion q)
 	xx = q.x * q.x;
 	yy = q.y * q.y;
 	zz = q.z * q.z;
-	mat.m[0] = 1 - (2 * (yy + zz));
-	mat.m[1] = 2 * (q.x * q.y - q.z * q.w);
-	mat.m[2] = 2 * (q.x * q.z + q.y * q.w);
-	mat.m[4] = 2 * (q.x * q.y + q.z * q.w);
-	mat.m[5] = 1 - (2 * (xx + zz));
-	mat.m[6] = 2 * (q.y * q.z - q.x * q.w);
-	mat.m[8] = 2 * (q.x * q.z - q.y * q.w);
-	mat.m[9] = 2 * (q.y * q.z + q.x * q.w);
-	mat.m[10] = 1 - (2 * (xx + yy));
+	mat.m[0] = 1 - 2 * (yy + zz);
+	mat.m[1] = 2 * (q.x * q.y + q.z * q.w);
+	mat.m[2] = 2 * (q.x * q.z - q.y * q.w);
+	mat.m[4] = 2 * (q.x * q.y - q.z * q.w);
+	mat.m[5] = 1 - 2 * (xx + zz);
+	mat.m[6] = 2 * (q.y * q.z + q.x * q.w);
+	mat.m[8] = 2 * (q.x * q.z + q.y * q.w);
+	mat.m[9] = 2 * (q.y * q.z - q.x * q.w);
+	mat.m[10] = 1 - 2 * (xx + yy);
 	return (mat);
 }
 
@@ -94,7 +94,7 @@ t_mat4x4	mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s) //quaternion r ?
 	return (mat);
 }*/
 
-t_vec3		mat4x4_t(t_mat4x4 mat)
+/*t_vec3		mat4x4_t(t_mat4x4 mat)
 {
 	t_vec3	t;
 
@@ -102,6 +102,26 @@ t_vec3		mat4x4_t(t_mat4x4 mat)
 	t.y = mat.m[7];
 	t.z = mat.m[11];
 	return (t);
+}*/
+
+t_mat4x4	mat4x4_translate(t_vec3 t)
+{
+	t_mat4x4	mat;
+
+	mat.m[3] = t.x;
+	mat.m[7] = t.y;
+	mat.m[11] = t.z;
+	return (mat);
+}
+
+t_mat4x4	mat4x4_scale(t_vec3 s)
+{
+	t_mat4x4	mat;
+
+	mat.m[0] = s.x;
+	mat.m[5] = s.y;
+	mat.m[10] = s.z;
+	return (mat);
 }
 
 t_mat4x4    mat4x4_add(t_mat4x4 a, t_mat4x4 b)
@@ -124,14 +144,6 @@ t_mat4x4    mat4x4_sub(t_mat4x4 a, t_mat4x4 b)
 	return (a);
 }
 
-t_mat4x4	mat4x4_translate(t_mat4x4 mat, t_vec3 t)
-{
-	mat.m[3] += t.x;
-	mat.m[7] += t.y;
-	mat.m[11] += t.z;
-	return (mat);
-}
-
 static void	swapf(float *a, float *b)
 {
 	float c;
@@ -152,19 +164,20 @@ t_mat4x4	mat4x4_transpose(t_mat4x4 mat)
 	return (mat);
 }
 
-t_vec4		prod_vec4(t_vec4 a, t_mat4x4 mat)
+t_vec4		vec4_mat4x4_prod(t_vec4 v, t_mat4x4 mat)
 {
 	unsigned int	i;
 	unsigned int	j;
-	t_vec4	res;
+	t_vec4			res;
 
 	j = 0;
 	while (j < 4)
 	{
 		i = 0;
+		res.v[j] = 0;
 		while (i < 4)
 		{
-			res.v[j] += a.v[i] * mat.m[i * 4 + j];
+			res.v[j] += v.v[i] * mat.m[i * 4 + j];
 			i++;
 		}
 		j++;
@@ -172,13 +185,21 @@ t_vec4		prod_vec4(t_vec4 a, t_mat4x4 mat)
 	return (res);
 }
 
+t_vec3		vec3_mat4x4_prod(t_vec3 v, t_mat4x4 mat)
+{
+	t_vec4	v4;
+
+	v4 = vec4_mat4x4_prod(vec4_v3w(v, 1), mat);
+	return (vec3_xyz(v4.x, v4.y, v4.z));
+}
+
 t_mat4x4    mat4x4_mult(t_mat4x4 a, t_mat4x4 b)
 {
 	t_mat4x4	res;
 
-	res.v[0] = prod_vec4(a.v[0], b);
-	res.v[1] = prod_vec4(a.v[0], b);
-	res.v[2] = prod_vec4(a.v[0], b);
-	res.v[3] = prod_vec4(a.v[0], b);
+	res.v[0] = vec4_mat4x4_prod(a.v[0], b);
+	res.v[1] = vec4_mat4x4_prod(a.v[0], b);
+	res.v[2] = vec4_mat4x4_prod(a.v[0], b);
+	res.v[3] = vec4_mat4x4_prod(a.v[0], b);
 	return (res);
 }

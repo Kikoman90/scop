@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 18:58:14 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/09 11:04:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,9 @@ t_transform			init_transform(void)
 {
 	t_transform	tr;
 
-	tr.position = vec3_xyz(0, 0, -10);
-	tr.rotation = quat();
+	tr.position = vec3_xyz(0, 0, 0);
+	tr.rotation = quat_tv(30, vec3_xyz(0, 1, 0));//VEC3_UP
+	//tr.rotation = quat();
 	tr.scale = vec3_f(1.0f);
 	return (tr);
 }

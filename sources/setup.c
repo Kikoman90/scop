@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 18:59:32 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/09 14:35:26 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
 	t_camera	cam;
 
 	cam.transform.position = pos;
-	cam.transform.rotation = quat_tv(0, vec3_xyz(0, 0, -1));
+	cam.transform.rotation = quat_tv(0, vec3_xyz(0, 0, 1));
 	cam.transform.scale = vec3_f(1);
 	cam.fov = fov;
 	cam.znear = zn;
@@ -89,67 +89,18 @@ static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
 t_mat4x4	compute_proj(float fov, float aspect, float zn, float zf)
 {
 	t_mat4x4	proj_mat;
-	float right;
-	float top;
 	float f;
 
+	fov *= M_PI / 180.0f;
 	f = 1 / tanf(fov / 2);
-	top = zn * tanf(fov * M_PI / 360.0);
-	right = top * aspect;
 	proj_mat = mat4x4();
 	proj_mat.m[0] = f / aspect;
 	proj_mat.m[5] = f;
-	proj_mat.m[10] = (zf + zn) / (zn - zf);
-	proj_mat.m[11] = (2 * zf * zn) / (zn - zf);
+	proj_mat.m[10] = -(zf + zn) / (zf - zn);
+	proj_mat.m[11] = (-2 * zn * zf) / (zf - zn);
 	proj_mat.m[14] = -1;
 	proj_mat.m[15] = 0;
-	/*proj_mat.m[0] = (2 * zn) / (2 * right);
-	proj_mat.m[5] = (2 * zn) / (2 * top);
-	proj_mat.m[]
-
-	float temp, temp2, temp3, temp4;
-    temp = 2.0 * znear;
-    temp2 = right - left;
-    temp3 = top - bottom;
-    temp4 = zfar - znear;
-    matrix[0] = temp / temp2;
-    matrix[1] = 0.0;
-    matrix[2] = 0.0;
-    matrix[3] = 0.0;
-    matrix[4] = 0.0;
-    matrix[5] = temp / temp3;
-    matrix[6] = 0.0;
-    matrix[7] = 0.0;
-    matrix[8] = (right + left) / temp2;
-    matrix[9] = (top + bottom) / temp3;
-    matrix[10] = (-zfar - znear) / temp4;
-    matrix[11] = -1.0;
-    matrix[12] = 0.0;
-    matrix[13] = 0.0;
-    matrix[14] = (-temp * zfar) / temp4;
-    matrix[15] = 0.0;*/
 	return (proj_mat);
-}
-
-t_mat4x4	look_at(t_vec3 pos, t_vec3 target, t_vec3 up)
-{
-	t_vec3		xaxis;
-	t_vec3		yaxis;
-	t_vec3		zaxis;
-	t_mat4x4	lookat;
-	
-	zaxis = vec3_norm(vec3_sub(pos, target));
-	xaxis = vec3_norm(vec3_cross(up, zaxis));
-	yaxis = vec3_cross(zaxis, xaxis);
-
-	lookat = mat4x4();
-	lookat.v[0] = vec4_xyzw(xaxis.x, yaxis.x, zaxis.x, 0);
-	lookat.v[1] = vec4_xyzw(xaxis.y, yaxis.y, zaxis.y, 0);
-	lookat.v[2] = vec4_xyzw(xaxis.z, yaxis.z, zaxis.z, 0);
-	lookat.v[3] = vec4_xyzw(-vec3_dot(xaxis, pos), -vec3_dot(yaxis, pos)\
-								, -vec3_dot(zaxis, pos), 1);
-	//transpose ?? apparently opengl is column major
-	return (lookat);
 }
 
 char		*read_shader_file(const char *path, size_t *data_size, int fd)
@@ -276,9 +227,10 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
 		return (clean_scop(env, CLEAN_SDL));
-	env->camera = init_camera(vec3_xyz(0, 0, 3), 60, 0.1, 25);
+	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 3);//0.1 && 25 (pos = {0, 0, -15})
 	env->proj_mat = compute_proj(env->camera.fov, \
-		WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
+		(float)WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
+	//(float)(WIN_W / WIN_H)
 	if (init_program(&(env->def_shader), "resources/shaders/default") == 0)
 		return (clean_scop(env, CLEAN_SDL));
 	env->go_count = 0;

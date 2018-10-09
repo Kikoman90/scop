@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 16:39:59 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/09 14:03:31 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 # include <SDL2/SDL.h>
 # include <OpenGL/gl3.h>
 
-# define WIN_W 640
-# define WIN_H 640
+# define WIN_W 800
+# define WIN_H 800
 
 # define MALLOC_ERROR "memory allocation failure"
 # define SDL_INIT_ERROR "failed to initialize sdl"
@@ -171,6 +171,7 @@ GLuint					shader_error(const char *shader_name, char *info_log, \
 										GLenum shader_type);
 
 //
+void					display_mat4x4(t_mat4x4 mat, const char *msg);
 void					display_vec3(const char *p, t_vec3 v);
 void					display_gameobject(t_gameobject *obj);
 void					display_go_list(t_go_node *list);
