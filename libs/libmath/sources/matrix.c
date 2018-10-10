@@ -6,200 +6,120 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/09 17:45:43 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/10 17:51:44 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libmath.h"
 
-t_mat4x4	quat_to_mat4x4(t_quaternion q)
-{
-	t_mat4x4	mat;
-	float xx;
-	float yy;
-	float zz;
+	/* MEMO (RM: row-major / CM: column-major)
+	
+	CM | 1 0 0 2 | | 1 0 0  0 | -> | 1 0 0  2 |
+	   | 0 1 0 3 | | 0 1 0  4 |    | 0 1 0  7 |
+	   | 0 0 1 1 | | 0 0 1 -2 |    | 0 0 1 -1 |
+	   | 0 0 0 1 | | 0 0 0  1 |    | 0 0 0  1 |
 
-	mat = (t_mat4x4)IDENTITY_MATRIX4;
-	xx = q.x * q.x;
-	yy = q.y * q.y;
-	zz = q.z * q.z;
-	mat.m[0] = 1 - 2 * (yy + zz);
-	mat.m[1] = 2 * (q.x * q.y + q.z * q.w);
-	mat.m[2] = 2 * (q.x * q.z - q.y * q.w);
-	mat.m[4] = 2 * (q.x * q.y - q.z * q.w);
-	mat.m[5] = 1 - 2 * (xx + zz);
-	mat.m[6] = 2 * (q.y * q.z + q.x * q.w);
-	mat.m[8] = 2 * (q.x * q.z + q.y * q.w);
-	mat.m[9] = 2 * (q.y * q.z - q.x * q.w);
-	mat.m[10] = 1 - 2 * (xx + yy);
-	return (mat);
-}
+	RM | 1 0 0 0 | | 1 0  0 0 | -> | 1 0  0 0 |
+	   | 0 1 0 0 | | 0 1  0 0 |    | 0 1  0 0 |
+	   | 0 0 1 0 | | 0 0  1 0 |    | 0 0  1 0 |
+	   | 2 3 1 1 | | 0 4 -2 1 |    | 2 7 -1 1 |
+
+	RM : v[0] = {1 0 0 2}
+	CM : v[0] = {1 0 0 2};
+	tout est dans l'interpretation
+
+	-------------------------------------------------
+	
+	(T)| 1 3 2 | (R)| 7   4 3 | (S)| 1 2 1 |
+	   | 7 5 0 |    | 0.5 4 1 |    | 3 2 1 |
+	   | 2 1 2 |    | 7   0 5 |    | 2 2 2 |
+	
+	(1) (tr)s;
+	(2) t(rs);
+
+	(1) | 22.5 16 16 | | 1 2 1 | -> | 102.5 109 70.5  |
+	    | 51.5 48 26 | | 3 2 1 |    | 247.5 251 151.5 |
+		| 28.5 12 17 | | 2 2 2 |    | 98.5  115 74.5  |
+
+	(2) | 1 3 2 | | 25   28 17  | -> | 102.5 109 70.5  |
+	    | 7 5 0 | | 14.5 11 6.5 |    | 247.5 251 151.5 |
+		| 2 1 2 | | 17   24 17  |    | 98.5  115 74.5  |
+	
+	-------------------------------------------------
+
+	column-major : v' = TRSv (first scale, then rotate, then translate);
+	row-major    : v' = vSRT (idem) */
 
 t_mat4x4	mat4x4(void)
 {
 	return ((t_mat4x4)IDENTITY_MATRIX4);
 }
 
-t_mat4x4	mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s) //quaternion r ?
-{
-	t_mat4x4	mat;
-	float xx;
-	float yy;
-	float zz;
-
-	mat = (t_mat4x4)IDENTITY_MATRIX4;
-	xx = r.x * r.x;
-	yy = r.y * r.y;
-	zz = r.z * r.z;
-	mat.m[0] = s.x - (2 * s.x * (yy + zz));
-	mat.m[1] = 2 * s.y * (r.x * r.y - r.z * r.w);
-	mat.m[2] = 2 * s.z * (r.x * r.z + r.y * r.w);
-	mat.m[3] = t.x;
-	mat.m[4] = 2 * s.x * (r.x * r.y + r.z * r.w);
-	mat.m[5] = s.y - (2 * s.y * (xx + zz));
-	mat.m[6] = 2 * s.z * (r.y * r.z - r.x * r.w);
-	mat.m[7] = t.y;
-	mat.m[8] = 2 * s.x * (r.x * r.z - r.y * r.w);
-	mat.m[9] = 2 * s.y * (r.y * r.z + r.x * r.w);
-	mat.m[10] = s.z - (2 * s.z * (xx + yy));
-	mat.m[11] = t.z;
+	/* TRS :
 	
-	return (mat);
-	/* // mat = mat4x4_scale(mat, s);
-	mat.m[0] = s.x;
-	mat.m[5] = s.y;
-	mat.m[10] = s.z;
+	1st technique: compute the 3 matrices and multiply them in the right order;
+	2nd technique: compute all together with formula below (if scaling is uniform)
 
-	// mat = mat4x4_rotate(mat, r)
+	| 1 0 0 tx | | r00 r10 r20 0 | | sx 0  0  0 | 
+	| 0 1 0 ty | | r01 r11 r21 0 | | 0  sy 0  0 |
+	| 0 0 1 tz | | r02 r12 r22 0 | | 0  0  sz 0 |
+    | 0 0 0  1 | |  0   0   0  1 | | 0  0  0  1 |
+	=
+	| 1 0 0 tx | | r00sx r10sy r20sz 0 |
+	| 0 1 0 ty | | r01sx r11sy r21sz 0 |
+	| 0 0 1 tz | | r02sx r12sy r22sz 0 |
+ 	| 0 0 0  1 | |   0     0     0   1 |
+	=
+	| r00sx           				r10sy						  r20sz							tx |
+	| r01sx           				r11sy						  r21sz							ty |
+	| r02sx           				r12sy						  r22sz							tz |
+	| (txr00sx + tyr01sx + tzr02sx) (txr10sy + tyr11sy + tzr12sy) (txr20sz + tyr21sz + tzr22sz) 1  |
+	
+	indices:
+	| 0 4  8 12 |
+	| 1 5  9 13 |
+	| 2 6 10 14 |
+	| 3 7 11 15 | */
 
-
-	// mat = mat4x4_translate(mat, t);
-	mat.m[3] = t.x;
-	mat.m[7] = t.y;
-	mat.m[11] = t.z;*/
-}
-
-/*t_mat4x4    mat_init(t_mat4x4 mat, float f)
+t_mat4x4	mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s)
 {
-    int		i;
+	t_mat4x4	trs;
+	t_mat4x4	rot_mat;
+	t_mat4x4	pos_mat;
+	t_mat4x4	sca_mat;
 
-	i = -1;
-	while (++i < 16)
-	{
-		if (f == MAT_ID)
-			mat.mat.m[i] = (i % 5 == 0 ? 1 : 0);
-		else
-			mat.mat.m[i] = f;
-	}
-	return (mat);
-}*/
+	rot_mat = quat_to_mat4x4(r);
+	trs = (t_mat4x4)IDENTITY_MATRIX4;
 
-/*t_vec3		mat4x4_t(t_mat4x4 mat)
-{
-	t_vec3	t;
+	//
+	pos_mat = (t_mat4x4)IDENTITY_MATRIX4;
+	pos_mat.m[12] = t.x;
+	pos_mat.m[13] = t.y;
+	pos_mat.m[14] = t.z;
+	sca_mat = (t_mat4x4)IDENTITY_MATRIX4;
+	sca_mat.m[0] = s.x;
+	sca_mat.m[5] = s.y;
+	sca_mat.m[10] = s.z;
 
-	t.x = mat.m[3];
-	t.y = mat.m[7];
-	t.z = mat.m[11];
-	return (t);
-}*/
+	trs = mat4x4_mult(rot_mat, sca_mat);
+	trs = mat4x4_mult(pos_mat, trs);
+	//
 
-t_mat4x4	mat4x4_translate(t_vec3 t)
-{
-	t_mat4x4	mat;
+	// wrong order
+	/*trs.m[0] = s.x * rot_mat.m[0];
+	trs.m[1] = s.x * rot_mat.m[1];
+	trs.m[2] = s.x * rot_mat.m[2];
+	trs.m[3] = t.x;// * trs.m[0] + t.y * trs.m[1] + t.z * trs.m[2];
+	trs.m[4] = s.y * rot_mat.m[4];
+	trs.m[5] = s.y * rot_mat.m[5];
+	trs.m[6] = s.y * rot_mat.m[6];
+	trs.m[7] = t.x * trs.m[4] + t.y * trs.m[5] + t.z * trs.m[6];
+	trs.m[8] = s.z * rot_mat.m[8];
+	trs.m[9] = s.z * rot_mat.m[9];
+	trs.m[10] = s.z * rot_mat.m[10];
+	trs.m[11] = t.x * trs.m[8] + t.y * trs.m[9] + t.z * trs.m[10];
+	return (mat4x4_transpose(trs));*/
+	
 
-	mat.m[3] = t.x;
-	mat.m[7] = t.y;
-	mat.m[11] = t.z;
-	return (mat);
-}
-
-t_mat4x4	mat4x4_scale(t_vec3 s)
-{
-	t_mat4x4	mat;
-
-	mat.m[0] = s.x;
-	mat.m[5] = s.y;
-	mat.m[10] = s.z;
-	return (mat);
-}
-
-t_mat4x4    mat4x4_add(t_mat4x4 a, t_mat4x4 b)
-{
-	int		i;
-
-	i = -1;
-	while (++i < 16)
-		a.m[i] += b.m[i];
-	return (a);
-}
-
-t_mat4x4    mat4x4_sub(t_mat4x4 a, t_mat4x4 b)
-{
-	int		i;
-
-	i = -1;
-	while (++i < 16)
-		a.m[i] -= b.m[i];
-	return (a);
-}
-
-static void	swapf(float *a, float *b)
-{
-	float c;
-
-	c = *a;
-	*a = *b;
-	*b = c;
-}
-
-t_mat4x4	mat4x4_transpose(t_mat4x4 mat)
-{
-	swapf(&mat.m[1], &mat.m[4]);
-	swapf(&mat.m[2], &mat.m[8]);
-	swapf(&mat.m[3], &mat.m[12]);
-	swapf(&mat.m[6], &mat.m[9]);
-	swapf(&mat.m[7], &mat.m[13]);
-	swapf(&mat.m[11], &mat.m[14]);
-	return (mat);
-}
-
-t_vec4		vec4_mat4x4_prod(t_vec4 v, t_mat4x4 mat)
-{
-	unsigned int	i;
-	unsigned int	j;
-	t_vec4			res;
-
-	j = 0;
-	while (j < 4)
-	{
-		i = 0;
-		res.v[j] = 0;
-		while (i < 4)
-		{
-			res.v[j] += v.v[i] * mat.m[i * 4 + j];
-			i++;
-		}
-		j++;
-	}
-	return (res);
-}
-
-t_vec3		vec3_mat4x4_prod(t_vec3 v, t_mat4x4 mat)
-{
-	t_vec4	v4;
-
-	v4 = vec4_mat4x4_prod(vec4_v3w(v, 1), mat);
-	return (vec3_xyz(v4.x, v4.y, v4.z));
-}
-
-t_mat4x4    mat4x4_mult(t_mat4x4 a, t_mat4x4 b)
-{
-	t_mat4x4	res;
-
-	res.v[0] = vec4_mat4x4_prod(a.v[0], b);
-	res.v[1] = vec4_mat4x4_prod(a.v[0], b);
-	res.v[2] = vec4_mat4x4_prod(a.v[0], b);
-	res.v[3] = vec4_mat4x4_prod(a.v[0], b);
-	return (res);
+	return (trs);
 }

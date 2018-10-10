@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/26 14:52:27 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 16:33:58 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/10 18:17:46 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,21 @@ t_vec3  vec3_f(float f)
     return (v);
 }
 
+t_vec3  vec3_xyz(float x, float y, float z)
+{
+    t_vec3  v;
+
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return (v);
+}
+
+t_vec3  vec3_v4(t_vec4 v4)
+{
+    return ((t_vec3){{v4.x, v4.y, v4.z}});
+}
+
 t_vec4  vec4_f(float f)
 {
     t_vec4  v;
@@ -30,16 +45,6 @@ t_vec4  vec4_f(float f)
     v.y = f;
     v.z = f;
     v.w = f;
-    return (v);
-}
-
-t_vec3  vec3_xyz(float x, float y, float z)
-{
-    t_vec3  v;
-
-    v.x = x;
-    v.y = y;
-    v.z = z;
     return (v);
 }
 

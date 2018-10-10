@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/09 14:01:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/10 17:35:51 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,31 @@
 
 // remove this file
 
+void		display_quaternion(t_quaternion q, const char *msg)
+{
+	ft_putendl(msg);
+	printf("{xyzw} : {%f, %f, %f, %f\n", q.x, q.y, q.z, q.w);
+}
+
 void		display_mat4x4(t_mat4x4 mat, const char *msg)
 {
 	unsigned int i;
 	unsigned int j;
 
-	i = 0;
+	j = 0;
+	ft_putendl("ROWMAJOR");
 	ft_putendl(msg);
-	while (i < 4)
+	while (j < 4)
 	{
-		j = 0;
+		i = 0;
 		printf("| ");
-		while (j < 4)
+		while (i < 4)
 		{
 			printf("% 06.1f ", mat.m[4 * i + j]);
-			j++;
+			i++;
 		}
 		printf("|\n");
-		i++;
+		j++;
 	}
 	ft_putendl("-----------------");
 }

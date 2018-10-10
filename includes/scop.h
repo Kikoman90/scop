@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/09 14:03:31 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/10 13:31:17 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,8 @@ void					prefix_error(const char *fname, unsigned int fline);
 GLuint					shader_error(const char *shader_name, char *info_log, \
 										GLenum shader_type);
 
-//
+// removal needed
+void					display_quaternion(t_quaternion q, const char *msg);
 void					display_mat4x4(t_mat4x4 mat, const char *msg);
 void					display_vec3(const char *p, t_vec3 v);
 void					display_gameobject(t_gameobject *obj);

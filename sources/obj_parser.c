@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   obj_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/04 20:26:35 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/10 18:37:55 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ static t_gameobject	*idx_feed(t_gameobject *go, char *data, t_seed idx_seed)
 		go->indices[i + 2] = iclamp(ft_atoi_f(ft_strword(data, &seed)) - 1, 0, idx_seed.count - 1);
 		if (idx_count == 6)
 		{
-			go->indices[i + 3] = go->indices[i + 2];
-			go->indices[i + 4] = go->indices[i + 1];
+			go->indices[i + 3] = go->indices[i];
+			go->indices[i + 4] = go->indices[i + 2];
 			go->indices[i + 5] = iclamp(ft_atoi_f(ft_strword(data, &seed)) - 1, 0, idx_seed.count - 1);
 		}
 		seed = skip_line(data, seed);

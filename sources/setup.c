@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/09 14:35:26 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/10 19:00:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
 	t_camera	cam;
 
 	cam.transform.position = pos;
-	cam.transform.rotation = quat_tv(0, vec3_xyz(0, 0, 1));
+	cam.transform.rotation = quat();
 	cam.transform.scale = vec3_f(1);
 	cam.fov = fov;
 	cam.znear = zn;
@@ -97,9 +97,10 @@ t_mat4x4	compute_proj(float fov, float aspect, float zn, float zf)
 	proj_mat.m[0] = f / aspect;
 	proj_mat.m[5] = f;
 	proj_mat.m[10] = -(zf + zn) / (zf - zn);
-	proj_mat.m[11] = (-2 * zn * zf) / (zf - zn);
-	proj_mat.m[14] = -1;
+	proj_mat.m[11] = -1;
+	proj_mat.m[14] = (-2 * zn * zf) / (zf - zn);
 	proj_mat.m[15] = 0;
+	//proj_mat = mat4x4_transpose(proj_mat); // shouldn't be so
 	return (proj_mat);
 }
 
@@ -227,7 +228,7 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
 		return (clean_scop(env, CLEAN_SDL));
-	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 3);//0.1 && 25 (pos = {0, 0, -15})
+	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 250);//0.1 && 25 (pos = {0, 0, -15})
 	env->proj_mat = compute_proj(env->camera.fov, \
 		(float)WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
 	//(float)(WIN_W / WIN_H)
