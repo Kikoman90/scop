@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/11 18:32:22 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/11 19:00:12 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ static void	*init_sdl_gl(t_env *env)
 	glViewport(0, 0, WIN_W, WIN_H);
 	
 	// init_msaa(&msaa_struct);
-	// MSAA
-	glGenFramebuffers(1, &env->ms_fbo); // multisample_framebufferobject
+	glGenFramebuffers(1, &env->ms_fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
 
 	GLuint	ms_rbo_color;
@@ -74,13 +73,13 @@ static void	*init_sdl_gl(t_env *env)
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ms_rbo_color);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ms_rbo_depth);
 	
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glGetIntegerv(GL_MAX_SAMPLES, &lol);
-	//printf("max samples: %d\n", lol);
+	//int max_samples;
+	//glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+	//printf("max samples : %d\n", max_samples); // macos = 8;
 
 	//GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	//if(status != GL_FRAMEBUFFER_COMPLETE)
-    //	fboUsed = false;
+	//if(status != GL_FRAMEBUFFER_COMPLETE) // erreur
+    //	printf("FAIL\n");
 	return ((void*)1);
 }
 

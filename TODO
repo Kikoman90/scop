@@ -1,5 +1,9 @@
 S C O P  S C O P E :
 
+clean everything up, reorganize structures and code/files.
+today : axis, handles, rotations (objects & camera)
+maybe sdl inputs too.
+
 ability to lock on a gameobject (camera rotates around it)
 
 test the parsing (multiple objects, no objects... etc)
