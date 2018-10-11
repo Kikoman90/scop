@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/18 14:04:23 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/11 17:24:57 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ static void	clean_sdl(t_env *env)
 		SDL_DestroyWindow(env->window);
 		env->window = NULL;
 	}
+	if (env->ms_fbo != 0)
+		glDeleteFramebuffers(1, &env->ms_fbo);
 	SDL_Quit();
 }
 

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/10 13:31:17 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/11 17:22:55 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 # include <SDL2/SDL.h>
 # include <OpenGL/gl3.h>
 
-# define WIN_W 800
-# define WIN_H 800
+# define WIN_W 1080
+# define WIN_H 900
 
 # define MALLOC_ERROR "memory allocation failure"
 # define SDL_INIT_ERROR "failed to initialize sdl"
@@ -31,8 +31,6 @@
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
-
-# include <stdio.h> // REMOVE ME PLEASE
 
 typedef enum			e_clean_flags
 {
@@ -116,6 +114,7 @@ typedef struct			s_env
 	int					loop;
 	SDL_Window			*window;
 	SDL_GLContext		gl_context;
+	GLuint				ms_fbo;
 	t_camera			camera;
 	t_mat4x4			view_mat;
 	t_mat4x4			proj_mat;
@@ -147,7 +146,7 @@ void					parse_wavefrontmtl(t_env *env, t_parser *parser, \
 
 unsigned int			get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset);
 
-void					gl_stack_feed(t_gameobject *go);
+void					init_gl_objects(t_gameobject *go);
 t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
 										size_t vc, size_t ic);
 t_mtl_node				*create_mtl_node(char *name);

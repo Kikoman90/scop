@@ -1,32 +1,43 @@
-obj_parser.c and mtl_parser.c !!
-mtl_id : good idea, bad idea ??
+S C O P  S C O P E :
 
 ability to lock on a gameobject (camera rotates around it)
 
 test the parsing (multiple objects, no objects... etc)
 IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
 IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)
-SERIALIZATION !
-env->go_count++ and env->mtl_count++ when adding nodes
 
 remove this file before finishing the project
 remove .vscode before finishing the project
+remove display.c
+remove stash folder with everything it contains
+
 libmath is not clean (norminette, unixcase...)
 norminette on all (EVERYTHING)
 check 42 headers
 check scop LEAKS (try different setup interruptions...)
 check everything
 
-// what i want : 
-// * close button triggers SDL_QUIT 🤠 event
-// * import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
-// * input handler !
-// * showFPS
-// * float field and toggle for fps capping (e.g. toggle[/] and [60fps])
-// * 3d textures and tetrahedrons eventually
-// * error logger
-// * vector / math libraries in c++ with operators lh +(rh) lh =(rh)
+SELECTION BUFFER -> one color associated with every object for selection picking
+SERIALIZATION !
 
-// gameObject = { rendering properties, physics properties, audio properties, behaviour(s), matter properties etc. };
+* close button triggers SDL_QUIT 🤠 event
+* import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
+* input handler !
+* showFPS
+* float field and toggle for fps capping (e.g. toggle[/] and [60fps])
+* handles (scene axes and grid, objects local/world coordinates (switch), rotation handles, scale handles, position handles)
+all sorts of handles and gizmos.
 
-// SELECTION BUFFER -> one color associated with every object for selection picking
+object basic info when hovering over it.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+O U T  O F  S C O P E :
+
+* error logger (console log "pops" up when there is a debug/erro)
+-> it's like a sidebar on top of the folder window, that slides up (you can lock it to keep it docked, small notifications as exclamation mark)
+
+* vector / math libraries in c++ with operators lh +(rh) lh =(rh)
+* 3d textures and tetrahedrons eventually
+
+gameObject = { rendering properties, physics properties, audio properties, behaviour(s), matter properties etc. };

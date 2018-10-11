@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 17:29:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/10 11:42:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/11 17:19:10 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,6 @@ t_quaternion    quat_norm(t_quaternion q)
     return (q);
 }
 
-/*
-** quaternion multiplication :
-** (Q1 * Q2).w = (w1w2 - x1x2 - y1y2 - z1z2);
-** (Q1 * Q2).x = (w1x2 + x1w2 + y1z2 - z1y2);
-** (Q1 * Q2).y = (w1y2 - x1z2 + y1w2 + z1x2);
-** (Q1 * Q2).z = (w1z2 + x1y2 - y1x2 + z1w2);
-*/
 t_quaternion    quat_mult(t_quaternion a, t_quaternion b)
 {
     t_quaternion    res;

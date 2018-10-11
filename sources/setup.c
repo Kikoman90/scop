@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/10 19:00:15 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/11 18:32:22 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,32 @@ static void	*init_sdl_gl(t_env *env)
 		return (log_error_null(SDL_GetError()));
 	glClearColor(0.19, 0.27, 0.41, 1);
 	glViewport(0, 0, WIN_W, WIN_H);
-	//glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS);
+	
+	// init_msaa(&msaa_struct);
+	// MSAA
+	glGenFramebuffers(1, &env->ms_fbo); // multisample_framebufferobject
+	glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
+
+	GLuint	ms_rbo_color;
+	glGenRenderbuffers(1, &ms_rbo_color);
+	glBindRenderbuffer(GL_RENDERBUFFER, ms_rbo_color);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB8, WIN_W, WIN_H);
+
+	GLuint	ms_rbo_depth;
+	glGenRenderbuffers(1, &ms_rbo_depth);
+	glBindRenderbuffer(GL_RENDERBUFFER, ms_rbo_depth);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
+	
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ms_rbo_color);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ms_rbo_depth);
+	
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glGetIntegerv(GL_MAX_SAMPLES, &lol);
+	//printf("max samples: %d\n", lol);
+
+	//GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	//if(status != GL_FRAMEBUFFER_COMPLETE)
+    //	fboUsed = false;
 	return ((void*)1);
 }
 
@@ -100,7 +124,6 @@ t_mat4x4	compute_proj(float fov, float aspect, float zn, float zf)
 	proj_mat.m[11] = -1;
 	proj_mat.m[14] = (-2 * zn * zf) / (zf - zn);
 	proj_mat.m[15] = 0;
-	//proj_mat = mat4x4_transpose(proj_mat); // shouldn't be so
 	return (proj_mat);
 }
 
@@ -138,7 +161,6 @@ GLuint		create_shader(const char *name, char *data, GLenum shader_type)
 	GLint	success;
 	GLchar	info_log[1024];
 	const GLchar	*src[1];
-	// PUT SIZE HERE AND ALLOC LOG TO THE RIGHT SIZE ??
 
 	if (!data || (sh = glCreateShader(shader_type)) == 0)
 		return (0);
@@ -169,14 +191,12 @@ void		free_data_and_path(char *data, char *fpath, size_t fsize)
 
 GLuint		init_shaders(t_shader *prg, const char *path)
 {
-	//const GLchar	*src[1];
 	char			*fullpath;
 	char			*fdata;
 	size_t			fsize;
 
 	fullpath = ft_strjoin(path, ".vert");
 	fdata = read_shader_file(fullpath, &fsize, 0);
-	//src[0] = (const GLchar*)fdata;
 	if ((prg->vtx_s = create_shader(prg->name, fdata, GL_VERTEX_SHADER)) == 0)
 	{
 		free_data_and_path(fdata, fullpath, fsize);
@@ -185,7 +205,6 @@ GLuint		init_shaders(t_shader *prg, const char *path)
 	free_data_and_path(fdata, fullpath, fsize);
 	fullpath = ft_strjoin(path, ".frag");
 	fdata = read_shader_file(fullpath, &fsize, 0);
-	//src[0] = (const GLchar*)fdata;
 	if ((prg->frg_s = create_shader(prg->name, fdata, GL_FRAGMENT_SHADER)) == 0)
 	{
 		free_data_and_path(fdata, fullpath, fsize);
@@ -228,10 +247,9 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
 		return (clean_scop(env, CLEAN_SDL));
-	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 250);//0.1 && 25 (pos = {0, 0, -15})
+	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 30);
 	env->proj_mat = compute_proj(env->camera.fov, \
 		(float)WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
-	//(float)(WIN_W / WIN_H)
 	if (init_program(&(env->def_shader), "resources/shaders/default") == 0)
 		return (clean_scop(env, CLEAN_SDL));
 	env->go_count = 0;
