@@ -4,11 +4,29 @@ clean everything up, reorganize structures and code/files.
 today : axis, handles, rotations (objects & camera)
 maybe sdl inputs too.
 
-ability to lock on a gameobject (camera rotates around it)
+pick_fbo => use a tiny frustrum that surrounds the mouse (ray)
 
-test the parsing (multiple objects, no objects... etc)
+* handles (scene axes and grid, objects local/world coordinates (switch), rotation handles, scale handles, position handles)
+all sorts of handles and gizmos.
+
+* showFPS
+* float field and toggle for fps capping (e.g. toggle[/] and [60fps])
+* close button triggers SDL_QUIT 🤠 event
+
+* input handler !
+
+ability to lock on a gameobject (camera rotates around it)
+SELECTION BUFFER -> one color associated with every object for selection picking
+object basic info when hovering over it.
+
+SERIALIZATION !
+
 IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
 IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)
+
+* import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
+
+test the parsing (multiple objects, no objects... etc)
 
 remove this file before finishing the project
 remove .vscode before finishing the project
@@ -20,19 +38,6 @@ norminette on all (EVERYTHING)
 check 42 headers
 check scop LEAKS (try different setup interruptions...)
 check everything
-
-SELECTION BUFFER -> one color associated with every object for selection picking
-SERIALIZATION !
-
-* close button triggers SDL_QUIT 🤠 event
-* import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
-* input handler !
-* showFPS
-* float field and toggle for fps capping (e.g. toggle[/] and [60fps])
-* handles (scene axes and grid, objects local/world coordinates (switch), rotation handles, scale handles, position handles)
-all sorts of handles and gizmos.
-
-object basic info when hovering over it.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 

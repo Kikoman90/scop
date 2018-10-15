@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mtl_parser.c                                       :+:      :+:    :+:   */
+/*   mtl_parse.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:14:23 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/26 19:13:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/12 17:12:38 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void		parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 		else if (word && ft_strcmp(word, "d") == 0)
 			bound_mtl->mtl->transparency = fclamp(ft_atof_f(ft_strword(parser->data, &parser->fseed)), 0, 1);
 		else if (word && ft_strcmp(word, "#") != 0 && ft_strcmp(word, "Ni") != 0 && ft_strcmp(word, "illum") != 0)
-			prefix_error(parser->fname, parser->fline);
+			parser_error(FILE_PREFIX_ERROR, parser->fname, parser->fline);
 		parser->fseed = skip_line(parser->data, parser->fseed);
 		parser->fline++;
 		if (word)

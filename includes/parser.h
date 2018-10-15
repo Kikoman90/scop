@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:13:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/25 17:05:11 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/12 16:46:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,11 @@
 # include "../libs/libmath/includes/libmath.h"
 
 # define FILE_PREFIX_ERROR "invalid prefix in file "
-# define MTL_UNSPECIFIED "cannot use material without loading .mtl file first"
+# define INVALID_IDX_ERROR "invalid index in file "
 
 typedef struct		s_seed
 {
+	unsigned int	line;
 	unsigned int	beginseed;
 	unsigned int	endseed;
 	size_t			count;

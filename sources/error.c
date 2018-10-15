@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 14:20:34 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 16:58:06 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/12 16:44:45 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,28 +41,26 @@ void		*log_error_null(const char *msg)
 	return (NULL);
 }
 
-void		prefix_error(const char *fname, unsigned int fline)
+void		parser_error(const char *err, const char *fname, unsigned int fline)
 {
 	char	*line_number;
 	char	*error_msg;
 
 	line_number = ft_strjoin_lf(ft_strjoin_rf(" (line ", ft_itoa(fline)), ")");
-	error_msg = ft_strjoin_bf(ft_strjoin(FILE_PREFIX_ERROR, "'"), \
-			ft_strjoin_bf(ft_strjoin(fname, "'"), line_number));
+	error_msg = ft_strjoin_bf(ft_strjoin(err, "'"), \
+		ft_strjoin_bf(ft_strjoin(fname, "'"), line_number));
 	log_error_free(error_msg);
 }
 
 GLuint		shader_error(const char *shader_name, char *info_log, GLenum shader_type)
 {
-	(void)shader_name;
-	(void)info_log;
+	char	*error_msg;
+	char	*log;
+
 	(void)shader_type;
-	ft_putendl("-----SHADER ERROR-----");
-	ft_putendl(shader_name);
-	ft_putendl(info_log);
-	//ft_putendl(shader_type);
-	ft_putendl("-----SHADER ERROR-----");
-	//log_error_free(ft_strjoin_auto());
-	//free(log); // !!!
+	log = ft_strjoin("\n", info_log);
+	error_msg = ft_strjoin_bf(ft_strjoin(SHADER_INIT_ERROR, " ("), \
+		ft_strjoin_bf(ft_strjoin(shader_name, ")"), log));
+	log_error_free(error_msg);
 	return (0);
 }

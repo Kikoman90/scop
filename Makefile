@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fsidler <marvin@42.fr>                     +#+  +:+       +#+         #
+#    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/09/26 14:55:31 by fsidler          ###   ########.fr        #
+#    Updated: 2018/10/12 12:34:50 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,15 +30,16 @@ HEADERS = includes
 
 SRCS =	main.c \
 		setup.c \
-		init_parser.c \
-		obj_parser.c \
-		mtl_parser.c \
-		utils_parser.c \
-		node_create.c \
-		node_add.c \
-		clean.c \
 		cleanup.c \
 		error.c \
+		init_parser.c \
+		obj_parse.c \
+		obj_init.c \
+		mtl_parse.c \
+		utils_parser.c \
+		node_add.c \
+		node_create.c \
+		node_clean.c \
 		display.c
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))

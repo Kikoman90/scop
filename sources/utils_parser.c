@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/02 19:45:34 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/15 11:08:24 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ float			fclamp(float value, const float min, const float max)
 	return (value);
 }
 
-// -> to libmath
+// -> to libmath (not so sure about that)
 t_vec3			vec3_atof(char *data, unsigned int *seed, int clamp01)
 {
 	t_vec3	res;

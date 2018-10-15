@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_parser.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:18:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/25 17:08:17 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/12 16:47:56 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,11 @@ t_obj_parser_var	*init_obj_parser_var(t_obj_parser_var *opv, \
 	opv->name = name;
 	opv->mtl_id = 0;
 	opv->mtl_offset = mtl_offset;
+	opv->vtx_seed.line = 0;
 	opv->vtx_seed.beginseed = 0;
 	opv->vtx_seed.endseed = 0;
 	opv->vtx_seed.count = 0;
+	opv->idx_seed.line = 0;
 	opv->idx_seed.beginseed = 0;
 	opv->idx_seed.endseed = 0;
 	opv->idx_seed.count = 0;

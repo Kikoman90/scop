@@ -6,11 +6,24 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/08 19:00:18 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/15 20:44:39 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
+#include <stdio.h> // you need to remove me
+
+void				generate_pick_cl(t_gameobject *go, unsigned int id)
+{
+	float	r;
+	float	g;
+	float	b;
+
+	r = (id & 0x000000FF) >> 0;
+	g = (id & 0x0000FF00) >> 8;
+	b = (id & 0x00FF0000) >> 16;
+	go->pick_clr = vec3_xyz(r / 255, g / 255, b / 255);
+}
 
 t_go_node			*add_go_node(t_env *env, t_go_node *node)
 {
@@ -18,6 +31,9 @@ t_go_node			*add_go_node(t_env *env, t_go_node *node)
 
 	head = env->go_list;
 	env->go_count++;
+	node->id = env->go_count;
+	printf("node_id:%u\n", node->id);
+	generate_pick_cl(node->go, node->id);
 	if (head == NULL)
 		return (node);
 	while (env->go_list->next)
@@ -32,6 +48,7 @@ t_mtl_node			*add_mtl_node(t_env *env, t_mtl_node *node)
 
 	head = env->mtl_list;
 	env->mtl_count++;
+	node->id = env->mtl_count;
 	if (head == NULL)
 		return (node);
 	while (env->mtl_list->next)

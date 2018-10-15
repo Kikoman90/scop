@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/11 19:00:12 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/15 20:38:26 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,24 @@ static void	*init_sdl_gl(t_env *env)
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ms_rbo_color);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ms_rbo_depth);
 	
+	glGenFramebuffers(1, &env->pick_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
+
+	GLuint	pick_rbo_color;
+	glGenRenderbuffers(1, &pick_rbo_color);
+	glBindRenderbuffer(GL_RENDERBUFFER, pick_rbo_color);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB8, WIN_W, WIN_H);
+
+	GLuint	pick_rbo_depth;
+	glGenRenderbuffers(1, &pick_rbo_depth);
+	glBindRenderbuffer(GL_RENDERBUFFER, pick_rbo_depth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
+	
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pick_rbo_color);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pick_rbo_depth);
+	glClearColor(0.19, 0.27, 0.41, 1);
+
+
 	//int max_samples;
 	//glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
 	//printf("max samples : %d\n", max_samples); // macos = 8;
@@ -240,6 +258,13 @@ GLuint		init_program(t_shader *program, const char *path)
 	return (1);
 }
 
+GLuint		init_programs(t_shader *def, t_shader *pick)
+{
+	if (!(init_program(def, "resources/shaders/default")))
+		return (0);
+	return (init_program(pick, "resources/shaders/pick"));
+}
+
 t_env		*init_scop(t_env *env, int argc, char **argv)
 {
 	if (!(env = (t_env*)malloc(sizeof(t_env))))
@@ -249,7 +274,7 @@ t_env		*init_scop(t_env *env, int argc, char **argv)
 	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 30);
 	env->proj_mat = compute_proj(env->camera.fov, \
 		(float)WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
-	if (init_program(&(env->def_shader), "resources/shaders/default") == 0)
+	if (init_programs(&(env->def_shader), &(env->pick_shader)) == 0)
 		return (clean_scop(env, CLEAN_SDL));
 	env->go_count = 0;
 	env->go_list = NULL;
