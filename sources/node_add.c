@@ -6,14 +6,13 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/15 20:44:39 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 15:01:54 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
-#include <stdio.h> // you need to remove me
 
-void				generate_pick_cl(t_gameobject *go, unsigned int id)
+void				generate_pick_clr(t_gameobject *go, unsigned int id)
 {
 	float	r;
 	float	g;
@@ -32,8 +31,7 @@ t_go_node			*add_go_node(t_env *env, t_go_node *node)
 	head = env->go_list;
 	env->go_count++;
 	node->id = env->go_count;
-	printf("node_id:%u\n", node->id);
-	generate_pick_cl(node->go, node->id);
+	generate_pick_clr(node->go, node->id);
 	if (head == NULL)
 		return (node);
 	while (env->go_list->next)

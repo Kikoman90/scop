@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/15 20:45:08 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:17:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ t_mat4x4	compute_view(t_camera cam)
 static void	draw(t_env *env, unsigned int *nb, int x, int y, int lmb)
 {
 	t_go_node	*go_tmp;
-	t_material	*def_mtl; //
+	//t_material	*def_mtl; //
 	t_mat4x4	mvp;
 	t_mat4x4	vp;
 	t_transform	go_tr;
@@ -40,7 +40,7 @@ static void	draw(t_env *env, unsigned int *nb, int x, int y, int lmb)
 
 
 	go_tmp = env->go_list;
-	def_mtl = env->mtl_list->mtl; //
+	//def_mtl = env->mtl_list->mtl; //
 	glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
@@ -49,7 +49,7 @@ static void	draw(t_env *env, unsigned int *nb, int x, int y, int lmb)
 	(void)nb;
 	while (go_tmp)
 	{
-		if (go_tmp->id == 2)
+		if (ft_strcmp(go_tmp->go->name, "MameneMamene") == 0)
 			go_tmp->go->transform.position.x += 0.001f;
 		go_tr = go_tmp->go->transform;
 		
@@ -61,7 +61,7 @@ static void	draw(t_env *env, unsigned int *nb, int x, int y, int lmb)
 		glUniformMatrix4fv(uniform_loc, 1, GL_FALSE, mvp.m);
 		uniform_loc = glGetUniformLocation(env->def_shader.prog, "uAlpha"); // store locations per shader struct
 		glUniform1f(uniform_loc, 0.2);
-		*nb = iclamp((int)*nb, 0, go_tmp->go->idx_count); // this is disgusting
+		*nb = ft_iclamp((int)*nb, 0, go_tmp->go->idx_count); // this is disgusting
 		glDrawElements(GL_TRIANGLES, go_tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
@@ -74,20 +74,16 @@ static void	draw(t_env *env, unsigned int *nb, int x, int y, int lmb)
 
 		go_tmp = go_tmp->next;
 	}
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, env->pick_fbo);
 	if (lmb == 1)
 	{
 		glReadPixels(x, y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
-		printf("%f %f %f\n", (float)data[0] / 255.0f, (float)data[1] / 255.0f, (float)data[2] / 255.0f);
+		//printf("%f %f %f\n", (float)data[0] / 255.0f, (float)data[1] / 255.0f, (float)data[2] / 255.0f);
 		pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
 		printf("PICKED ID: %d\n", pickedID);
 	}
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	//glBindFramebuffer(GL_READ_FRAMEBUFFER, env->ms_fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, env->ms_fbo);
 	glBlitFramebuffer(0, 0, WIN_W, WIN_H, 0, 0, WIN_W, WIN_H, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-	
-
 }
 
 static void	loop(t_env *env)

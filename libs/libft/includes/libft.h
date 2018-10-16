@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/17 16:31:09 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:15:56 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,9 @@ int					ft_atoi(const char *str);
 int					ft_atoi_f(char *str);
 float				ft_atof(const char *s);
 float				ft_atof_f(char *s);
+
+int					ft_iclamp(int value, const int min, const int max);
+float				ft_fclamp(float value, const float min, const float max);
 
 void				ft_bzero(void *s, size_t n);
 

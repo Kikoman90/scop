@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/12 17:49:55 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:27:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 	!(go->gl_stack = (t_gl_stack*)malloc(sizeof(t_gl_stack))))
 		return (log_error_null(MALLOC_ERROR));
 	go->mtl_id = mtl_id;
-	go->name = name;	
+	go->name = name;
 	return (go);
 }
 

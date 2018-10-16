@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/15 11:08:24 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:18:23 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,25 +29,6 @@ unsigned int	get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset)
 	return (0);
 }
 
-// -> to libft ft_iclamp (clamp.c)
-int				iclamp(int value, const int min, const int max)
-{
-	if (value < min)
-		value = min;
-	else if (value > max)
-		value = max;
-	return (value);
-}
-
-// -> to libft ft_fclamp (clamp.c)
-float			fclamp(float value, const float min, const float max)
-{
-	if (value < min)
-		value = min;
-	else if (value > max)
-		value = max;
-	return (value);
-}
 
 // -> to libmath (not so sure about that)
 t_vec3			vec3_atof(char *data, unsigned int *seed, int clamp01)
@@ -59,9 +40,9 @@ t_vec3			vec3_atof(char *data, unsigned int *seed, int clamp01)
 	res.z = ft_atof_f(ft_strword(data, seed));
 	if (clamp01 == 1)
 	{
-		res.x = fclamp(res.x, 0, 1);
-		res.y = fclamp(res.y, 0, 1);
-		res.z = fclamp(res.z, 0, 1);
+		res.x = ft_fclamp(res.x, 0, 1);
+		res.y = ft_fclamp(res.y, 0, 1);
+		res.z = ft_fclamp(res.z, 0, 1);
 	}
 	return (res);
 }

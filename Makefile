@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/10/12 12:34:50 by fsidler          ###   ########.fr        #
+#    Updated: 2018/10/16 17:46:24 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ SRCS =	main.c \
 		setup.c \
 		cleanup.c \
 		error.c \
+		shader_init.c \
 		init_parser.c \
 		obj_parse.c \
 		obj_init.c \

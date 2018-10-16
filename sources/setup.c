@@ -6,127 +6,13 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/15 20:38:26 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:06:52 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void		parse_file(t_env *env, const char *path, \
-						void (*ft_parsing)(t_env*, t_parser*, char*))
-{
-	t_parser	*parser;
-	int			fd;
-
-	if (!(parser = (t_parser*)malloc(sizeof(t_parser))))
-		log_error(MALLOC_ERROR);
-	if (init_parser(parser, path, &fd) != -1)
-	{
-		if ((parser->data = (char *)mmap(NULL, parser->fsize, \
-			PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-			log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
-		else
-		{
-			parser->data[parser->fsize] = '\0';
-			ft_parsing(env, parser, NULL);
-			if (munmap(parser->data, parser->fsize) == -1)
-				log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
-			parser->data = NULL;
-		}
-		close(fd);
-		free(parser->fpath);
-	}
-	free(parser);
-}
-
-static void	*init_sdl_gl(t_env *env)
-{
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
-		return (log_error_null(SDL_INIT_ERROR));
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, \
-		SDL_GL_CONTEXT_PROFILE_CORE);
-	if (!(env->window = SDL_CreateWindow("SCOP", SDL_WINDOWPOS_CENTERED, \
-		SDL_WINDOWPOS_CENTERED, WIN_W, WIN_H, SDL_WINDOW_RESIZABLE \
-		| SDL_WINDOW_OPENGL)))
-		return (log_error_null(WIN_CREATE_ERROR));
-	if (!(env->gl_context = SDL_GL_CreateContext(env->window)))
-		return (log_error_null(SDL_GetError()));
-	glClearColor(0.19, 0.27, 0.41, 1);
-	glViewport(0, 0, WIN_W, WIN_H);
-	
-	// init_msaa(&msaa_struct);
-	glGenFramebuffers(1, &env->ms_fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
-
-	GLuint	ms_rbo_color;
-	glGenRenderbuffers(1, &ms_rbo_color);
-	glBindRenderbuffer(GL_RENDERBUFFER, ms_rbo_color);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB8, WIN_W, WIN_H);
-
-	GLuint	ms_rbo_depth;
-	glGenRenderbuffers(1, &ms_rbo_depth);
-	glBindRenderbuffer(GL_RENDERBUFFER, ms_rbo_depth);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
-	
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ms_rbo_color);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ms_rbo_depth);
-	
-	glGenFramebuffers(1, &env->pick_fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
-
-	GLuint	pick_rbo_color;
-	glGenRenderbuffers(1, &pick_rbo_color);
-	glBindRenderbuffer(GL_RENDERBUFFER, pick_rbo_color);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB8, WIN_W, WIN_H);
-
-	GLuint	pick_rbo_depth;
-	glGenRenderbuffers(1, &pick_rbo_depth);
-	glBindRenderbuffer(GL_RENDERBUFFER, pick_rbo_depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
-	
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pick_rbo_color);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pick_rbo_depth);
-	glClearColor(0.19, 0.27, 0.41, 1);
-
-
-	//int max_samples;
-	//glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-	//printf("max samples : %d\n", max_samples); // macos = 8;
-
-	//GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	//if(status != GL_FRAMEBUFFER_COMPLETE) // erreur
-    //	printf("FAIL\n");
-	return ((void*)1);
-}
-
-static t_mtl_node	*init_default_mtl(void)
-{
-	t_mtl_node	*def_mtl;
-		
-	def_mtl = create_mtl_node(ft_strdup("default_mtl"));
-	def_mtl->mtl->clr_amb = vec3_f(0.2);
-	def_mtl->mtl->clr_dif = vec3_f(0.6);
-	def_mtl->mtl->clr_spc = vec3_f(0.3);
-	def_mtl->mtl->expnt_spc = 60.0;
-	def_mtl->mtl->transparency = 1.0;
-	return (def_mtl);
-}
-
-static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
-{
-	t_camera	cam;
-
-	cam.transform.position = pos;
-	cam.transform.rotation = quat();
-	cam.transform.scale = vec3_f(1);
-	cam.fov = fov;
-	cam.znear = zn;
-	cam.zfar = zf;
-	return (cam);
-}
-
+// update.c file
 t_mat4x4	compute_proj(float fov, float aspect, float zn, float zf)
 {
 	t_mat4x4	proj_mat;
@@ -144,143 +30,121 @@ t_mat4x4	compute_proj(float fov, float aspect, float zn, float zf)
 	return (proj_mat);
 }
 
-char		*read_shader_file(const char *path, size_t *data_size, int fd)
+/*
+** glGetIntegerv(GL_MAX_SAMPLES, &max_samples); // multisampling
+** printf("max samples : %d\n", max_samples); // macos = 8;
+*/
+static int	check_framebuffer_status(const char *fbo_type)
 {
-	struct stat	s;
-	char		*data;
+	GLenum	status;
+	char	*err_msg;
 
-	if ((fd = open(path, O_RDWR)) == -1)
+	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE)
+		return (1);
+	err_msg = ft_strjoin(fbo_type, FRAMEBUFFER_INCOMPLETE_ERROR);
+	switch (status)
 	{
-		log_error_free(ft_strjoin("(open) ", strerror(errno)));
-		return (NULL);
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			log_error_free(ft_strjoin_lf(err_msg, " (incomplete attachment)"));
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			log_error_free(ft_strjoin_lf(err_msg, " (missing attachment)"));
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+			log_error_free(ft_strjoin_lf(err_msg, " (samples do not match)"));
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+			log_error_free(ft_strjoin_lf(err_msg, " (internal format unsupported)"));
+			break;
+		default:
+			log_error_free(err_msg);
 	}
-	if(fstat(fd, &s) == -1)
-	{
-		close(fd);
-		log_error_free(ft_strjoin("(fstat) ", strerror(errno)));
-		return (NULL);
-	}
-	*data_size = (size_t)s.st_size;
-	if ((data = (char*)mmap(NULL, *data_size, \
-		PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-	{
-		log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
-		close(fd);
-		return (NULL);
-	}
-	close(fd);
-	return (data);
+	return (0);
 }
 
-GLuint		create_shader(const char *name, char *data, GLenum shader_type)
+static int	init_framebuffers(GLuint *ms_fbo, GLuint *pick_fbo)
 {
-	GLuint	sh;
-	GLint	success;
-	GLchar	info_log[1024];
-	const GLchar	*src[1];
+	GLuint	rbo[4];
 
-	if (!data || (sh = glCreateShader(shader_type)) == 0)
+	glGenFramebuffers(1, ms_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, *ms_fbo);
+	glGenRenderbuffers(4, &rbo[0]);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo[0]);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB8, WIN_W, WIN_H);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo[0]);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo[1]);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo[1]);
+	if (check_framebuffer_status("multisample ") == 0)
 		return (0);
-	src[0] = (const GLchar*)data;
-	glShaderSource(sh, 1, src, NULL);
-	glCompileShader(sh);
-	glGetShaderiv(sh, GL_COMPILE_STATUS, &success);
-	if (success == GL_FALSE)
-	{
-		glGetShaderInfoLog(sh, 1024, NULL, &info_log[0]);
-		glDeleteShader(sh);
-		return (shader_error(name, info_log, shader_type));
-	}
-	return (sh);
+	glGenFramebuffers(1, pick_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, *pick_fbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo[2]);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB8, WIN_W, WIN_H);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo[2]);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo[3]);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo[3]);
+	return (check_framebuffer_status("color pick "));
 }
 
-void		free_data_and_path(char *data, char *fpath, size_t fsize)
+static void	*init_sdl_gl(t_env *env)
 {
-	free(fpath);
-	fpath = NULL;
-	if (data)
-	{
-		if (munmap(data, fsize) == -1)
-			log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
-		data = NULL;
-	}
+	env->ms_fbo = 0;
+	env->pick_fbo = 0;
+	env->def_shader.prog = 0;
+	env->pick_shader.prog = 0;
+	env->std_shader.prog = 0;
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+		return (log_error_null(SDL_INIT_ERROR));
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, \
+		SDL_GL_CONTEXT_PROFILE_CORE);
+	if (!(env->window = SDL_CreateWindow("SCOP", SDL_WINDOWPOS_CENTERED, \
+		SDL_WINDOWPOS_CENTERED, WIN_W, WIN_H, SDL_WINDOW_RESIZABLE \
+		| SDL_WINDOW_OPENGL)))
+		return (log_error_null(WIN_CREATE_ERROR));
+	if (!(env->gl_context = SDL_GL_CreateContext(env->window)))
+		return (log_error_null(SDL_GetError()));
+	init_framebuffers(&env->ms_fbo, &env->pick_fbo);
+	glClearColor(0.19, 0.27, 0.41, 1);
+	glViewport(0, 0, WIN_W, WIN_H);
+	return ((void*)1);
 }
 
-GLuint		init_shaders(t_shader *prg, const char *path)
+static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
 {
-	char			*fullpath;
-	char			*fdata;
-	size_t			fsize;
+	t_camera	cam;
 
-	fullpath = ft_strjoin(path, ".vert");
-	fdata = read_shader_file(fullpath, &fsize, 0);
-	if ((prg->vtx_s = create_shader(prg->name, fdata, GL_VERTEX_SHADER)) == 0)
-	{
-		free_data_and_path(fdata, fullpath, fsize);
-		return (0);
-	}
-	free_data_and_path(fdata, fullpath, fsize);
-	fullpath = ft_strjoin(path, ".frag");
-	fdata = read_shader_file(fullpath, &fsize, 0);
-	if ((prg->frg_s = create_shader(prg->name, fdata, GL_FRAGMENT_SHADER)) == 0)
-	{
-		free_data_and_path(fdata, fullpath, fsize);
-		glDeleteShader(prg->vtx_s);
-		return (0);
-	}
-	free_data_and_path(fdata, fullpath, fsize);
-	return (1);
+	cam.transform.position = pos;
+	cam.transform.rotation = quat();
+	cam.transform.scale = vec3_f(1);
+	cam.fov = fov;
+	cam.znear = zn;
+	cam.zfar = zf;
+	return (cam);
 }
 
-GLuint		init_program(t_shader *program, const char *path)
-{
-	GLint	success;
-	GLchar	info_log[1024];
-
-	program->name = ft_strrchr(path, '/') + 1;
-	if (init_shaders(program, path) == 0)
-		return (0);
-	program->prog = glCreateProgram();
-	glAttachShader(program->prog, program->vtx_s);
-	glAttachShader(program->prog, program->frg_s);
-	glLinkProgram(program->prog);
-	glGetProgramiv(program->prog, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE)
-	{
-		glGetProgramInfoLog(program->prog, 1024, NULL, &info_log[0]);
-		glDeleteProgram(program->prog);
-		glDeleteShader(program->vtx_s);
-		glDeleteShader(program->frg_s);
-		return (shader_error(program->name, info_log, 0));
-	}
-	glDetachShader(program->prog, program->vtx_s);
-	glDetachShader(program->prog, program->frg_s);
-	return (1);
-}
-
-GLuint		init_programs(t_shader *def, t_shader *pick)
-{
-	if (!(init_program(def, "resources/shaders/default")))
-		return (0);
-	return (init_program(pick, "resources/shaders/pick"));
-}
-
-t_env		*init_scop(t_env *env, int argc, char **argv)
+t_env			*init_scop(t_env *env, int argc, char **argv)
 {
 	if (!(env = (t_env*)malloc(sizeof(t_env))))
 		return (log_error_null(MALLOC_ERROR));
 	if (!init_sdl_gl(env))
-		return (clean_scop(env, CLEAN_SDL));
+		return (clean_scop(env, CLEAN_SDL_GL));
 	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 30);
 	env->proj_mat = compute_proj(env->camera.fov, \
 		(float)WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
-	if (init_programs(&(env->def_shader), &(env->pick_shader)) == 0)
-		return (clean_scop(env, CLEAN_SDL));
-	env->go_count = 0;
-	env->go_list = NULL;
-	env->mtl_count = 0;
+	if (!init_program(&env->def_shader, "resources/shaders/default") ||\
+		!init_program(&env->pick_shader, "resources/shaders/pick") ||\
+		!init_program(&env->std_shader, "resources/shaders/standard"))
+		return (clean_scop(env, CLEAN_SDL_GL));
 	env->mtl_list = NULL;
-	env->mtl_list = add_mtl_node(env, init_default_mtl());
+	env->go_list = NULL;
+	env->selection = NULL;
+	env->mtl_count = 0;
+	env->go_count = 0;
+	env->selection_count = 0;
 	while (argc-- > 1)
 		parse_file(env, argv[argc], parse_wavefrontobj);
 	env->loop = 1;

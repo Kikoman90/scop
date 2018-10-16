@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fsidler <marvin@42.fr>                     +#+  +:+       +#+         #
+#    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/02 11:09:55 by fsidler           #+#    #+#              #
-#    Updated: 2015/12/21 18:44:29 by fsidler          ###   ########.fr        #
+#    Updated: 2018/10/16 19:16:11 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,7 @@ SRCS = 	ft_isascii.c \
 		ft_atof.c \
 		ft_atof_f.c \
 	 	ft_bzero.c \
+		ft_clamp.c \
 	  	ft_memccpy.c \
 	  	ft_memcpy.c \
 	  	ft_memchr.c \

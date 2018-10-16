@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:13:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/12 16:46:15 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:25:10 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,10 @@ typedef struct		s_parser
 	unsigned int	fline;
 	unsigned int	fseed;
 	size_t			fsize;
-	char			*fpath;
 	const char		*fname;
+	char			*fpath;
 	char			*data;
 }					t_parser;
-
-t_obj_parser_var	*init_obj_parser_var(t_obj_parser_var *opv, char *name, \
-										unsigned int mtl_offset);
-int					init_parser(t_parser *parser, const char *path, int *fd);
-
-int					iclamp(int value, int min, int max);
-float				fclamp(float value, float min, float max);
 
 t_vec3				vec3_atof(char *data, unsigned int *seed, int clamp01);
 unsigned int		skip_line(char *data, unsigned int seed);

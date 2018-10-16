@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:14:23 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/12 17:12:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:21:03 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void		parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 			bound_mtl = create_mtl_node(generate_name(ft_strword(parser->data, &parser->fseed), MTL_NAME, env->mtl_count));
 		}
 		else if (word && ft_strcmp(word, "Ns") == 0)
-			bound_mtl->mtl->expnt_spc = fclamp(ft_atof_f(ft_strword(parser->data, &parser->fseed)), 0, 100);
+			bound_mtl->mtl->expnt_spc = ft_fclamp(ft_atof_f(ft_strword(parser->data, &parser->fseed)), 0, 100);
 		else if (word && ft_strcmp(word, "Ka") == 0)
 			bound_mtl->mtl->clr_amb = vec3_atof(parser->data, &parser->fseed, 1);
 		else if (word && ft_strcmp(word, "Kd") == 0)
@@ -35,7 +35,7 @@ void		parse_wavefrontmtl(t_env *env, t_parser *parser, char *word)
 		else if (word && ft_strcmp(word, "Ks") == 0)
 			bound_mtl->mtl->clr_spc = vec3_atof(parser->data, &parser->fseed, 1);
 		else if (word && ft_strcmp(word, "d") == 0)
-			bound_mtl->mtl->transparency = fclamp(ft_atof_f(ft_strword(parser->data, &parser->fseed)), 0, 1);
+			bound_mtl->mtl->transparency = ft_fclamp(ft_atof_f(ft_strword(parser->data, &parser->fseed)), 0, 1);
 		else if (word && ft_strcmp(word, "#") != 0 && ft_strcmp(word, "Ni") != 0 && ft_strcmp(word, "illum") != 0)
 			parser_error(FILE_PREFIX_ERROR, parser->fname, parser->fline);
 		parser->fseed = skip_line(parser->data, parser->fseed);

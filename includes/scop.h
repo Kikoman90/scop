@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/15 18:55:35 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/16 19:26:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,14 @@
 # define SDL_INIT_ERROR "failed to initialize sdl"
 # define WIN_CREATE_ERROR "failed to create window"
 # define SHADER_INIT_ERROR "shader initialization failed"
+# define FRAMEBUFFER_INCOMPLETE_ERROR "framebuffer imcomplete"
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
 
 typedef enum			e_clean_flags
 {
-	CLEAN_SDL = 1 << 0,
+	CLEAN_SDL_GL = 1 << 0,
 	CLEAN_ALL = 1 << 1
 }						t_clean_flags;
 
@@ -74,21 +75,14 @@ typedef struct			s_gameobject
 {
 	t_transform			transform;
 	t_vec3				*vertices;
-	size_t				vtx_count;
 	unsigned int		*indices;
+	size_t				vtx_count;
 	size_t				idx_count;
 	unsigned int		mtl_id;
 	char				*name;
-	t_gl_stack			*gl_stack;
 	t_vec3				pick_clr;
+	t_gl_stack			*gl_stack;
 }						t_gameobject;
-// transform attributes
-// rendering properties (vao vbo ids, shaders)
-// physics properties
-// audio properties
-// behaviour
-
-// model matrix ??
 
 typedef struct			s_mtl_node
 {
@@ -119,16 +113,17 @@ typedef struct			s_env
 	SDL_GLContext		gl_context;
 	GLuint				ms_fbo;
 	GLuint				pick_fbo;
-	t_camera			camera;
-	t_mat4x4			view_mat;
-	t_mat4x4			proj_mat;
 	t_shader			def_shader;
 	t_shader			pick_shader;
-	t_go_node			*selection; // draw after geometry;
-	t_go_node			*go_list;
+	t_shader			std_shader;
+	t_camera			camera;
+	t_mat4x4			proj_mat;
 	t_mtl_node			*mtl_list;
-	size_t				go_count;
+	t_go_node			*go_list;
+	t_go_node			*selection;
 	size_t				mtl_count;
+	size_t				go_count;
+	size_t				selection_count;
 }						t_env;
 
 /*
@@ -137,6 +132,19 @@ typedef struct			s_env
 void					parse_file(t_env *env, const char *path, void \
 									(*ft_parsing)(t_env*, t_parser*, char*));
 t_env					*init_scop(t_env *env, int argc, char **argv);
+
+/*
+** shader_init.c		=> 5 functions
+*/
+GLuint					init_program(t_shader *program, const char *path);
+
+/*
+** parser.c				=> 3 functions
+*/
+t_obj_parser_var		*init_obj_parser_var(t_obj_parser_var *opv, \
+							char *name, unsigned int mtl_offset);
+void					parse_file(t_env *env, const char *path, \
+							void (*ft_parsing)(t_env*, t_parser*, char*));
 
 /*
 ** obj_parser.c			=> ? functions
@@ -171,8 +179,7 @@ void					log_error(const char *msg);
 void					log_error_free(char *msg);
 void					*log_error_null(const char *msg);
 void					parser_error(const char *err, const char *fname, unsigned int fline);
-GLuint					shader_error(const char *shader_name, char *info_log, \
-										GLenum shader_type);
+GLuint					shader_error(const char *shader_name, char *log, GLenum shader_type); //shader_type is unused
 
 // removal needed
 void					display_quaternion(t_quaternion q, const char *msg);
@@ -187,6 +194,5 @@ void					display_mtl_list(t_mtl_node *list);
 void					init_gl_objects(t_gameobject *go);
 t_transform				init_transform(void);
 t_transform         	init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
-
 
 #endif
