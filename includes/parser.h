@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:13:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:25:10 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/17 16:57:54 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,5 @@ typedef struct		s_parser
 t_vec3				vec3_atof(char *data, unsigned int *seed, int clamp01);
 unsigned int		skip_line(char *data, unsigned int seed);
 unsigned int		check_idx_count(char *data, unsigned int seed, int idx);
-char				*generate_name(char *name, const char *typename, \
-									size_t count);
 
 #endif

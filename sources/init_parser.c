@@ -6,14 +6,14 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:18:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:11:29 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/17 17:32:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-t_obj_parser_var	*init_obj_parser_var(t_obj_parser_var *opv, \
-											char *name, unsigned int mtl_offset)
+t_obj_parser_var	*init_opv(t_obj_parser_var *opv, char *name, \
+								unsigned int mtl_offset)
 {
 	if (!opv)
 	{

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:26:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/17 17:33:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,10 +127,8 @@ typedef struct			s_env
 }						t_env;
 
 /*
-** setup.c				=> ? functions
+** setup.c				=> 5 functions (+ 1 to move)
 */
-void					parse_file(t_env *env, const char *path, void \
-									(*ft_parsing)(t_env*, t_parser*, char*));
 t_env					*init_scop(t_env *env, int argc, char **argv);
 
 /*
@@ -141,8 +139,8 @@ GLuint					init_program(t_shader *program, const char *path);
 /*
 ** parser.c				=> 3 functions
 */
-t_obj_parser_var		*init_obj_parser_var(t_obj_parser_var *opv, \
-							char *name, unsigned int mtl_offset);
+t_obj_parser_var		*init_opv(t_obj_parser_var *opv, char *name, \
+							unsigned int mtl_offset);
 void					parse_file(t_env *env, const char *path, \
 							void (*ft_parsing)(t_env*, t_parser*, char*));
 
@@ -150,26 +148,38 @@ void					parse_file(t_env *env, const char *path, \
 ** obj_parser.c			=> ? functions
 */
 void					parse_wavefrontobj(t_env *env, t_parser *parser, \
-											char *word);
+							char *word);
 
 /*
 ** mtl_parser.c			=> ? functions
 */
 void					parse_wavefrontmtl(t_env *env, t_parser *parser, \
-										char *word);
+							char *word);
 
 unsigned int			get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset);
 
+/*
+** node_create.c		=> 4 functions
+*/
 t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
-										size_t vc, size_t ic);
+							size_t vc, size_t ic);
 t_mtl_node				*create_mtl_node(char *name);
 
+/*
+** node_add.c			=> 2 functions (+ 1 to move)
+*/
 t_go_node				*add_go_node(t_env *env, t_go_node *node);
 t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
 
+/*
+** node_clean.c			=> 4 functions
+*/
 void					clean_go_node(t_go_node *node);
 void					clean_mtl_node(t_mtl_node *node);
 
+/*
+** cleanup.c			=> 4 functions
+*/
 void					*clean_scop(t_env *env, t_clean_flags f);
 
 /*

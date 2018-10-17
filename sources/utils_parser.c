@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:18:23 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/17 16:57:39 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,20 @@
 
 unsigned int	get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset)
 {
-	unsigned int	i;
 	t_mtl_node		*mtl_list;
 
-	i = 0;
 	mtl_list = env->mtl_list;
 	while (mtl_list)
 	{
-		if (i >= mtl_offset && ft_strcmp(mtl_name, mtl_list->mtl->name) == 0)
-			return (i);
-		i++;
+		if (mtl_list->id > mtl_offset && \
+			ft_strcmp(mtl_name, mtl_list->mtl->name) == 0)
+		{
+			free(mtl_name);
+			return (mtl_list->id);
+		}
 		mtl_list = mtl_list->next;
 	}
+	free(mtl_name);
 	return (0);
 }
 
@@ -67,12 +69,4 @@ unsigned int	check_idx_count(char *data, unsigned int seed, int idx)
 	if (idx == 1 && count == 4)
 		count = 6;
 	return (count);
-}
-
-char			*generate_name(char *name, const char *typename, size_t count)
-{
-	if (name)
-		return (name);
-	count++;
-	return (ft_strjoin_rf(typename, ft_itoa((int)count)));
 }

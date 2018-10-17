@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:27:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/17 17:06:57 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,11 @@ static t_material	*create_material(char *name)
 	if (!(mtl = (t_material*)malloc(sizeof(t_material))))
 		return (log_error_null(MALLOC_ERROR));
 	mtl->name = name;
+	mtl->clr_amb = (t_vec3)VEC3_ZERO;
+	mtl->clr_dif = (t_vec3)VEC3_ZERO;
+	mtl->clr_spc = (t_vec3)VEC3_ZERO;
+	mtl->expnt_spc = 0.0f;
+	mtl->transparency = 1.0f;
 	return (mtl);
 }
 

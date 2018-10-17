@@ -94,7 +94,6 @@ f 29 23 24
 f 19 27 36 37
 f 24 35 28 29
 
-# remove next line = segfault
 o MameneMamene
 v -0.5 0.5 0.5 
 v -0.5 -0.5 0.5

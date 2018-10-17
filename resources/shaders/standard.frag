@@ -1,14 +1,26 @@
 #version 410 core
 
-//in vec4				vColor;
-//in vec2				vUV;
-out vec4			FragColor;
-//uniform sampler2D	TextureSampler;
-uniform vec3        uPickColor;
+uniform 	MatProps {
+	vec3	clr_amb;
+	vec3	clr_dif;
+	vec3	clr_spc;
+	float	expnt_spc;
+	float	transparency;
+};
 
-void main()
+uniform 	LightProps {
+	vec3	position;
+	vec3	color;
+	float	intensity;
+	float	range;
+};
+
+//uniform sampler2D	TextureSampler;
+
+in	vec4	iNormal;
+out	vec4	FragColor;
+
+void	main()
 {
 	//FragColor = mix(texture(TextureSampler, vUV).rgba, vColor, uAlpha);
-	//FragColor = vec4(vColor.rgb, uAlpha);
-    FragColor = vec4(uPickColor, 1.0f);
 }

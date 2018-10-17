@@ -6,14 +6,14 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:17:47 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/17 17:56:48 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void __attribute__((constructor)) begin(); //remove after checking leaks
-void __attribute__((destructor)) end() {} // remove after checking leaks
+//void __attribute__((constructor)) begin(); //remove after checking leaks
+//void __attribute__((destructor)) end() {}; // remove after checking leaks
 
 t_mat4x4	compute_view(t_camera cam)
 {
@@ -44,7 +44,7 @@ static void	draw(t_env *env, unsigned int *nb, int x, int y, int lmb)
 	glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	vp = mat4x4_mult(env->proj_mat, compute_view(env->camera));
 	(void)nb;
 	while (go_tmp)
@@ -123,6 +123,8 @@ int			main(int argc, char **argv)
 	env = NULL;
 	if (!(env = init_scop(env, argc, argv)))
 		return (0);
+	display_go_list(env->go_list);
+	display_mtl_list(env->mtl_list);
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
 	return (0);

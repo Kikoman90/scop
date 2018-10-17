@@ -1,10 +1,12 @@
 #version 410 core
 
 in vec4				vColor;
-//in vec2				vUV;
-out vec4			FragColor;
-//uniform sampler2D	TextureSampler;
+//in vec2			vUV;
+
 uniform float		uAlpha;
+//uniform sampler2D	TextureSampler;
+
+out vec4			FragColor;
 
 void main()
 {

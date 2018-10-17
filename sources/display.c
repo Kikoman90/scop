@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/10 17:35:51 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/17 16:51:48 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void		display_go_list(t_go_node *list)
 	printf("display obj list\n");
 	while (tmp)
 	{
+		printf("Gameobject ID: %u\n", tmp->id);
 		display_gameobject(tmp->go);
 		tmp = tmp->next;
 	}
@@ -103,6 +104,7 @@ void		display_mtl_list(t_mtl_node *list)
 	printf("display mtl list\n");
 	while (tmp)
 	{
+		printf("Material ID: %u\n", tmp->id);
 		display_material(tmp->mtl);
 		tmp = tmp->next;
 	}
