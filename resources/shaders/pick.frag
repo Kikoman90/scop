@@ -1,10 +1,10 @@
 #version 410 core
 
-uniform vec3	uPickColor;
+uniform vec3	pickClr;
 
-out vec4		FragColor;
+out vec4		FragClr;
 
 void main()
 {
-    FragColor = vec4(uPickColor, 1.0f);
+    FragClr = vec4(pickClr, 1.0f);
 }

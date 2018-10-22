@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/17 17:33:21 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/22 18:07:24 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,13 @@ typedef enum			e_clean_flags
 	CLEAN_ALL = 1 << 1
 }						t_clean_flags;
 
+typedef enum			e_uniforms
+{
+	DEF_SHADER_UNIFORMS = 1 << 0,
+	STD_SHADER_UNIFORMS = 1 << 1,
+	PICK_SHADER_UNIFORMS = 1 << 2
+}						t_uniforms;
+
 typedef struct			s_transform
 {
 	t_vec3				position;
@@ -59,6 +66,7 @@ typedef struct			s_shader
 	GLuint				vtx_s;
 	GLuint				frg_s;
 	GLuint				prog;
+	GLint				u_loc[11];
 }						t_shader;
 
 typedef struct			s_material
@@ -83,6 +91,14 @@ typedef struct			s_gameobject
 	t_vec3				pick_clr;
 	t_gl_stack			*gl_stack;
 }						t_gameobject;
+
+typedef struct			s_light
+{
+	t_gameobject		*go;
+	t_vec3				light_color;
+	float				intensity;
+	float				range;
+}						t_light;
 
 typedef struct			s_mtl_node
 {
@@ -124,6 +140,7 @@ typedef struct			s_env
 	size_t				mtl_count;
 	size_t				go_count;
 	size_t				selection_count;
+	t_light				light;
 }						t_env;
 
 /*
@@ -170,12 +187,15 @@ t_mtl_node				*create_mtl_node(char *name);
 */
 t_go_node				*add_go_node(t_env *env, t_go_node *node);
 t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
+t_go_node				*clone_go_node(t_go_node *src);
 
 /*
 ** node_clean.c			=> 4 functions
 */
-void					clean_go_node(t_go_node *node);
-void					clean_mtl_node(t_mtl_node *node);
+void					clean_go_node(t_go_node *node, unsigned int no_free);
+void					clean_mtl_node(t_mtl_node *node, unsigned int no_free);
+void					remove_go_node(t_go_node *list, unsigned int id, \
+							unsigned int no_f, size_t *count);
 
 /*
 ** cleanup.c			=> 4 functions
@@ -204,5 +224,10 @@ void					display_mtl_list(t_mtl_node *list);
 void					init_gl_objects(t_gameobject *go);
 t_transform				init_transform(void);
 t_transform         	init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
+t_mat4x4				go_trs(t_transform tr);
+t_light					init_light(t_env *env, t_vec3 color, float i, \
+							float range);
+							
+t_go_node				*get_go_node(t_go_node *list, unsigned int id);
 
 #endif

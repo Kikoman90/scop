@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/17 17:06:57 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/22 16:35:22 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 		return (log_error_null(MALLOC_ERROR));
 	//go->transform = init_transform();
 	go->transform = init_transform_trs(\
-		(t_vec3)VEC3_ZERO, quat_tv(90, (t_vec3)VEC3_UP), (t_vec3)VEC3_ONE);
+	vec3_xyz(0, 1.0f, -3.0f), quat_tv(90, (t_vec3)VEC3_UP), (t_vec3)VEC3_ONE);
 	go->vtx_count = vc;
 	go->idx_count = ic;
 	if (!(go->vertices = (t_vec3*)malloc(sizeof(t_vec3) * vc)) || \
@@ -60,7 +60,7 @@ t_go_node			*create_go_node(char *name, unsigned int mtl_id, \
 	}
 	if (!(node->go = create_gameobject(name, mtl_id, vc, ic)))
 	{
-		clean_go_node(node);
+		clean_go_node(node, 0);
 		return (NULL);
 	}
 	node->next = NULL;
@@ -78,9 +78,23 @@ t_mtl_node			*create_mtl_node(char *name)
 	}
 	if (!(node->mtl = create_material(name)))
 	{
-		clean_mtl_node(node);
+		clean_mtl_node(node, 0);
 		return (NULL);
 	}
+	node->next = NULL;
+	return (node);
+}
+
+t_go_node			*clone_go_node(t_go_node *src)
+{
+	t_go_node	*node;
+
+	if (!src)
+		return (NULL);
+	if (!(node = (t_go_node*)malloc(sizeof(t_go_node))))
+		return (log_error_null(MALLOC_ERROR));
+	node->id = src->id;
+	node->go = src->go;
 	node->next = NULL;
 	return (node);
 }

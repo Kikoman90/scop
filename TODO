@@ -4,21 +4,19 @@ clean everything up, reorganize structures and code/files.
 today : axis, handles, rotations (objects & camera)
 maybe sdl inputs too.
 
-pick_fbo => use a tiny frustrum that surrounds the mouse (ray)
+lighting
 
 * handles (scene axes and grid, objects local/world coordinates (switch), rotation handles, scale handles, position handles)
 all sorts of handles and gizmos.
 
 * showFPS
-* float field and toggle for fps capping (e.g. toggle[/] and [60fps])
 * close button triggers SDL_QUIT 🤠 event
-
 * input handler !
 
 ability to lock on a gameobject (camera rotates around it)
-SELECTION BUFFER -> one color associated with every object for selection picking
 object basic info when hovering over it.
 
+------------------------------------------------------------------------------------------------------------------------------------------------
 SERIALIZATION !
 
 IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
@@ -43,9 +41,12 @@ check everything
 
 O U T  O F  S C O P E :
 
-* error logger (console log "pops" up when there is a debug/erro)
+pick_fbo => use a tiny frustrum that surrounds the mouse (ray)
+
+* error logger (console log "pops" up when there is a debug/error)
 -> it's like a sidebar on top of the folder window, that slides up (you can lock it to keep it docked, small notifications as exclamation mark)
 
+* float field and toggle for fps capping (e.g. toggle[/] and [60fps])
 * vector / math libraries in c++ with operators lh +(rh) lh =(rh)
 * 3d textures and tetrahedrons eventually
 

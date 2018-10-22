@@ -2,7 +2,6 @@
 
 in vec3			iPosition;
 in vec3			iNormal;
-//in vec3		iUV;
 
 uniform mat4	m;
 uniform mat4	vp;

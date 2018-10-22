@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:06:52 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/22 16:01:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,8 @@ t_env			*init_scop(t_env *env, int argc, char **argv)
 	env->selection_count = 0;
 	while (argc-- > 1)
 		parse_file(env, argv[argc], parse_wavefrontobj);
+	parse_file(env, "resources/obj/light_obj.obj", parse_wavefrontobj);
+	env->light = init_light(env, (t_vec3)VEC3_ONE, 1.0f, 12.0f);
 	env->loop = 1;
 	return (env);
 }

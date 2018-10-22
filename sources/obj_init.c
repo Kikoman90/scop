@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/12 12:15:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/15 11:16:51 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/22 18:22:50 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,11 @@ void				init_gl_objects(t_gameobject *go)
 	glBindVertexArray(0);
 }
 
+t_mat4x4			go_trs(t_transform tr)
+{
+	return (mat4x4_trs(tr.position, tr.rotation, tr.scale));
+}
+
 t_transform			init_transform(void)
 {
 	t_transform	tr;
@@ -45,4 +50,20 @@ t_transform         init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s)
 	tr.rotation = r;
 	tr.scale = s;
 	return (tr);
+}
+
+t_light				init_light(t_env *env, t_vec3 color, float i, float range)
+{
+	t_light			light;
+	t_gameobject	*light_go;
+
+	light_go = get_go_node(env->go_list, env->go_count)->go;
+	light.go = light_go;
+	light.go->transform.position = vec3_xyz(2.3f, 3.0f, 0.0f);
+	light.go->transform.scale = vec3_xyz(0.2f, 0.2f, 0.2f);
+	light.light_color = color;
+	light.intensity = i;
+	light.range = range;
+	remove_go_node(env->go_list, env->go_count, 1, &env->go_count);
+	return (light);
 }

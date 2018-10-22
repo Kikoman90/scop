@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/17 17:56:48 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/22 18:26:24 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,92 +26,246 @@ t_mat4x4	compute_view(t_camera cam)
 	return (view);
 }
 
-static void	draw(t_env *env, unsigned int *nb, int x, int y, int lmb)
+t_material	*get_mtl(t_mtl_node *list, unsigned int id)
 {
-	t_go_node	*go_tmp;
-	//t_material	*def_mtl; //
-	t_mat4x4	mvp;
-	t_mat4x4	vp;
-	t_transform	go_tr;
-	GLint 		uniform_loc;
+	t_mtl_node	*tmp;
 
-	unsigned char data[3];
-	unsigned int pickedID;
-
-
-	go_tmp = env->go_list;
-	//def_mtl = env->mtl_list->mtl; //
-	glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	vp = mat4x4_mult(env->proj_mat, compute_view(env->camera));
-	(void)nb;
-	while (go_tmp)
+	tmp = list;
+	while (tmp != NULL)
 	{
-		if (ft_strcmp(go_tmp->go->name, "MameneMamene") == 0)
-			go_tmp->go->transform.position.x += 0.001f;
-		go_tr = go_tmp->go->transform;
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
-		glUseProgram(env->def_shader.prog);
-		glBindVertexArray(go_tmp->go->gl_stack->vao);
-		mvp = mat4x4_mult(vp, mat4x4_trs(go_tr.position, go_tr.rotation, go_tr.scale));
-		uniform_loc = glGetUniformLocation(env->def_shader.prog, "mvp"); // store locations per shader struct
-		glUniformMatrix4fv(uniform_loc, 1, GL_FALSE, mvp.m);
-		uniform_loc = glGetUniformLocation(env->def_shader.prog, "uAlpha"); // store locations per shader struct
-		glUniform1f(uniform_loc, 0.2);
-		*nb = ft_iclamp((int)*nb, 0, go_tmp->go->idx_count); // this is disgusting
-		glDrawElements(GL_TRIANGLES, go_tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
-		glUseProgram(env->pick_shader.prog);
-		uniform_loc = glGetUniformLocation(env->pick_shader.prog, "mvp"); // store locations per shader struct
-		glUniformMatrix4fv(uniform_loc, 1, GL_FALSE, mvp.m);
-		uniform_loc = glGetUniformLocation(env->pick_shader.prog, "uPickColor");
-		glUniform3fv(uniform_loc, 1, &go_tmp->go->pick_clr.v[0]);
-		glDrawElements(GL_TRIANGLES, go_tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
-
-		go_tmp = go_tmp->next;
+		if (id == tmp->id)
+			return (tmp->mtl);
+		tmp = tmp->next;
 	}
-	if (lmb == 1)
+	return (NULL);
+}
+
+t_go_node	*get_go_node(t_go_node *list, unsigned int id)
+{
+	t_go_node	*tmp;
+
+	tmp = list;
+	while (tmp != NULL)
+	{
+		if (id == tmp->id)
+			return (clone_go_node(tmp)); // unnecessary call
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+
+void		add_to_selection(t_go_node *selection, t_go_node *go_list, \
+	size_t *count, unsigned int id)
+{
+	t_go_node	*tmp;
+
+	tmp = selection;
+	if (tmp == NULL && (selection = get_go_node(go_list, id)))
+		*count += 1;
+	else
+	{
+		while (tmp->next != NULL)
+		{
+			if (id == tmp->id)
+				return ;
+			tmp = tmp->next;
+		}
+		if (id != tmp->id && (tmp->next = get_go_node(go_list, id)))
+			*count += 1;		
+	}
+}
+
+void		get_model_matrices(t_go_node *go_list, t_mat4x4 *m)
+{
+	t_go_node	*tmp;
+
+	tmp = go_list;
+	while (tmp)
+	{
+		m[tmp->id - 1] = go_trs(tmp->go->transform);
+		printf("model_matrix[%d]\n", tmp->id - 1);
+		display_mat4x4(m[tmp->id - 1], "MAT");
+		tmp = tmp->next;
+	}
+}
+
+void		handle_picking(t_go_node *selection, t_go_node *go_list, \
+	size_t *count)
+{
+	int				x;
+	int				y;
+	unsigned int	picked_id;
+	unsigned char	data[3];
+
+	if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(1))
 	{
 		glReadPixels(x, y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
-		//printf("%f %f %f\n", (float)data[0] / 255.0f, (float)data[1] / 255.0f, (float)data[2] / 255.0f);
-		pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
-		printf("PICKED ID: %d\n", pickedID);
+		picked_id = data[0] + data[1] * 256 + data[2] * 256 * 256;
+		// if hold shift -> add
+		// else clear, and add (if picked_id != 0)
+		if (picked_id != 0)
+			add_to_selection(selection, go_list, count, picked_id);
 	}
+}
+
+void		get_uniforms(t_shader *shdr, t_uniforms shader_u)
+{
+	shdr->u_loc[0] = glGetUniformLocation(shdr->prog, "m");
+	shdr->u_loc[1] = glGetUniformLocation(shdr->prog, "vp");
+	if (shader_u & PICK_SHADER_UNIFORMS)
+		shdr->u_loc[2] = glGetUniformLocation(shdr->prog, "PickClr");
+	else
+	{
+		shdr->u_loc[2] = glGetUniformLocation(shdr->prog, "Light.position");
+		shdr->u_loc[3] = glGetUniformLocation(shdr->prog, "Light.color");
+		shdr->u_loc[4] = glGetUniformLocation(shdr->prog, "Light.intensity");
+		shdr->u_loc[5] = glGetUniformLocation(shdr->prog, "Light.range");
+		if (shader_u & DEF_SHADER_UNIFORMS)
+		{
+			shdr->u_loc[6] = glGetUniformLocation(shdr->prog, "fade");
+			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "TextureSampler");
+		}
+		else if (shader_u & STD_SHADER_UNIFORMS)
+		{
+			shdr->u_loc[6] = glGetUniformLocation(shdr->prog, "Mat.clr_amb");
+			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "Mat.clr_dif");
+			shdr->u_loc[8] = glGetUniformLocation(shdr->prog, "Mat.clr_spc");
+			shdr->u_loc[9] = glGetUniformLocation(shdr->prog, "Mat.expnt_spc");
+			shdr->u_loc[10] = glGetUniformLocation(shdr->prog, "Mat.transp");
+		}
+	}	
+}
+
+static void	set_def_uniforms(t_shader shader, t_light light, float fade) // and a texture
+{
+	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.v[0]);
+	glUniform3fv(shader.u_loc[3], 1, &light.light_color.v[0]);
+	glUniform1f(shader.u_loc[4], light.intensity);
+	glUniform1f(shader.u_loc[5], light.range);
+	glUniform1f(shader.u_loc[6], fade);
+	// texture uniform
+}
+
+static void	set_std_uniforms(t_shader shader, t_light light, t_material *mtl)
+{
+	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.v[0]);
+	glUniform3fv(shader.u_loc[3], 1, &light.light_color.v[0]);
+	glUniform1f(shader.u_loc[4], light.intensity);
+	glUniform1f(shader.u_loc[5], light.range);
+	glUniform3fv(shader.u_loc[6], 1, &mtl->clr_amb.v[0]);
+	glUniform3fv(shader.u_loc[7], 1, &mtl->clr_dif.v[0]);
+	glUniform3fv(shader.u_loc[8], 1, &mtl->clr_spc.v[0]);
+	glUniform1f(shader.u_loc[9], mtl->expnt_spc);
+	glUniform1f(shader.u_loc[10], mtl->transparency);
+}
+
+void		set_uniforms(t_env *env, t_uniforms shader_u, t_go_node *node, \
+	t_mat4x4 *m)
+{
+	t_shader	shader;
+
+	if (shader_u & PICK_SHADER_UNIFORMS)
+	{
+		shader = env->pick_shader;
+		glUniform3fv(shader.u_loc[2], 1, &node->go->pick_clr.v[0]);
+	}
+	else if (shader_u & DEF_SHADER_UNIFORMS)
+	{
+		shader = env->def_shader;
+		set_def_uniforms(shader, env->light, 0.9f);//, env->texture_set[current_tex]);
+	}
+	else if (shader_u & STD_SHADER_UNIFORMS)
+	{
+		shader = env->std_shader;
+		set_std_uniforms(shader, env->light, \
+			get_mtl(env->mtl_list, node->go->mtl_id));
+	}
+	glUniformMatrix4fv(shader.u_loc[0], 1, GL_FALSE, m[node->id].m);
+	glUniformMatrix4fv(shader.u_loc[1], 1, GL_FALSE, m[0].m);
+}
+
+void		draw_ms_fbo(t_env *env, t_mat4x4 *m)
+{
+	t_go_node	*tmp;
+	
+	tmp = env->go_list;
+	while (tmp)
+	{
+		glBindVertexArray(tmp->go->gl_stack->vao);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
+		if (tmp->go->mtl_id != 0)
+		{
+			glUseProgram(env->std_shader.prog);
+			set_uniforms(env, STD_SHADER_UNIFORMS, tmp, m);
+			glDisableVertexAttribArray(2);
+			glDisableVertexAttribArray(3);
+		}
+		else
+		{
+			glUseProgram(env->def_shader.prog);
+			set_uniforms(env, DEF_SHADER_UNIFORMS, tmp, m);
+		}
+		glDrawElements(GL_TRIANGLES, tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
+		tmp = tmp->next;
+	}
+}
+
+void		draw_pick_fbo(t_env *env, t_mat4x4 *m)
+{
+	t_go_node	*tmp;
+
+	tmp = env->go_list;
+	while (tmp)
+	{
+		glUseProgram(env->pick_shader.prog);
+		set_uniforms(env, PICK_SHADER_UNIFORMS, tmp, m);
+		glBindVertexArray(tmp->go->gl_stack->vao);
+		glDisableVertexAttribArray(1); // normals
+		glDisableVertexAttribArray(2); // UVs
+		glDisableVertexAttribArray(3); // grey color array
+		glDrawElements(GL_TRIANGLES, tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
+		tmp = tmp->next;
+	}
+}
+
+static void	draw(t_env *env)
+{
+	t_mat4x4	m[env->go_count + 1];
+
+	m[0] = mat4x4_mult(env->proj_mat, compute_view(env->camera));
+	get_model_matrices(env->go_list, m);
+	//display_mat4x4(m[1], "m[1]"); //
+	//display_mat4x4(m[2], "m[2]"); //
+	glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	draw_ms_fbo(env, m);
+	glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	draw_pick_fbo(env, m);
+	handle_picking(env->selection, env->go_list, &env->selection_count);
+	// draw_handles();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, env->ms_fbo);
-	glBlitFramebuffer(0, 0, WIN_W, WIN_H, 0, 0, WIN_W, WIN_H, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(0, 0, WIN_W, WIN_H, 0, 0, WIN_W, WIN_H, \
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
 static void	loop(t_env *env)
 {
 	SDL_Event	event;
-	unsigned int	nb; // beurk !
-	int	x;
-	int	y;
-	int	lmb;
 
-	nb = 0;
-	// materials and shaders... look into that later
-	// once things are stable, simple sdl GUI (GUImp ?)
 	while (env->loop == 1)
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//HandleEventsAndInput(){
 		SDL_PollEvent(&event);
 		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			env->loop = 0;
-		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_a)
-			nb += 1;
-		
-		if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(1))
-			lmb = 1;
-		else
-			lmb = 0;
-		//lmb = SDL_BUTTON(SDL_BUTTON_LEFT) ? 0 : 1;
-		draw(env, &nb, x, WIN_H - 1 - y, lmb);
+		//}
+		draw(env);
 		SDL_GL_SwapWindow(env->window);
 	}
 }
@@ -123,8 +277,6 @@ int			main(int argc, char **argv)
 	env = NULL;
 	if (!(env = init_scop(env, argc, argv)))
 		return (0);
-	display_go_list(env->go_list);
-	display_mtl_list(env->mtl_list);
 	loop(env);
 	clean_scop(env, CLEAN_ALL);
 	return (0);

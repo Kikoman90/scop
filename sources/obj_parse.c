@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/17 18:38:18 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/22 11:35:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ static void		parse_go(t_env *env, t_parser *parser, t_obj_parser_var *opv, \
 				opv->vtx_seed.count, opv->idx_seed.count)))
 		{
 			if (!vtx_idx_feed(node->go, parser->data, parser->fname, opv))
-				clean_go_node(node);
+				clean_go_node(node, 0);
 			else
 			{
 				init_gl_objects(node->go);
