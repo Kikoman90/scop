@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/22 18:26:24 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/24 17:47:45 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,8 +138,8 @@ void		get_uniforms(t_shader *shdr, t_uniforms shader_u)
 
 static void	set_def_uniforms(t_shader shader, t_light light, float fade) // and a texture
 {
-	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.v[0]);
-	glUniform3fv(shader.u_loc[3], 1, &light.light_color.v[0]);
+	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.x);
+	glUniform3fv(shader.u_loc[3], 1, &light.light_color.x);
 	glUniform1f(shader.u_loc[4], light.intensity);
 	glUniform1f(shader.u_loc[5], light.range);
 	glUniform1f(shader.u_loc[6], fade);
@@ -148,13 +148,13 @@ static void	set_def_uniforms(t_shader shader, t_light light, float fade) // and 
 
 static void	set_std_uniforms(t_shader shader, t_light light, t_material *mtl)
 {
-	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.v[0]);
-	glUniform3fv(shader.u_loc[3], 1, &light.light_color.v[0]);
+	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.x);
+	glUniform3fv(shader.u_loc[3], 1, &light.light_color.x);
 	glUniform1f(shader.u_loc[4], light.intensity);
 	glUniform1f(shader.u_loc[5], light.range);
-	glUniform3fv(shader.u_loc[6], 1, &mtl->clr_amb.v[0]);
-	glUniform3fv(shader.u_loc[7], 1, &mtl->clr_dif.v[0]);
-	glUniform3fv(shader.u_loc[8], 1, &mtl->clr_spc.v[0]);
+	glUniform3fv(shader.u_loc[6], 1, &mtl->clr_amb.x);
+	glUniform3fv(shader.u_loc[7], 1, &mtl->clr_dif.x);
+	glUniform3fv(shader.u_loc[8], 1, &mtl->clr_spc.x);
 	glUniform1f(shader.u_loc[9], mtl->expnt_spc);
 	glUniform1f(shader.u_loc[10], mtl->transparency);
 }
@@ -167,7 +167,7 @@ void		set_uniforms(t_env *env, t_uniforms shader_u, t_go_node *node, \
 	if (shader_u & PICK_SHADER_UNIFORMS)
 	{
 		shader = env->pick_shader;
-		glUniform3fv(shader.u_loc[2], 1, &node->go->pick_clr.v[0]);
+		glUniform3fv(shader.u_loc[2], 1, &node->go->pick_clr.x);
 	}
 	else if (shader_u & DEF_SHADER_UNIFORMS)
 	{

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/22 18:07:24 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/23 15:23:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,16 +48,16 @@ typedef enum			e_uniforms
 
 typedef struct			s_transform
 {
-	t_vec3				position;
 	t_quaternion		rotation;
+	t_vec3				position;
 	t_vec3				scale;
 }						t_transform;
 
 typedef struct			s_gl_stack
 {
 	GLuint				vao;
-	GLuint				vbo;
 	GLuint				ibo;
+	GLuint				vbo[4];
 }						t_gl_stack;
 
 typedef struct			s_shader
@@ -79,15 +79,23 @@ typedef struct			s_material
 	float				transparency;
 }						t_material;
 
+typedef struct			s_vtx_attrib
+{
+	t_vec2				uv;
+	t_vec3				vertex;
+	t_vec3				normal;
+	t_vec3				color;
+}						t_vtx_attrib;
+
 typedef struct			s_gameobject
 {
+	char				*name;
 	t_transform			transform;
-	t_vec3				*vertices;
+	t_vtx_attrib		*vtx_attrib;
 	unsigned int		*indices;
 	size_t				vtx_count;
 	size_t				idx_count;
 	unsigned int		mtl_id;
-	char				*name;
 	t_vec3				pick_clr;
 	t_gl_stack			*gl_stack;
 }						t_gameobject;
@@ -133,6 +141,7 @@ typedef struct			s_env
 	t_shader			pick_shader;
 	t_shader			std_shader;
 	t_camera			camera;
+	t_light				light;
 	t_mat4x4			proj_mat;
 	t_mtl_node			*mtl_list;
 	t_go_node			*go_list;
@@ -140,7 +149,6 @@ typedef struct			s_env
 	size_t				mtl_count;
 	size_t				go_count;
 	size_t				selection_count;
-	t_light				light;
 }						t_env;
 
 /*
@@ -208,7 +216,7 @@ void					*clean_scop(t_env *env, t_clean_flags f);
 void					log_error(const char *msg);
 void					log_error_free(char *msg);
 void					*log_error_null(const char *msg);
-void					parser_error(const char *err, const char *fname, unsigned int fline);
+int						parser_error(const char *err, const char *fname, unsigned int fline);
 GLuint					shader_error(const char *shader_name, char *log, GLenum shader_type); //shader_type is unused
 
 // removal needed

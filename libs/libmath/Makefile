@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/12 17:25:31 by fsidler           #+#    #+#              #
-#    Updated: 2018/10/10 14:42:24 by fsidler          ###   ########.fr        #
+#    Updated: 2018/10/23 16:53:40 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,7 @@ DIR_OBJS = tmp
 HEADERS = includes
 
 SRCS =	vector.c \
+		vectorbis.c \
 		vector_advop.c \
 		vector_basop.c \
 		matrix.c \

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/17 16:57:39 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/23 14:02:07 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ unsigned int	check_idx_count(char *data, unsigned int seed, int idx)
 	while (data[seed] != '\n' && data[seed] != '\0' && \
 		(seed = ft_wordoffset(data, seed)))
 		count++;
-	if (idx == 1 && count == 4)
-		count = 6;
+	if (idx == 1 && count > 3)
+		count = 3 + (count - 3) * 3;
 	return (count);
 }

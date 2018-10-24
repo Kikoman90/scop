@@ -6,13 +6,13 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/10 11:32:03 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/10 13:29:46 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/23 17:59:01 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libmath.h"
 
-static void swapf(float *a, float *b)
+static void	swapf(float *a, float *b)
 {
 	float c;
 
@@ -21,7 +21,7 @@ static void swapf(float *a, float *b)
 	*b = c;
 }
 
-t_mat4x4    mat4x4_add(t_mat4x4 a, t_mat4x4 b)
+t_mat4x4	mat4x4_add(t_mat4x4 a, t_mat4x4 b)
 {
 	int		i;
 
@@ -31,7 +31,7 @@ t_mat4x4    mat4x4_add(t_mat4x4 a, t_mat4x4 b)
 	return (a);
 }
 
-t_mat4x4    mat4x4_sub(t_mat4x4 a, t_mat4x4 b)
+t_mat4x4	mat4x4_sub(t_mat4x4 a, t_mat4x4 b)
 {
 	int		i;
 

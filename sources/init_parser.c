@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:18:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/17 17:32:58 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/24 15:21:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 t_obj_parser_var	*init_opv(t_obj_parser_var *opv, char *name, \
 								unsigned int mtl_offset)
 {
+	unsigned int i;
+
 	if (!opv)
 	{
 		if (!(opv = (t_obj_parser_var*)malloc(sizeof(t_obj_parser_var))))
@@ -23,14 +25,19 @@ t_obj_parser_var	*init_opv(t_obj_parser_var *opv, char *name, \
 	opv->name = name;
 	opv->mtl_id = 0;
 	opv->mtl_offset = mtl_offset;
-	opv->vtx_seed.line = 0;
-	opv->vtx_seed.beginseed = 0;
-	opv->vtx_seed.endseed = 0;
-	opv->vtx_seed.count = 0;
-	opv->idx_seed.line = 0;
-	opv->idx_seed.beginseed = 0;
-	opv->idx_seed.endseed = 0;
-	opv->idx_seed.count = 0;
+	i = 3;
+	while (i--)
+	{
+		opv->v_seed[i].line = 0;
+		opv->v_seed[i].beginseed = 0;
+		opv->v_seed[i].endseed = 0;
+		opv->v_seed[i].count = 0;
+	}
+	opv->f_seed.line = 0;
+	opv->f_seed.beginseed = 0;
+	opv->f_seed.endseed = 0;
+	opv->f_seed.count = 0;
+	opv->attrib_list = NULL;
 	return (opv);
 }
 

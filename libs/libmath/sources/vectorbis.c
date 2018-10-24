@@ -1,38 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vector.c                                           :+:      :+:    :+:   */
+/*   vectorbis.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/26 14:52:27 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/24 17:44:09 by fsidler          ###   ########.fr       */
+/*   Created: 2018/10/23 16:48:22 by fsidler           #+#    #+#             */
+/*   Updated: 2018/10/23 16:52:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libmath.h"
 
-t_vec2	vec2_f(float f)
+t_vec3	vec3_v4(t_vec4 v4)
 {
-	return ((t_vec2){{f, f}});
+	return ((t_vec3){{v4.x, v4.y, v4.z}});
 }
 
-t_vec2	vec2_xy(float x, float y)
+t_vec4	vec4_f(float f)
 {
-	return ((t_vec2){{x, y}});
+	return ((t_vec4){{f, f, f, f}});
 }
 
-t_vec2	vec2_v3(t_vec3 v)
+t_vec4	vec4_xyzw(float x, float y, float z, float w)
 {
-	return ((t_vec2){{v.x, v.y}});
+	return ((t_vec4){{x, y, z, w}});
 }
 
-t_vec3	vec3_f(float f)
+t_vec4	vec4_v3w(t_vec3 v3, float w)
 {
-	return ((t_vec3){{f, f, f}});
-}
-
-t_vec3	vec3_xyz(float x, float y, float z)
-{
-	return ((t_vec3){{x, y, z}});
+	return ((t_vec4){{v3.x, v3.y, v3.z, w}});
 }

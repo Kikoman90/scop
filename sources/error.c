@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 14:20:34 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:02:57 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/23 14:24:01 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	*log_error_null(const char *msg)
 	return (NULL);
 }
 
-void	parser_error(const char *err, const char *fname, unsigned int fline)
+int		parser_error(const char *err, const char *fname, unsigned int fline)
 {
 	char	*line_number;
 	char	*error_msg;
@@ -50,6 +50,7 @@ void	parser_error(const char *err, const char *fname, unsigned int fline)
 	error_msg = ft_strjoin_bf(ft_strjoin(err, "'"), \
 		ft_strjoin_bf(ft_strjoin(fname, "'"), line_number));
 	log_error_free(error_msg);
+	return (0);
 }
 
 GLuint	shader_error(const char *shader_name, char *log, GLenum shader_type)

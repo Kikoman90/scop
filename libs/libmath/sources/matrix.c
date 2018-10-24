@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/11 17:17:59 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/23 18:09:41 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,10 @@
 
 t_mat4x4	mat4x4(void)
 {
-	return ((t_mat4x4)IDENTITY_MATRIX4);
+	return ((t_mat4x4){{1.0f, 0.0f, 0.0f, 0.0f,\
+						0.0f, 1.0f, 0.0f, 0.0f,\
+						0.0f, 0.0f, 1.0f, 0.0f,\
+						0.0f, 0.0f, 0.0f, 1.0f}});
 }
 
 t_mat4x4	mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s)
@@ -23,7 +26,7 @@ t_mat4x4	mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s)
 	t_mat4x4	rot_mat;
 
 	rot_mat = quat_to_mat4x4(r);
-	trs = (t_mat4x4)IDENTITY_MATRIX4;
+	trs = mat4x4();
 	trs.m[0] = s.x * rot_mat.m[0];
 	trs.m[1] = s.x * rot_mat.m[1];
 	trs.m[2] = s.x * rot_mat.m[2];

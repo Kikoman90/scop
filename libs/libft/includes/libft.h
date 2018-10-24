@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:15:56 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/24 16:07:10 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ int					ft_strncmp(const char *s1, const char *s2, size_t n);
 
 char				*ft_strcat(char *dest, const char *src);
 char				*ft_strncat(char *dest, const char *src, size_t n);
-char				*ft_strchr(const char *str, int c);
+char				*ft_strchr(const char *str, int c, int inc);
+char				*ft_strnchr(const char *str, int c, int n, int inc);
 char				*ft_strrchr(const char *str, int c);
 char				*ft_strcpy(char *dest, const char *src);
 char				*ft_strncpy(char *dest, const char *src, size_t n);

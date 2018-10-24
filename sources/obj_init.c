@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/12 12:15:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/22 18:22:50 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/23 18:28:11 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,26 @@ void				init_gl_objects(t_gameobject *go)
 {
 	glGenVertexArrays(1, &go->gl_stack->vao);
 	glBindVertexArray(go->gl_stack->vao);
-	glGenBuffers(1, &go->gl_stack->vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);	
-	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, &go->vertices[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
+	glGenBuffers(4, &go->gl_stack->vbo[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, 2 * GL_FLOAT);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, \
+		&go->vtx_attrib[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[1]);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, 5 * GL_FLOAT);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, \
+		&go->vtx_attrib[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[2]);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * GL_FLOAT, 0);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec2) * go->vtx_count, &go->vtx_attrib[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[3]);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, 8 * GL_FLOAT);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, \
+		&go->vtx_attrib[0], GL_STATIC_DRAW);
 	glGenBuffers(1, &go->gl_stack->ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, go->gl_stack->ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * go->idx_count, &go->indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * go->idx_count,\
+		&go->indices[0], GL_STATIC_DRAW);
 	glBindVertexArray(0);
 }
 
