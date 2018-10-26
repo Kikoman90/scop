@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/22 16:24:34 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 15:15:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 static void	clean_go(t_gameobject *go)
 {
-	if (go->vertices)
+	if (go->vtx_attrib)
 	{
-		free(go->vertices);
-		go->vertices = NULL;
+		free(go->vtx_attrib);
+		go->vtx_attrib = NULL;
 	}
 	if (go->indices)
 	{
@@ -26,8 +26,8 @@ static void	clean_go(t_gameobject *go)
 	}
 	if (go->gl_stack)
 	{
-		glDeleteBuffers(1, &go->gl_stack->vbo);
 		glDeleteBuffers(1, &go->gl_stack->ibo);
+		glDeleteBuffers(4, &go->gl_stack->vbo[0]);
 		glDeleteVertexArrays(1, &go->gl_stack->vao);
 		free(go->gl_stack);
 		go->gl_stack = NULL;

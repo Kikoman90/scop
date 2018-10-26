@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 15:01:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 15:48:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ t_go_node			*add_go_node(t_env *env, t_go_node *node)
 	t_go_node	*head;
 
 	head = env->go_list;
+	env->go_mat_update = 1;
 	env->go_count++;
 	node->id = env->go_count;
 	generate_pick_clr(node->go, node->id);

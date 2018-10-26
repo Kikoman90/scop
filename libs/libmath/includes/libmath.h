@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/24 17:44:26 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 14:49:52 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 
 # include <math.h>
 
-# define VEC3_ZERO {{0.0f, 0.0f, 0.0f}}
-# define VEC3_ONE {{1.0f, 1.0f, 1.0f}}
-# define VEC3_UP {{0.0f, 1.0f, 0.0f}}
-# define VEC3_RIGHT {{1.0f, 0.0f, 0.0f}}
-# define VEC3_FRONT {{0.0f, 0.0f, 1.0f}}
+# define VEC3_ZERO {0.0f, 0.0f, 0.0f}
+# define VEC3_ONE {1.0f, 1.0f, 1.0f}
+# define VEC3_UP {0.0f, 1.0f, 0.0f}
+# define VEC3_RIGHT {1.0f, 0.0f, 0.0f}
+# define VEC3_FRONT {0.0f, 0.0f, 1.0f}
 
-# define VEC4_ZERO {{0.0f, 0.0f, 0.0f, 0.0f}}
-# define VEC4_ONE {{1.0f, 1.0f, 1.0f, 1.0f}}
-# define VEC4_UP {{0.0f, 1.0f, 0.0f, 0.0f}}
+# define VEC4_ZERO {0.0f, 0.0f, 0.0f, 0.0f}
+# define VEC4_ONE {1.0f, 1.0f, 1.0f, 1.0f}
+# define VEC4_UP {0.0f, 1.0f, 0.0f, 0.0f}
 
 typedef struct	s_vec2
 {

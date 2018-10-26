@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/22 16:01:28 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 16:24:49 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,9 +135,9 @@ t_env			*init_scop(t_env *env, int argc, char **argv)
 	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.1, 30);
 	env->proj_mat = compute_proj(env->camera.fov, \
 		(float)WIN_W / WIN_H, env->camera.znear, env->camera.zfar);
-	if (!init_program(&env->def_shader, "resources/shaders/default") ||\
-		!init_program(&env->pick_shader, "resources/shaders/pick") ||\
-		!init_program(&env->std_shader, "resources/shaders/standard"))
+	if (!init_program(&env->def_shader, "resources/shaders/default", DEF_SHADER_UNIFORMS) ||\
+		!init_program(&env->pick_shader, "resources/shaders/pick", PICK_SHADER_UNIFORMS) ||\
+		!init_program(&env->std_shader, "resources/shaders/standard", STD_SHADER_UNIFORMS))
 		return (clean_scop(env, CLEAN_SDL_GL));
 	env->mtl_list = NULL;
 	env->go_list = NULL;
@@ -149,6 +149,10 @@ t_env			*init_scop(t_env *env, int argc, char **argv)
 		parse_file(env, argv[argc], parse_wavefrontobj);
 	parse_file(env, "resources/obj/light_obj.obj", parse_wavefrontobj);
 	env->light = init_light(env, (t_vec3)VEC3_ONE, 1.0f, 12.0f);
+	env->go_mat = NULL;
+	env->go_mat_update = mat_update(&env->go_mat, env->go_count);
+	if (env->go_mat)
+		printf("dudude\n");
 	env->loop = 1;
 	return (env);
 }

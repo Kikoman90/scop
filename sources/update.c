@@ -1,33 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vectorbis.c                                        :+:      :+:    :+:   */
+/*   update.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/23 16:48:22 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 15:17:45 by fsidler          ###   ########.fr       */
+/*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
+/*   Updated: 2018/10/26 16:17:40 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libmath.h"
+#include "scop.h"
 
-t_vec3	vec3_v4(t_vec4 v4)
+unsigned int    mat_update(t_mat4x4 **mat, size_t count)
 {
-	return ((t_vec3){v4.x, v4.y, v4.z});
-}
-
-t_vec4	vec4_f(float f)
-{
-	return ((t_vec4){f, f, f, f});
-}
-
-t_vec4	vec4_xyzw(float x, float y, float z, float w)
-{
-	return ((t_vec4){x, y, z, w});
-}
-
-t_vec4	vec4_v3w(t_vec3 v3, float w)
-{
-	return ((t_vec4){v3.x, v3.y, v3.z, w});
+    if (count == 0)
+    {
+        *mat = NULL;
+        return (0);
+    }
+    if (*mat)
+        free (*mat);
+    count++;
+    if (!(*mat = (t_mat4x4*)malloc(sizeof(t_mat4x4) * count)))
+        return (1);
+    printf("i don't get it yet\n");
+    return (0);
 }

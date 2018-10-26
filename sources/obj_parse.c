@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/24 17:43:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 14:56:14 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ static void		trim_vtx_attrib(char *word, char *data, unsigned int seed, unsigned
 
 
 static t_vec3		vtx_attrib_feed(t_seed *v_seed, char *data, \
-	unsigned int idx, char *v);
+	unsigned int idx, char *v)
 {
 	unsigned int	i;
 	unsigned int	seed;
@@ -132,19 +132,58 @@ static t_vec3		vtx_attrib_feed(t_seed *v_seed, char *data, \
 	return ((t_vec3)VEC3_ZERO);
 }
 
-static unsigned int	vtx_feed(t_gameobject *go, t_obj_parser_var *opv, \
-	char *data, unsigned int *attrib)
+static t_idx_attrib	*cmp_attrib(t_idx_attrib *list, t_idx_attrib *elem,
+	unsigned int *cmp)
 {
-	static unsigned int	ret = 0;
+	t_idx_attrib	*tmp;
+	t_idx_attrib	*attrib_ret;
 
-	go->vtx_attrib[ret].vertex = vtx_attrib_feed(&opv->v_seed[0], data, \
-		attrib[0], "v");
-	go->vtx_attrib[ret].uv = vec2_v3(vtx_attrib_feed(&opv->v_seed[1], data, \
-		attrib[1], "vt"));
-	go->vtx_attrib[ret].normal = vec3_norm(vtx_attrib_feed(&opv->v_seed[2], \
-		data, attrib[2], "vn"));
-	//go->vtx_attrib[ret].color = gen_color(go->vtx_attrib[ret].vertex); //worldspace function
-	return (ret);
+	tmp = list;
+	while (tmp)
+	{
+		if (tmp->attrib[0] == elem->attrib[0] && \
+			tmp->attrib[1] == elem->attrib[1] && \
+			tmp->attrib[2] == elem->attrib[2])
+		{
+			*cmp = 1;
+			return (tmp);
+		}
+		tmp = tmp->next;
+	}
+	if (!(attrib_ret = (t_idx_attrib*)malloc(sizeof(t_idx_attrib))))
+		return (log_error_null(MALLOC_ERROR));
+	attrib_ret->attrib[0] = elem->attrib[0];
+	attrib_ret->attrib[1] = elem->attrib[1];
+	attrib_ret->attrib[2] = elem->attrib[2];
+	attrib_ret->next = NULL;
+	*cmp = 0;
+	return (attrib_ret);
+}
+
+static unsigned int	vtx_feed(t_gameobject *go, t_obj_parser_var *opv, \
+	char *data, t_idx_attrib *elem)
+{
+	static unsigned int	i = 0;
+	unsigned int		cmp;
+	t_idx_attrib		*cmp_res;
+
+	if (!(cmp_res = cmp_attrib(opv->attrib_list, elem, &cmp)))
+		return (0);
+	if (cmp == 1)
+		return (cmp_res->idx_ret);
+	cmp_res->idx_ret = i;
+	go->vtx_attrib[i].vertex = vtx_attrib_feed(&opv->v_seed[0], \
+		data, elem->attrib[0], "v");
+	go->vtx_attrib[i].uv = vec2_v3(vtx_attrib_feed(&opv->v_seed[1], \
+		data, elem->attrib[1], "vt"));
+	go->vtx_attrib[i].normal = vec3_norm(vtx_attrib_feed(&opv->v_seed[2], \
+		data, elem->attrib[2], "vn"));
+	go->vtx_attrib[i].color = vec3_xyz(	sinf( go->vtx_attrib[i].vertex.x ), \
+										sinf( go->vtx_attrib[i].vertex.y ), \
+										sinf( go->vtx_attrib[i].vertex.z ));
+	//go->vtx_attrib[i].color = gen_color(go->vtx_attrib[ret].vertex); //worldspace function
+	i++;
+	return (cmp_res->idx_ret);
 }
 
 static unsigned int	*vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
@@ -167,8 +206,7 @@ static unsigned int	*vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
 		f_tmp->attrib[2] = ft_atoi(ft_strnchr(word, '/', 2, 1));
 		if (word)
 			free(word);
-		if (!cmp_attrib_list(opv->attrib_list, f_tmp))
-			f_tmp->idx_ret = vtx_feed(go, opv, data, f_tmp->attrib);
+		f_tmp->idx_ret = vtx_feed(go, opv, data, f_tmp);
 		ret[i] = f_tmp->idx_ret;
 		i++;
 	}
@@ -176,17 +214,17 @@ static unsigned int	*vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
 	return (ret);
 }
 
-static void		idx_feed(t_gameobject *go, unsigned int *indices, \
+static unsigned int		idx_feed(t_gameobject *go, unsigned int *indices, \
 	unsigned int i, unsigned int count)
 {
 	unsigned int	j;
 	unsigned int	ri;
 	unsigned int	ii;
 	
-	ii = 0;
-	ri = i + 3;
 	if (!indices)
 		return (0);
+	ii = 0;
+	ri = i + 3;
 	while (i < ri)
 		go->indices[i++] = indices[ii++];
 	ri += count - 3;
@@ -203,7 +241,7 @@ static void		idx_feed(t_gameobject *go, unsigned int *indices, \
 	return (1);
 }
 
-static int		attrib_feed(t_obj_parser_var *opv, t_parser *psr, \
+static int			attrib_feed(t_obj_parser_var *opv, t_parser *psr, \
 	t_gameobject *go, char *word)
 {
 	unsigned int	i;
@@ -219,7 +257,7 @@ static int		attrib_feed(t_obj_parser_var *opv, t_parser *psr, \
 		{
 			if ((opv->f_count = check_idx_count(psr->data, seed, 0)) < 3)
 				return (parser_error(FACE_ERROR, psr->fname, f_seed->line));
-			if (!idx_feed(go, vtx_attrib(opv, psr->data, seed)), \
+			if (!idx_feed(go, vtx_attrib(go, opv, psr->data, seed), \
 				i, opv->f_count))
 				return (0);
 			i += 3 + ((opv->f_count - 3) * 3);

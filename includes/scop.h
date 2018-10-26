@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/23 15:23:00 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 16:26:33 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@
 # define WIN_CREATE_ERROR "failed to create window"
 # define SHADER_INIT_ERROR "shader initialization failed"
 # define FRAMEBUFFER_INCOMPLETE_ERROR "framebuffer imcomplete"
+
+# define BUFFER_OFFSET (char*)NULL + (i);
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
@@ -143,12 +145,14 @@ typedef struct			s_env
 	t_camera			camera;
 	t_light				light;
 	t_mat4x4			proj_mat;
+	t_mat4x4			*go_mat;
 	t_mtl_node			*mtl_list;
 	t_go_node			*go_list;
 	t_go_node			*selection;
 	size_t				mtl_count;
 	size_t				go_count;
 	size_t				selection_count;
+	unsigned int		go_mat_update;
 }						t_env;
 
 /*
@@ -159,7 +163,10 @@ t_env					*init_scop(t_env *env, int argc, char **argv);
 /*
 ** shader_init.c		=> 5 functions
 */
-GLuint					init_program(t_shader *program, const char *path);
+GLuint					init_program(t_shader *program, const char *path, \
+							t_uniforms uf);
+
+void		get_uniforms(t_shader *shdr, t_uniforms shader_u);
 
 /*
 ** parser.c				=> 3 functions
@@ -196,6 +203,11 @@ t_mtl_node				*create_mtl_node(char *name);
 t_go_node				*add_go_node(t_env *env, t_go_node *node);
 t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
 t_go_node				*clone_go_node(t_go_node *src);
+
+/*
+** update.c				=> 1 function
+*/
+unsigned int			mat_update(t_mat4x4 **mat, size_t count);
 
 /*
 ** node_clean.c			=> 4 functions

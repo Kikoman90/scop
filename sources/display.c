@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/22 11:41:26 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 15:16:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 void		display_quaternion(t_quaternion q, const char *msg)
 {
 	ft_putendl(msg);
-	printf("{xyzw} : {%f, %f, %f, %f\n", q.x, q.y, q.z, q.w);
+	printf("{xyzw} : {%f, %f, %f, %f\n", q.v.x, q.v.y, q.v.z, q.w);
 }
 
 void		display_mat4x4(t_mat4x4 mat, const char *msg)
@@ -56,11 +56,13 @@ void		display_gameobject(t_gameobject *obj)
 	i = 0;
 	printf("display object (name : %s)\n", obj->name);
 	printf("material id : %d\n", obj->mtl_id);
-	while (i < obj->vtx_count)
+	printf("vtx_count / idx_count => %zu / %zu\n", obj->vtx_count, obj->idx_count);
+	/*while (i < obj->vtx_count)
 	{
+		vtx_attrib[i]->...
 		printf("vertex %d = (%f, %f, %f)\n", i, obj->vertices[i].x, obj->vertices[i].y, obj->vertices[i].z);
 		i++;
-	}
+	}*/
 	i = 0;
 	while (i < obj->idx_count)
 	{

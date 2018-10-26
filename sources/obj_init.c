@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/12 12:15:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/23 18:28:11 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 15:33:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,23 @@ void				init_gl_objects(t_gameobject *go)
 	glBindVertexArray(go->gl_stack->vao);
 	glGenBuffers(4, &go->gl_stack->vbo[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[0]);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, 2 * GL_FLOAT);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, \
+		(char *)NULL + (2 * sizeof(float)));
 	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, \
 		&go->vtx_attrib[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[1]);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, 5 * GL_FLOAT);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, \
+		(char *)NULL + (5 * sizeof(float)));
 	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, \
 		&go->vtx_attrib[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[2]);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * GL_FLOAT, 0);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec2) * go->vtx_count, &go->vtx_attrib[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec2) * go->vtx_count, \
+		&go->vtx_attrib[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack->vbo[3]);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, 8 * GL_FLOAT);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * GL_FLOAT, \
+		(char *)NULL + (8 * sizeof(float)));
 	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vec3) * go->vtx_count, \
 		&go->vtx_attrib[0], GL_STATIC_DRAW);
 	glGenBuffers(1, &go->gl_stack->ibo);

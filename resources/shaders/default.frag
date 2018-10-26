@@ -12,12 +12,13 @@ uniform 			LightProps {
 };
 
 uniform float		fade;
-uniform sampler2D	TextureSampler;
+//uniform sampler2D	TextureSampler;
 
 out vec4			FragColor;
 
 void main()
 {
 	// lighting
-	FragColor = mix(texture(TextureSampler, vUV).rgba, vColor, fade);
+	//FragColor = mix(texture(TextureSampler, vUV).rgba, vColor, fade);
+	FragColor = vec4(0.6f, 0.6f, 0.6f, fade);
 }

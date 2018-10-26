@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/16 14:28:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/16 19:35:58 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 16:25:41 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ static GLuint	init_shaders(t_shader *prg, const char *path)
 	return (1);
 }
 
-GLuint			init_program(t_shader *program, const char *path)
+GLuint			init_program(t_shader *program, const char *path, t_uniforms uf)
 {
 	GLint	success;
 	GLchar	info_log[1024];
@@ -125,5 +125,6 @@ GLuint			init_program(t_shader *program, const char *path)
 	glDetachShader(program->prog, program->frg_s);
 	glDeleteShader(program->vtx_s);
 	glDeleteShader(program->frg_s);
+	get_uniforms(program, uf);
 	return (1);
 }

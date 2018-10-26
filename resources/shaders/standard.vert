@@ -1,7 +1,7 @@
 #version 410 core
 
-in vec3			iPosition;
-in vec3			iNormal;
+layout(location = 0) in vec3	iPosition;
+layout(location = 1) in vec3	iNormal;
 
 uniform mat4	m;
 uniform mat4	vp;
