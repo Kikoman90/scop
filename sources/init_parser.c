@@ -6,38 +6,56 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:18:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/24 15:21:25 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 13:46:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
+t_idx_attrib		*free_attrib(t_idx_attrib *list)
+{
+	t_idx_attrib	*tmp;
+	t_idx_attrib	*tmp2;
+
+	tmp = list;
+	while (tmp)
+	{
+		tmp2 = tmp->next;
+		free(tmp);
+		tmp = tmp2;
+	}
+	return (NULL);
+}
+
+t_seed				init_seed_struct()
+{
+	t_seed	seed;
+
+	seed.line = 0;
+	seed.beginseed = 0;
+	seed.endseed = 0;
+	seed.count = 0;
+	return (seed);
+}
+
 t_obj_parser_var	*init_opv(t_obj_parser_var *opv, char *name, \
 								unsigned int mtl_offset)
 {
-	unsigned int i;
-
 	if (!opv)
 	{
 		if (!(opv = (t_obj_parser_var*)malloc(sizeof(t_obj_parser_var))))
 			return (log_error_null(MALLOC_ERROR));
+		opv->attrib_list = NULL;
 	}
 	opv->name = name;
 	opv->mtl_id = 0;
 	opv->mtl_offset = mtl_offset;
-	i = 3;
-	while (i--)
-	{
-		opv->v_seed[i].line = 0;
-		opv->v_seed[i].beginseed = 0;
-		opv->v_seed[i].endseed = 0;
-		opv->v_seed[i].count = 0;
-	}
-	opv->f_seed.line = 0;
-	opv->f_seed.beginseed = 0;
-	opv->f_seed.endseed = 0;
-	opv->f_seed.count = 0;
-	opv->attrib_list = NULL;
+	opv->attrib_fill = 0;
+	opv->v_seed[0] = init_seed_struct();
+	opv->v_seed[1] = init_seed_struct();
+	opv->v_seed[2] = init_seed_struct();
+	opv->f_seed = init_seed_struct();
+	opv->attrib_list = free_attrib(opv->attrib_list);
 	return (opv);
 }
 

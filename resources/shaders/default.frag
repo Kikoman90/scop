@@ -4,7 +4,7 @@ in vec4				vNormal;
 in vec2				vUV;
 in vec4				vColor;
 
-uniform 			LightProps {
+struct 				LightProps {
 	vec3			position;
 	vec3			color;
 	float			intensity;
@@ -13,6 +13,7 @@ uniform 			LightProps {
 
 uniform float		fade;
 //uniform sampler2D	TextureSampler;
+uniform LightProps	light;
 
 out vec4			FragColor;
 

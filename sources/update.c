@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 16:17:40 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 19:32:22 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,5 @@ unsigned int    mat_update(t_mat4x4 **mat, size_t count)
     count++;
     if (!(*mat = (t_mat4x4*)malloc(sizeof(t_mat4x4) * count)))
         return (1);
-    printf("i don't get it yet\n");
     return (0);
 }

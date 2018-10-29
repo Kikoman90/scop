@@ -1,9 +1,9 @@
 #version 410 core
 
-layout(location = 0) in vec3	iPosition;
-layout(location = 1) in vec3	iNormal;
-layout(location = 2) in vec2	iUV;
-layout(location = 3) in vec3	iColor;
+in vec3	iPosition;
+in vec3	iNormal;
+in vec2	iUV;
+in vec3	iColor;
 
 uniform mat4	m;
 uniform mat4	vp;

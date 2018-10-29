@@ -6,14 +6,14 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 15:13:44 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 12:13:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
 static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
-										size_t vc, size_t ic)
+	size_t ic)
 {
 	t_gameobject	*go;
 
@@ -22,10 +22,8 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 	//go->transform = init_transform();
 	go->transform = init_transform_trs(\
 	vec3_xyz(0, 1.0f, -3.0f), quat_tv(90, (t_vec3)VEC3_UP), (t_vec3)VEC3_ONE);
-	go->vtx_count = vc;
 	go->idx_count = ic;
-	if (!(go->vtx_attrib = (t_vtx_attrib*)malloc(sizeof(t_vtx_attrib) * vc)) ||\
-	!(go->indices = (unsigned int*)malloc(sizeof(unsigned int) * ic)) || \
+	if (!(go->indices = (unsigned int*)malloc(sizeof(unsigned int) * ic)) || \
 	!(go->gl_stack = (t_gl_stack*)malloc(sizeof(t_gl_stack))))
 		return (log_error_null(MALLOC_ERROR));
 	go->mtl_id = mtl_id;
@@ -48,8 +46,7 @@ static t_material	*create_material(char *name)
 	return (mtl);
 }
 
-t_go_node			*create_go_node(char *name, unsigned int mtl_id, \
-									size_t vc, size_t ic)
+t_go_node			*create_go_node(char *name, unsigned int mtl_id, size_t ic)
 {
 	t_go_node	*node;
 
@@ -58,7 +55,7 @@ t_go_node			*create_go_node(char *name, unsigned int mtl_id, \
 		free(name);
 		return (log_error_null(MALLOC_ERROR));
 	}
-	if (!(node->go = create_gameobject(name, mtl_id, vc, ic)))
+	if (!(node->go = create_gameobject(name, mtl_id, ic)))
 	{
 		clean_go_node(node, 0);
 		return (NULL);
@@ -85,7 +82,7 @@ t_mtl_node			*create_mtl_node(char *name)
 	return (node);
 }
 
-t_go_node			*clone_go_node(t_go_node *src)
+/*t_go_node			*clone_go_node(t_go_node *src)
 {
 	t_go_node	*node;
 
@@ -97,4 +94,4 @@ t_go_node			*clone_go_node(t_go_node *src)
 	node->go = src->go;
 	node->next = NULL;
 	return (node);
-}
+}*/

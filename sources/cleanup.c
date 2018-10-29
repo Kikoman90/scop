@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/22 16:23:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/26 17:19:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,10 @@ void		*clean_scop(t_env *env, t_clean_flags f)
 		clean_go_list(env->selection, &env->selection_count, 1);
 		clean_go_list(env->go_list, &env->go_count, 0);
 		clean_mtl_list(env->mtl_list, &env->mtl_count, 0);
-		free(env->light.go);
+		if (env->light.go)
+			free(env->light.go);
+		if (env->go_mat)
+			free(env->go_mat);
 	}
 	else if (f & CLEAN_SDL_GL)
 	{

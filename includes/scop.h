@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 16:26:33 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 13:11:42 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,7 @@ unsigned int			get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset);
 ** node_create.c		=> 4 functions
 */
 t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
-							size_t vc, size_t ic);
+							size_t ic);
 t_mtl_node				*create_mtl_node(char *name);
 
 /*
@@ -202,7 +202,7 @@ t_mtl_node				*create_mtl_node(char *name);
 */
 t_go_node				*add_go_node(t_env *env, t_go_node *node);
 t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
-t_go_node				*clone_go_node(t_go_node *src);
+//t_go_node				*clone_go_node(t_go_node *src);
 
 /*
 ** update.c				=> 1 function
@@ -241,13 +241,13 @@ void					display_material(t_material *mtl);
 void					display_mtl_list(t_mtl_node *list);
 //
 
-void					init_gl_objects(t_gameobject *go);
+void					init_gl_objects(t_gameobject *go, char *b, size_t sf);
 t_transform				init_transform(void);
 t_transform         	init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 t_mat4x4				go_trs(t_transform tr);
 t_light					init_light(t_env *env, t_vec3 color, float i, \
 							float range);
 							
-t_go_node				*get_go_node(t_go_node *list, unsigned int id);
+t_gameobject			*get_gameobject(t_go_node *list, unsigned int id);
 
 #endif
