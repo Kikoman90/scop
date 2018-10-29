@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 20:13:19 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 19:27:31 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ void		display_vec2(const char *p, t_vec2 v)
 
 void		display_gameobject(t_gameobject *obj)
 {
-	unsigned int i;
+	unsigned int	i;
+	unsigned int	j;
 
 	i = 0;
 	printf("display object (name : %s)\n", obj->name);
@@ -65,12 +66,15 @@ void		display_gameobject(t_gameobject *obj)
 	while (i < obj->idx_count)
 	{
 		printf("triangle %d = (%d, %d, %d)\n", i / 3, obj->indices[i], obj->indices[i + 1], obj->indices[i + 2]);
-		printf("vtx n%u\n", obj->indices[i]);
-		display_vec3("vtx_pos", obj->vtx_attrib[obj->indices[i]].vertex);
-		display_vec2("vtx_uv", obj->vtx_attrib[obj->indices[i]].uv);
-		display_vec3("vtx_nrm", obj->vtx_attrib[obj->indices[i]].normal);
-		display_vec3("vtx_clr", obj->vtx_attrib[obj->indices[i]].color);
-		i += 3;
+		j = i + 3;
+		while (i < j)
+		{
+			printf("vtx n%u\n", obj->indices[i]);
+			display_vec3("vtx_pos", obj->vtx_attrib[obj->indices[i]].vertex);
+			display_vec2("vtx_uv", obj->vtx_attrib[obj->indices[i]].uv);
+			display_vec3("vtx_nrm", obj->vtx_attrib[obj->indices[i]].normal);
+			i++;//display_vec3("vtx_clr", obj->vtx_attrib[obj->indices[i]].color);
+		}
 	}
 }
 

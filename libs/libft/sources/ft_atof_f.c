@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atof_f.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 12:45:28 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/17 16:32:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 19:35:35 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ float		ft_atof_f(char *s)
 	t_info	*env;
 	float	res;
 
+	if (!s || ft_strlen(s) == 0)
+		return (0);
 	if ((env = malloc(sizeof(t_info))) == NULL)
 		return (0);
 	init_value(env);

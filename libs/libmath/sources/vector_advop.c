@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/26 14:52:58 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/23 18:04:30 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 19:36:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,12 @@ t_vec3		vec3_norm(t_vec3 v)
 	float	n;
 
 	n = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
-	v.x /= n;
-	v.y /= n;
-	v.z /= n;
+	if (n != 0)
+	{
+		v.x /= n;
+		v.y /= n;
+		v.z /= n;
+	}
 	return (v);
 }
 

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 13:42:55 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 20:53:48 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ t_mat4x4	compute_view(t_camera cam)
 	return (view);
 }
 
-/*t_material	*get_mtl(t_mtl_node *list, unsigned int id)
+t_material	*get_mtl(t_mtl_node *list, unsigned int id)
 {
 	t_mtl_node	*tmp;
 
@@ -38,7 +38,7 @@ t_mat4x4	compute_view(t_camera cam)
 		tmp = tmp->next;
 	}
 	return (NULL);
-}*/
+}
 
 t_gameobject	*get_gameobject(t_go_node *list, unsigned int id)
 {
@@ -75,7 +75,7 @@ t_gameobject	*get_gameobject(t_go_node *list, unsigned int id)
 	}
 }*/
 
-/*void		get_model_matrices(t_go_node *go_list, t_mat4x4 *m)
+void		get_model_matrices(t_go_node *go_list, t_mat4x4 *m)
 {
 	t_go_node	*tmp;
 
@@ -84,11 +84,11 @@ t_gameobject	*get_gameobject(t_go_node *list, unsigned int id)
 	{
 		//tmp->go->mtl_id = 0;
 		m[tmp->id] = go_trs(tmp->go->transform);
-		//printf("model_matrix[%d]\n", tmp->id - 1);
-		//display_mat4x4(m[tmp->id - 1], "MAT");
+		//printf("model_matrix[%d]\n", tmp->id);
+		//display_mat4x4(m[tmp->id], "MAT");
 		tmp = tmp->next;
 	}
-}*/
+}
 
 /*void		handle_picking(t_go_node *selection, t_go_node *go_list, \
 	size_t *count)
@@ -108,86 +108,6 @@ t_gameobject	*get_gameobject(t_go_node *list, unsigned int id)
 			add_to_selection(selection, go_list, count, picked_id);
 	}
 }*/
-
-void		get_uniforms(t_shader *shdr, t_uniforms shader_u)
-{
-	shdr->u_loc[0] = glGetUniformLocation(shdr->prog, "m");
-	shdr->u_loc[1] = glGetUniformLocation(shdr->prog, "vp");
-	if (shader_u & PICK_SHADER_UNIFORMS)
-		shdr->u_loc[2] = glGetUniformLocation(shdr->prog, "pickClr");
-	else
-	{
-		shdr->u_loc[2] = glGetUniformLocation(shdr->prog, "light.position");
-		shdr->u_loc[3] = glGetUniformLocation(shdr->prog, "light.color");
-		shdr->u_loc[4] = glGetUniformLocation(shdr->prog, "light.intensity");
-		shdr->u_loc[5] = glGetUniformLocation(shdr->prog, "light.range");
-		if (shader_u & DEF_SHADER_UNIFORMS)
-		{
-			shdr->u_loc[6] = glGetUniformLocation(shdr->prog, "fade");
-			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "TextureSampler");
-		}
-		else if (shader_u & STD_SHADER_UNIFORMS)
-		{
-			shdr->u_loc[6] = glGetUniformLocation(shdr->prog, "mat.clr_amb");
-			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "mat.clr_dif");
-			shdr->u_loc[8] = glGetUniformLocation(shdr->prog, "mat.clr_spc");
-			shdr->u_loc[9] = glGetUniformLocation(shdr->prog, "mat.expnt_spc");
-			shdr->u_loc[10] = glGetUniformLocation(shdr->prog, "mat.transp");
-		}
-	}
-	printf("LOCATIONS = ");
-	for (int i = 0; i < 11; i++)
-		printf("%2d ", (int)shdr->u_loc[i]);
-	printf("\n");
-}
-
-/*static void	set_def_uniforms(t_shader shader, t_light light, float fade) // and a texture
-{
-	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.x);
-	glUniform3fv(shader.u_loc[3], 1, &light.light_color.x);
-	glUniform1f(shader.u_loc[4], light.intensity);
-	glUniform1f(shader.u_loc[5], light.range);
-	glUniform1f(shader.u_loc[6], fade);
-	// texture uniform
-}
-
-static void	set_std_uniforms(t_shader shader, t_light light, t_material *mtl)
-{
-	glUniform3fv(shader.u_loc[2], 1, &light.go->transform.position.x);
-	glUniform3fv(shader.u_loc[3], 1, &light.light_color.x);
-	glUniform1f(shader.u_loc[4], light.intensity);
-	glUniform1f(shader.u_loc[5], light.range);
-	glUniform3fv(shader.u_loc[6], 1, &mtl->clr_amb.x);
-	glUniform3fv(shader.u_loc[7], 1, &mtl->clr_dif.x);
-	glUniform3fv(shader.u_loc[8], 1, &mtl->clr_spc.x);
-	glUniform1f(shader.u_loc[9], mtl->expnt_spc);
-	glUniform1f(shader.u_loc[10], mtl->transparency);
-}
-
-void		set_uniforms(t_env *env, t_uniforms shader_u, t_go_node *node, \
-	t_mat4x4 *m)
-{
-	t_shader	shader;
-
-	if (shader_u & PICK_SHADER_UNIFORMS)
-	{
-		shader = env->pick_shader;
-		glUniform3fv(shader.u_loc[2], 1, &node->go->pick_clr.x);
-	}
-	else if (shader_u & DEF_SHADER_UNIFORMS)
-	{
-		shader = env->def_shader;
-		set_def_uniforms(shader, env->light, 0.9f);//, env->texture_set[current_tex]);
-	}
-	else if (shader_u & STD_SHADER_UNIFORMS)
-	{
-		shader = env->std_shader;
-		set_std_uniforms(shader, env->light, \
-			get_mtl(env->mtl_list, node->go->mtl_id));
-	}
-	glUniformMatrix4fv(shader.u_loc[0], 1, GL_FALSE, m[node->id].m);
-	glUniformMatrix4fv(shader.u_loc[1], 1, GL_FALSE, m[0].m);
-}
 
 void		draw_ms_fbo(t_env *env, t_mat4x4 *m)
 {
@@ -227,6 +147,7 @@ void		draw_pick_fbo(t_env *env, t_mat4x4 *m)
 		glUseProgram(env->pick_shader.prog);
 		set_uniforms(env, PICK_SHADER_UNIFORMS, tmp, m);
 		glBindVertexArray(tmp->go->gl_stack->vao);
+		glEnableVertexAttribArray(0);
 		glDisableVertexAttribArray(1); // normals
 		glDisableVertexAttribArray(2); // UVs
 		glDisableVertexAttribArray(3); // grey color array
@@ -246,25 +167,25 @@ static void	draw(t_env *env)
 	{
 		env->go_mat[0] = mat4x4_mult(env->proj_mat, compute_view(env->camera));
 		get_model_matrices(env->go_list, env->go_mat);
-		for (unsigned int i = 0; i < env->go_count + 1; i++)
-			display_mat4x4(env->go_mat[i], ft_itoa(i));
-		//glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//draw_ms_fbo(env, env->go_mat);
+		//for (unsigned int i = 0; i < env->go_count + 1; i++)
+		//	display_mat4x4(env->go_mat[i], ft_itoa(i));
+		glBindFramebuffer(GL_FRAMEBUFFER, env->ms_fbo);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		draw_ms_fbo(env, env->go_mat);
 		glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		draw_pick_fbo(env, env->go_mat);
-		handle_picking(env->selection, env->go_list, &env->selection_count);
+		// handle_picking(env->selection, env->go_list, &env->selection_count);
 		// draw_handles();
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, env->pick_fbo);
-		//glBindFramebuffer(GL_READ_FRAMEBUFFER, env->ms_fbo);
+		//glBindFramebuffer(GL_READ_FRAMEBUFFER, env->pick_fbo);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, env->ms_fbo);
 		glBlitFramebuffer(0, 0, WIN_W, WIN_H, 0, 0, WIN_W, WIN_H, \
 			GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
-}*/
+}
 
-/*static void	loop(t_env *env)
+static void	loop(t_env *env)
 {
 	SDL_Event	event;
 
@@ -277,10 +198,10 @@ static void	draw(t_env *env)
 		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			env->loop = 0;
 		//}
-		//draw(env);
+		draw(env);
 		SDL_GL_SwapWindow(env->window);
 	}
-}*/
+}
 
 int			main(int argc, char **argv)
 {
@@ -289,9 +210,9 @@ int			main(int argc, char **argv)
 	env = NULL;
 	if (!(env = init_scop(env, argc, argv)))
 		return (0);
-	//printf("2\n");
-	display_go_list(env->go_list);
-	//loop(env);
+	//display_go_list(env->go_list);
+	glBindVertexArray(0); // ?
+	loop(env);
 	clean_scop(env, CLEAN_ALL);
 	return (0);
 }

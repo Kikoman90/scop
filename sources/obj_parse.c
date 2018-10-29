@@ -6,21 +6,11 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 17:30:43 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 19:32:02 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
-
-/*int				valid_idx_check(unsigned int *idx, unsigned int vtx_count, \
-					unsigned int idx_count)
-{
-	if (*idx > vtx_count || *(idx + 1) > vtx_count || *(idx + 2) > vtx_count)
-		return (0);
-	if (idx_count == 6 && *(idx + 5) > vtx_count)
-		return (0);
-	return (1);
-}*/
 
 static t_vec3		feed_attrib(t_seed *v_seed, char *data, unsigned int idx, \
 	char *v)
@@ -30,24 +20,21 @@ static t_vec3		feed_attrib(t_seed *v_seed, char *data, unsigned int idx, \
 	char			*word;
 
 	i = 1;
-	//if (idx-- == 0)
-	//	return ((t_vec3)VEC3_ZERO);
 	seed = v_seed->beginseed;
-	while (i <= idx && i < v_seed->count && seed < v_seed->endseed && data[seed])
+	while (i <= idx && i <= v_seed->count && seed < v_seed->endseed && data[seed])
 	{
 		if ((word = ft_strword(data, &seed)) && ft_strcmp(word, v) == 0)
 		{
-			if (i++ == idx)
+			if (i == idx)
 			{
 				free(word);
-				//return ((t_vec3)VEC3_ONE);
 				return (vec3_atof(data, &seed, 0));
 			}
 		}
-		if (word)
-			free(word);
 		seed = skip_line(data, seed);
-		v_seed->line++; // absolutely useless
+		if (v_seed->line++ && word)
+			free(word);
+		i++;
 	}
 	return ((t_vec3)VEC3_ZERO);
 }
@@ -80,7 +67,7 @@ void			parse_vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
 	}
 }
 
-void			print_attrib_list(t_idx_attrib *list)
+/*void			print_attrib_list(t_idx_attrib *list)
 {
 	t_idx_attrib	*tmp;
 
@@ -94,7 +81,7 @@ void			print_attrib_list(t_idx_attrib *list)
 		tmp = tmp->next;
 	}
 	printf("=------------------------=\n");
-}
+}*/
 
 unsigned int	cmp_attrib(t_idx_attrib *att1, t_idx_attrib *att2, \
 	unsigned int *ret)
@@ -103,7 +90,6 @@ unsigned int	cmp_attrib(t_idx_attrib *att1, t_idx_attrib *att2, \
 		att1->attrib[1] == att2->attrib[1] && \
 		att1->attrib[2] == att2->attrib[2])
 	{
-		printf("attrib_node already exists\n");
 		*ret = att1->idx_ret;
 		return (1);
 	}
@@ -117,39 +103,28 @@ t_idx_attrib	*check_attrib_list(t_obj_parser_var *opv, t_idx_attrib *elem, \
 	t_idx_attrib	*attrib_ret;
 
 	tmp = opv->attrib_list;
-	printf("before doing anything\n");
-	print_attrib_list(opv->attrib_list);
 	while (tmp && tmp->next)
 	{
 		if (cmp_attrib(tmp, elem, ret) == 1)
-			return (opv->attrib_list);
+			return (tmp);
 		tmp = tmp->next;
 	}
 	if (tmp && cmp_attrib(tmp, elem, ret) == 1)
-		return (opv->attrib_list);
+		return (tmp);
 	if (!(attrib_ret = (t_idx_attrib*)malloc(sizeof(t_idx_attrib))))
 		return (log_error_null(MALLOC_ERROR));
-	//printf("doesn't exist, adding it to the list\n");
 	attrib_ret->idx_ret = opv->attrib_fill++;
 	attrib_ret->attrib[0] = elem->attrib[0];
 	attrib_ret->attrib[1] = elem->attrib[1];
 	attrib_ret->attrib[2] = elem->attrib[2];
 	attrib_ret->next = NULL;
 	*ret = attrib_ret->idx_ret;
-	printf("THIS NODE: {%u %u %u} {%u}\n", attrib_ret->attrib[0], \
-		attrib_ret->attrib[1], attrib_ret->attrib[2], attrib_ret->idx_ret);
 	if (tmp)
-	{
-		printf("added at the end\n");
 		tmp->next = attrib_ret;
-		return (opv->attrib_list);
-	}
-	printf("added at the start\n");
+	else
+		opv->attrib_list = attrib_ret;
 	return (attrib_ret);
-		//opv->attrib_list = attrib_ret;
 }
-
-
 
 unsigned int	*get_ret_indices(t_obj_parser_var *opv, char *data, \
 	unsigned int seed)
@@ -157,43 +132,26 @@ unsigned int	*get_ret_indices(t_obj_parser_var *opv, char *data, \
 	unsigned int	i;
 	unsigned int	*ret;
 	char			*word;
-	t_idx_attrib	*f_tmp;
+	t_idx_attrib	f_tmp;
 
-	if (!(ret = (unsigned int*)malloc(sizeof(unsigned int) * opv->f_count)) || \
-		!(f_tmp = (t_idx_attrib*)malloc(sizeof(t_idx_attrib))))
+	if (!(ret = (unsigned int*)malloc(sizeof(unsigned int) * opv->f_count)))
 			return (log_error_null(MALLOC_ERROR));
 	i = 0;
 	while (i < opv->f_count)
 	{
 		word = ft_strword(data, &seed);
-		//printf("attrib_fill = %u\n", opv->attrib_fill);
-		//printf("WORD = %s\n", word);
-		//printf("ft_strchr(WORD, '/', 1) = %s\n", ft_strchr(word, '/', 1));
-		//printf("ft_strchr(WORD, '/', 2, 1) = %s\n", ft_strnchr(word, '/', 2, 1));
-		f_tmp->attrib[0] = (unsigned int)ft_atoi(word);
-		f_tmp->attrib[1] = (unsigned int)ft_atoi(ft_strchr(word, '/', 1));
-		f_tmp->attrib[2] = (unsigned int)ft_atoi(ft_strnchr(word, '/', 2, 1));
-		printf("f_tmp->attrib[3] = {%u, %u, %u}\n", f_tmp->attrib[0], \
-			f_tmp->attrib[1], f_tmp->attrib[2]);
+		f_tmp.attrib[0] = (unsigned int)ft_atoi(word);
+		f_tmp.attrib[1] = (unsigned int)ft_atoi(ft_strchr(word, '/', 1));
+		f_tmp.attrib[2] = (unsigned int)ft_atoi(ft_strnchr(word, '/', 2, 1));
 		if (word)
 			free(word);
-		//printf("before cmp\n");
-		if (!(opv->attrib_list = check_attrib_list(opv, f_tmp, &(ret[i]))))
+		if (!check_attrib_list(opv, &f_tmp, &ret[i]))
 		{
 			free(ret);
 			return (NULL);
 		}
-		//printf("after cmp\n");
-		//print_attrib_list(opv->attrib_list);
 		i++;
 	}
-	//printf("\n");
-	if (f_tmp)
-		free(f_tmp);
-	printf("RET = { ");
-	for (unsigned int k = 0; k < opv->f_count; k++)
-		printf("%u ", ret[k]);
-	printf("}\n");
 	return (ret);
 }
 
@@ -209,10 +167,7 @@ static unsigned int		feed_indices(t_gameobject *go, unsigned int *indices, \
 	ii = 0;
 	ri = i + 3;
 	while (i < ri)
-	{
 		go->indices[i++] = indices[ii++];
-		printf("go->indices[%u] = %u\n", i - 1, go->indices[i - 1]);
-	}
 	ri += (count - 3);
 	j = i;
 	while (i < ri)
@@ -220,9 +175,6 @@ static unsigned int		feed_indices(t_gameobject *go, unsigned int *indices, \
 		go->indices[j] = go->indices[i - 3];
 		go->indices[j + 1] = go->indices[i - 1];
 		go->indices[j + 2] = indices[ii++];
-		printf("lel go->indices[%u] = %u\n", j, go->indices[j]);
-		printf("lel go->indices[%u] = %u\n", j + 1, go->indices[j + 1]);
-		printf("lel go->indices[%u] = %u\n", j + 2, go->indices[j + 2]);
 		j += 3;
 		i++;
 	}
@@ -238,8 +190,6 @@ unsigned int	parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
 	t_seed			*f_seed;
 	char			*w;
 
-	unsigned int	*returnlol;
-
 	i = 0;
 	f_seed = &opv->f_seed;
 	seed = f_seed->beginseed;
@@ -249,22 +199,9 @@ unsigned int	parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
 		{
 			if ((opv->f_count = check_idx_count(parser->data, seed, 0)) < 3)
 				return (parser_error(FACE_ERROR, parser->fname, f_seed->line));
-			returnlol = get_ret_indices(opv, parser->data, seed);
-			printf("this is returnlol = { ");
-			for (unsigned int k = 0; k < opv->f_count; k++)
-				printf("%u ", returnlol[k]);
-			printf("}\n");
-			//printf("tell me now1\n");
-			//print_attrib_list(opv->attrib_list);
-			// THIS FUNCTION CHANGES MY LIST
-			feed_indices(go, returnlol, i, opv->f_count);
-			// THIS FUNCTION CHANGES MY LIST
-			//printf("tell me now2\n");
-			//print_attrib_list(opv->attrib_list);
-			//if (!feed_indices(go, get_ret_indices(opv, parser->data, seed), \
-			//	opv->f_count, i))
-			//	return (0);
-			//print_attrib_list(opv->attrib_list);
+			if (!feed_indices(go, get_ret_indices(opv, parser->data, seed), \
+				i, opv->f_count))
+				return (0);
 			i += 3 + ((opv->f_count - 3) * 3);
 		}
 		seed = skip_line(parser->data, seed);
@@ -272,8 +209,6 @@ unsigned int	parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
 			free(w);
 	}
 	go->vtx_count = opv->attrib_fill;
-	//print_attrib_list(opv->attrib_list);
-	printf("vtx_count = %zu\n", go->vtx_count);
 	return (1);
 }
 
@@ -287,20 +222,14 @@ static void		parse_go(t_env *env, t_parser *parser, t_obj_parser_var *opv, \
 	{
 		if (!opv->name || ft_strlen(opv->name) == 0)
 			opv->name = ft_strjoin_rf(GO_NAME, ft_itoa((int)env->go_count + 1));
-		printf("opv->name = %s\n", opv->name);
-		printf("opv->f_seed.count = %zu\n", opv->f_seed.count);
 		if ((node = create_go_node(opv->name, opv->mtl_id, opv->f_seed.count)))
 		{
 			if (!parse_indices(node->go, opv, parser) || !(node->go->vtx_attrib\
 				= (t_vtx_attrib*)malloc(sizeof(t_vtx_attrib) * node->go->vtx_count)))
 				clean_go_node(node, 0);
-			//printf("4\n");
-			//parse_vtx_attrib(node->go, opv, parser->data);
-			//printf("5\n");
-			//init_gl_objects(node->go, (char*)NULL, sizeof(float));
-			//printf("6\n");
-			//env->go_list = add_go_node(env, node);
-			exit(1);
+			parse_vtx_attrib(node->go, opv, parser->data);
+			init_gl_objects(node->go, (char*)NULL, sizeof(float));
+			env->go_list = add_go_node(env, node);
 		}
 	}
 	if (free_opv == 1)

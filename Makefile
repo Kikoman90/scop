@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/10/26 15:51:22 by fsidler          ###   ########.fr        #
+#    Updated: 2018/10/29 19:13:47 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,7 @@ SRCS =	main.c \
 		node_add.c \
 		node_create.c \
 		node_clean.c \
+		uniforms.c \
 		update.c \
 		display.c \
 

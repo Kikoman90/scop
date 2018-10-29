@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 13:11:42 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 19:48:29 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,6 +205,13 @@ t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
 //t_go_node				*clone_go_node(t_go_node *src);
 
 /*
+** uniforms.c			=> 5 functions
+*/
+void					get_uniforms(t_shader *shdr, t_uniforms shader_u);
+void					set_uniforms(t_env *env, t_uniforms shader_u, \
+							t_go_node *node, t_mat4x4 *m);
+
+/*
 ** update.c				=> 1 function
 */
 unsigned int			mat_update(t_mat4x4 **mat, size_t count);
@@ -249,5 +256,7 @@ t_light					init_light(t_env *env, t_vec3 color, float i, \
 							float range);
 							
 t_gameobject			*get_gameobject(t_go_node *list, unsigned int id);
+
+t_material				*get_mtl(t_mtl_node *list, unsigned int id);
 
 #endif

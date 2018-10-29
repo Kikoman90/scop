@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 20:35:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/29 19:34:45 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ t_vec3			vec3_atof(char *data, unsigned int *seed, int clamp01)
 
 	res.x = ft_atof_f(ft_strword(data, seed));
 	res.y = ft_atof_f(ft_strword(data, seed));
-	res.z = 1.0f;//ft_atof_f(ft_strword(data, seed));
+	res.z = ft_atof_f(ft_strword(data, seed)); // = 1.0f;
 	if (clamp01 == 1)
 	{
 		res.x = ft_fclamp(res.x, 0, 1);
