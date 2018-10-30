@@ -1,6 +1,7 @@
 #version 410 core
 
-in vec4		vNormal;
+in vec3		vFragPos;
+in vec3		vNormal;
 
 struct 		LightProps {
 	vec3	position;
@@ -17,6 +18,7 @@ struct		MatProps {
 	float	transp;
 };
 
+uniform vec3		viewPos;
 uniform LightProps	light;
 uniform MatProps	mat;
 
@@ -24,10 +26,16 @@ out	vec4	FragColor;
 
 void	main()
 {
-	//uniforms that are not used return -1 with glGetUniformLocation();
-	//vec4 sum = vec4(light.color.x, light.color.y, light.color.z, 1.0f);
-	//float range_intensity = light.intensity + light.range;
-	//vec4 pos = vec4(light.position, 0.2f);
-	// lighting
-	FragColor = vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	vec3 ray = vFragPos - light.position;
+	vec3 lightDir = normalize(light.position - vFragPos);
+	float dist = -length(ray);// * -1;
+	dist = (dist + light.range) / light.range;
+	vec3 diffuse = light.intensity * max(dot(vNormal, lightDir), 0.0) \
+		* mat.clr_dif * light.color * dist;
+	vec3 viewDir = normalize(viewPos - vFragPos);
+	vec3 reflectDir = reflect(-lightDir, vNormal);
+	vec3 specular = light.intensity * (mat.expnt_spc / 100.0f) * pow(max(dot(viewDir, reflectDir), 0.0), 32)
+		* mat.clr_spc * light.color * dist;
+	vec3 final = mat.clr_amb + diffuse + specular;
+	FragColor = vec4(final, mat.transp);
 }

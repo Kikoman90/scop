@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 20:55:03 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/30 15:59:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,12 @@ static void	*init_sdl_gl(t_env *env)
 	if (!(env->gl_context = SDL_GL_CreateContext(env->window)))
 		return (log_error_null(SDL_GetError()));
 	init_framebuffers(&env->ms_fbo, &env->pick_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.19, 0.27, 0.41, 1);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable( GL_BLEND );
 	glViewport(0, 0, WIN_W, WIN_H);
 	return ((void*)1);
 }
@@ -148,7 +153,7 @@ t_env			*init_scop(t_env *env, int argc, char **argv)
 	while (argc-- > 1)
 		parse_file(env, argv[argc], parse_wavefrontobj);
 	parse_file(env, "resources/obj/light_obj.obj", parse_wavefrontobj);
-	env->light = init_light(env, (t_vec3)VEC3_ONE, 1.0f, 12.0f);
+	env->light = init_light(env, (t_vec3)VEC3_ONE, 1.5f, 12.0f);
 	env->go_mat = NULL;
 	env->go_mat_update = mat_update(&env->go_mat, env->go_count);
 	env->loop = 1;

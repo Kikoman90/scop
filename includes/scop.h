@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 19:48:29 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/30 16:03:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ typedef struct			s_transform
 typedef struct			s_gl_stack
 {
 	GLuint				vao;
+	GLuint				vbo;
 	GLuint				ibo;
-	GLuint				vbo[4];
 }						t_gl_stack;
 
 typedef struct			s_shader
@@ -68,7 +68,7 @@ typedef struct			s_shader
 	GLuint				vtx_s;
 	GLuint				frg_s;
 	GLuint				prog;
-	GLint				u_loc[11];
+	GLint				u_loc[12];
 }						t_shader;
 
 typedef struct			s_material
@@ -248,7 +248,8 @@ void					display_material(t_material *mtl);
 void					display_mtl_list(t_mtl_node *list);
 //
 
-void					init_gl_objects(t_gameobject *go, char *b, size_t sf);
+void					init_gl_objects(t_gameobject *go, size_t buf_s, \
+							size_t attr_s);
 t_transform				init_transform(void);
 t_transform         	init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 t_mat4x4				go_trs(t_transform tr);

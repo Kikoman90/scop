@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 19:32:02 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/30 13:24:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,7 @@ static void		parse_go(t_env *env, t_parser *parser, t_obj_parser_var *opv, \
 				= (t_vtx_attrib*)malloc(sizeof(t_vtx_attrib) * node->go->vtx_count)))
 				clean_go_node(node, 0);
 			parse_vtx_attrib(node->go, opv, parser->data);
-			init_gl_objects(node->go, (char*)NULL, sizeof(float));
+			init_gl_objects(node->go, sizeof(t_vtx_attrib), sizeof(float));
 			env->go_list = add_go_node(env, node);
 		}
 	}
