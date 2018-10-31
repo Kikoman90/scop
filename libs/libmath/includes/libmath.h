@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 14:49:52 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 13:48:48 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,108 +25,108 @@
 # define VEC4_ONE {1.0f, 1.0f, 1.0f, 1.0f}
 # define VEC4_UP {0.0f, 1.0f, 0.0f, 0.0f}
 
-typedef struct	s_vec2
+typedef struct		s_vec2
 {
-	float		x;
-	float		y;
-}				t_vec2;
+	float			x;
+	float			y;
+}					t_vec2;
 
-typedef struct	s_vec3
+typedef struct		s_vec3
 {
-	float		x;
-	float		y;
-	float		z;
-}				t_vec3;
+	float			x;
+	float			y;
+	float			z;
+}					t_vec3;
 
-typedef struct	s_vec4
+typedef struct		s_vec4
 {
-	float		x;
-	float		y;
-	float		z;
-	float		w;
-}				t_vec4;
+	float			x;
+	float			y;
+	float			z;
+	float			w;
+}					t_vec4;
 
 /*
 ** column-major matrix
 */
-typedef union	u_mat4x4 {
-	float		m[16];
-	t_vec4		v[4];
-}				t_mat4x4;
+typedef union		u_mat4x4 {
+	float			m[16];
+	t_vec4			v[4];
+}					t_mat4x4;
 
-typedef struct	s_quaternion
+typedef struct		s_quaternion
 {
-	float		w;
-	t_vec3		v;
-}				t_quaternion;
+	float			w;
+	t_vec3			v;
+}					t_quaternion;
 
 /*
-** vector.c		=> 5 functions
+** vector.c			=> 5 functions
 */
-t_vec2			vec2_f(float f);
-t_vec2			vec2_xy(float x, float y);
-t_vec2			vec2_v3(t_vec3 v);
-t_vec3			vec3_f(float f);
-t_vec3			vec3_xyz(float x, float y, float z);
+t_vec2				vec2_f(float f);
+t_vec2				vec2_xy(float x, float y);
+t_vec2				vec2_v3(t_vec3 v);
+t_vec3				vec3_f(float f);
+t_vec3				vec3_xyz(float x, float y, float z);
 
 /*
-** vectorbis.c	=> 4 functions
+** vectorbis.c		=> 4 functions
 */
-t_vec3			vec3_v4(t_vec4 v4);
-t_vec4			vec4_f(float f);
-t_vec4			vec4_xyzw(float x, float y, float z, float w);
-t_vec4			vec4_v3w(t_vec3 v3, float w);
+t_vec3				vec3_v4(t_vec4 v4);
+t_vec4				vec4_f(float f);
+t_vec4				vec4_xyzw(float x, float y, float z, float w);
+t_vec4				vec4_v3w(t_vec3 v3, float w);
 
 /*
 ** vector_basop.c	=> 4 functions
 */
-t_vec3			vec3_scale(t_vec3 v, float s);
-t_vec3			vec3_add(t_vec3 a, t_vec3 b);
-t_vec3			vec3_sub(t_vec3 a, t_vec3 b);
-float			vec3_length(t_vec3 v);
+t_vec3				vec3_scale(t_vec3 v, float s);
+t_vec3				vec3_add(t_vec3 a, t_vec3 b);
+t_vec3				vec3_sub(t_vec3 a, t_vec3 b);
+float				vec3_length(t_vec3 v);
 
 /*
 ** vector_advop.c	=> 3 functions
 */
-t_vec3			vec3_cross(t_vec3 a, t_vec3 b);
-t_vec2			vec2_norm(t_vec2 v);
-t_vec3			vec3_norm(t_vec3 v);
-float			vec3_dot(t_vec3 a, t_vec3 b);
+t_vec3				vec3_cross(t_vec3 a, t_vec3 b);
+t_vec2				vec2_norm(t_vec2 v);
+t_vec3				vec3_norm(t_vec3 v);
+float				vec3_dot(t_vec3 a, t_vec3 b);
 
 /*
-** matrix.c		=> 2 functions
+** matrix.c			=> 2 functions
 */
-t_mat4x4		mat4x4(void);
-t_mat4x4		mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s);
+t_mat4x4			mat4x4(void);
+t_mat4x4			mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 
 /*
 ** matrix_basop.c	=> 4 functions
 */
-t_mat4x4		mat4x4_add(t_mat4x4 a, t_mat4x4 b);
-t_mat4x4		mat4x4_sub(t_mat4x4 a, t_mat4x4 b);
-t_mat4x4		mat4x4_transpose(t_mat4x4 mat);
+t_mat4x4			mat4x4_add(t_mat4x4 a, t_mat4x4 b);
+t_mat4x4			mat4x4_sub(t_mat4x4 a, t_mat4x4 b);
+t_mat4x4			mat4x4_transpose(t_mat4x4 mat);
 
 /*
 ** vector_advop.c	=> 5 functions
 */
-t_vec3			vec3_mat4x4_prod(t_mat4x4 mat, t_vec3 v);
-t_vec4			vec4_mat4x4_prod(t_mat4x4 mat, t_vec4 v);
-t_mat4x4		mat4x4_mult(t_mat4x4 a, t_mat4x4 b);
-t_mat4x4		quat_to_mat4x4(t_quaternion q);
-t_quaternion	mat4x4_to_quat(t_mat4x4 mat); // too many lines
+t_vec3				vec3_mat4x4_prod(t_mat4x4 mat, t_vec3 v);
+t_vec4				vec4_mat4x4_prod(t_mat4x4 mat, t_vec4 v);
+t_mat4x4			mat4x4_mult(t_mat4x4 a, t_mat4x4 b);
+t_mat4x4			quat_to_mat4x4(t_quaternion q);
+t_quaternion		mat4x4_to_quat(t_mat4x4 mat); // too many lines
 
 /*
-** quaternion.c	=> 5 functions
+** quaternion.c		=> 5 functions
 */
-t_quaternion	quat(void);
-t_quaternion	quat_tv(float theta, t_vec3 v);
-t_quaternion	quat_norm(t_quaternion q);
-t_quaternion	quat_mult(t_quaternion a, t_quaternion b);
-t_vec3			vector_rot(t_quaternion q, t_vec3 v);
+t_quaternion		quat(void);
+t_quaternion		quat_tv(float theta, t_vec3 v);
+t_quaternion		quat_norm(t_quaternion q);
+t_quaternion		quat_mult(t_quaternion a, t_quaternion b);
+t_vec3				vector_rot(t_quaternion q, t_vec3 v);
 
-//t_mat4x4			mat4x4_scale(t_vec3 s);
-//t_mat4x4			mat4x4_translate(t_vec3 t);
-//t_quaternion    	quat_inv(t_quaternion q); // res.w = q.w res.v = vec3_inv(q.v);
-//reference functions ? (i.e. vec3_addr(t_vec3 *a, t_vec3 b) -> vec3_addr(&a, b))
+// t_mat4x4			mat4x4_scale(t_vec3 s);
+// t_mat4x4			mat4x4_translate(t_vec3 t);
+// t_quaternion    	quat_inv(t_quaternion q); res.w = q.w res.v = vec3_inv(q.v);
+// reference functions ? i.e. vec3_addr(t_vec3 *a, t_vec3 b) => vec3_addr(&a, b)
 
 #endif

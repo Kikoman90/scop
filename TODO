@@ -1,20 +1,26 @@
 S C O P  S C O P E :
 
-clean everything up, reorganize structures and code/files.
-today : axis, handles, rotations (objects & camera)
-maybe sdl inputs too.
-
-lighting
-
-* handles (scene axes and grid, objects local/world coordinates (switch), rotation handles, scale handles, position handles)
-all sorts of handles and gizmos.
+* trouver le centre de l'objet (zmin, zmax, ymin, ymax, xmin, xmax)
+* ensuite recalculer les positions des vertex par rapport au nouveau centre
+* calculer les normales des faces si elles ne sont pas indiquees ou incoherentes
+* skybox (OR GRID AND AXES !)
+* handles
+* camera movement
+* a bit of UI ?
+* close button triggers SDL_QUIT 🤠 event
 
 * showFPS
-* close button triggers SDL_QUIT 🤠 event
 * input handler !
 
-ability to lock on a gameobject (camera rotates around it)
-object basic info when hovering over it.
+HANDLES
+* scene axes and grid, objects local/world coordinates (switch)
+    all sorts of handles and gizmos (e.g. light gizmos)
+* small coordinate system in the bottom right to indicate world axes
+
+* ability to lock on a gameobject (camera rotates around it)
+* object basic info when hovering over it.
+
+clean everything up, reorganize structures and code/files.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 SERIALIZATION !

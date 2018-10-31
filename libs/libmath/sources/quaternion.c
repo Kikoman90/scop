@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 17:29:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/23 18:03:15 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/30 21:50:42 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ t_quaternion	quat(void)
 	return (q);
 }
 
-// flag parameter to normalize quaternion ?
 t_quaternion	quat_tv(float theta, t_vec3 v)
 {
 	t_quaternion	q;

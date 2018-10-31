@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/30 16:03:32 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 13:55:57 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@
 # define SHADER_INIT_ERROR "shader initialization failed"
 # define FRAMEBUFFER_INCOMPLETE_ERROR "framebuffer imcomplete"
 
-# define BUFFER_OFFSET (char*)NULL + (i);
-
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
 
@@ -54,6 +52,14 @@ typedef struct			s_transform
 	t_vec3				position;
 	t_vec3				scale;
 }						t_transform;
+
+typedef struct			s_vtx_attrib
+{
+	t_vec2				uv;
+	t_vec3				vertex;
+	t_vec3				normal;
+	t_vec3				color;
+}						t_vtx_attrib;
 
 typedef struct			s_gl_stack
 {
@@ -81,14 +87,6 @@ typedef struct			s_material
 	float				transparency;
 }						t_material;
 
-typedef struct			s_vtx_attrib
-{
-	t_vec2				uv;
-	t_vec3				vertex;
-	t_vec3				normal;
-	t_vec3				color;
-}						t_vtx_attrib;
-
 typedef struct			s_gameobject
 {
 	char				*name;
@@ -101,14 +99,6 @@ typedef struct			s_gameobject
 	t_vec3				pick_clr;
 	t_gl_stack			*gl_stack;
 }						t_gameobject;
-
-typedef struct			s_light
-{
-	t_gameobject		*go;
-	t_vec3				light_color;
-	float				intensity;
-	float				range;
-}						t_light;
 
 typedef struct			s_mtl_node
 {
@@ -123,6 +113,14 @@ typedef struct			s_go_node
 	t_gameobject		*go;
 	struct s_go_node	*next;
 }						t_go_node;
+
+typedef struct			s_light
+{
+	t_gameobject		*go;
+	t_vec3				light_color;
+	float				intensity;
+	float				range;
+}						t_light;
 
 typedef struct			s_camera
 {
@@ -156,7 +154,7 @@ typedef struct			s_env
 }						t_env;
 
 /*
-** setup.c				=> 5 functions (+ 1 to move)
+** setup.c				=> 5 functions
 */
 t_env					*init_scop(t_env *env, int argc, char **argv);
 
@@ -165,64 +163,96 @@ t_env					*init_scop(t_env *env, int argc, char **argv);
 */
 GLuint					init_program(t_shader *program, const char *path, \
 							t_uniforms uf);
-
-void		get_uniforms(t_shader *shdr, t_uniforms shader_u);
-
 /*
-** parser.c				=> 3 functions
+** parser_init.c		=> 5 functions
 */
+t_idx_attrib			*free_attrib(t_idx_attrib *list);
 t_obj_parser_var		*init_opv(t_obj_parser_var *opv, char *name, \
 							unsigned int mtl_offset);
 void					parse_file(t_env *env, const char *path, \
 							void (*ft_parsing)(t_env*, t_parser*, char*));
 
 /*
-** obj_parser.c			=> ? functions
+** mtl_parse.c			=> 2 functions
+*/
+void					parse_wavefrontmtl(t_env *env, t_parser *parser, \
+							char *word);
+
+/*
+** attrib_parse.c		=> 5 functions
+*/
+void			    	parse_vtx_attrib(t_gameobject *go, \
+							t_obj_parser_var *opv, char *data);
+unsigned int	    	parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
+							t_parser *parser);
+
+/*
+** obj_parse.c			=> 4 functions
 */
 void					parse_wavefrontobj(t_env *env, t_parser *parser, \
 							char *word);
 
 /*
-** mtl_parser.c			=> ? functions
+** obj_init.c			=> 5 functions
 */
-void					parse_wavefrontmtl(t_env *env, t_parser *parser, \
-							char *word);
+t_mat4x4				go_trs(t_transform tr);
+t_transform				init_transform(void);
+t_transform         	init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
+t_light					init_light(t_env *env, t_vec3 color, float i, \
+							float range);
+void					init_gl_objects(t_gameobject *go, size_t buf_s, \
+							size_t attr_s);
 
-unsigned int			get_mtl_id(t_env *env, char *mtl_name, unsigned int mtl_offset);
+/*
+** obj_get.c			=> 4 functions
+*/
+void					get_model_matrices(t_go_node *go_list, t_mat4x4 *m);
+unsigned int			get_mtl_id(t_env *env, char *mtl_name, \
+							unsigned int mtl_offset);
+t_material				*get_mtl(t_mtl_node *list, unsigned int id);
+t_gameobject			*get_gameobject(t_go_node *list, unsigned int id);
 
 /*
 ** node_create.c		=> 4 functions
 */
+t_mtl_node				*create_mtl_node(char *name);
 t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
 							size_t ic);
-t_mtl_node				*create_mtl_node(char *name);
 
 /*
-** node_add.c			=> 2 functions (+ 1 to move)
+** node_add.c			=> 3 functions
 */
-t_go_node				*add_go_node(t_env *env, t_go_node *node);
 t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
-//t_go_node				*clone_go_node(t_go_node *src);
-
-/*
-** uniforms.c			=> 5 functions
-*/
-void					get_uniforms(t_shader *shdr, t_uniforms shader_u);
-void					set_uniforms(t_env *env, t_uniforms shader_u, \
-							t_go_node *node, t_mat4x4 *m);
-
-/*
-** update.c				=> 1 function
-*/
-unsigned int			mat_update(t_mat4x4 **mat, size_t count);
+t_go_node				*add_go_node(t_env *env, t_go_node *node);
 
 /*
 ** node_clean.c			=> 4 functions
 */
-void					clean_go_node(t_go_node *node, unsigned int no_free);
 void					clean_mtl_node(t_mtl_node *node, unsigned int no_free);
+void					clean_go_node(t_go_node *node, unsigned int no_free);
 void					remove_go_node(t_go_node *list, unsigned int id, \
 							unsigned int no_f, size_t *count);
+
+/*
+** uniforms.c			=> 5 functions
+*/
+void					set_uniforms(t_env *env, t_uniforms shader_u, \
+							t_go_node *node, t_mat4x4 *m);
+void					get_uniforms(t_shader *shdr, t_uniforms shader_u);
+
+/*
+** update.c				=> 4 function
+*/
+void					rotate_gameobjects(t_go_node *list, double delta);
+unsigned int			mat_update(t_mat4x4 **mat, size_t count);
+t_mat4x4				compute_view(t_camera cam);
+t_mat4x4	    		compute_proj(float fov, float aspect, float zn, \
+							float zf);
+
+/*
+** events_handle.c		=> 4 functions
+*/
+void					handle_events_and_input(t_env *env);
 
 /*
 ** cleanup.c			=> 4 functions
@@ -235,29 +265,19 @@ void					*clean_scop(t_env *env, t_clean_flags f);
 void					log_error(const char *msg);
 void					log_error_free(char *msg);
 void					*log_error_null(const char *msg);
-int						parser_error(const char *err, const char *fname, unsigned int fline);
-GLuint					shader_error(const char *shader_name, char *log, GLenum shader_type); //shader_type is unused
+int						parser_error(const char *err, const char *fname, \
+							unsigned int fline);
+GLuint					shader_error(const char *shader_name, char *log, \
+							GLenum shader_type);
 
 // removal needed
-void					display_quaternion(t_quaternion q, const char *msg);
-void					display_mat4x4(t_mat4x4 mat, const char *msg);
 void					display_vec3(const char *p, t_vec3 v);
-void					display_gameobject(t_gameobject *obj);
-void					display_go_list(t_go_node *list);
+void					display_mat4x4(t_mat4x4 mat, const char *msg);
+void					display_quaternion(t_quaternion q, const char *msg);
 void					display_material(t_material *mtl);
 void					display_mtl_list(t_mtl_node *list);
+void					display_gameobject(t_gameobject *obj);
+void					display_go_list(t_go_node *list);
 //
-
-void					init_gl_objects(t_gameobject *go, size_t buf_s, \
-							size_t attr_s);
-t_transform				init_transform(void);
-t_transform         	init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
-t_mat4x4				go_trs(t_transform tr);
-t_light					init_light(t_env *env, t_vec3 color, float i, \
-							float range);
-							
-t_gameobject			*get_gameobject(t_go_node *list, unsigned int id);
-
-t_material				*get_mtl(t_mtl_node *list, unsigned int id);
 
 #endif

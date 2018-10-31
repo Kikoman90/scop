@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/16 14:28:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 16:25:41 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 10:38:43 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,8 @@ static GLuint	create_shader(const char *name, char *data, GLenum shader_type)
 	return (sh);
 }
 
-static GLuint	init_shaders(t_shader *prg, const char *path)
+static GLuint	init_shaders(t_shader *prg, const char *path, \
+	unsigned int u_loc_count)
 {
 	char			*fullpath;
 	char			*fdata;
@@ -97,6 +98,8 @@ static GLuint	init_shaders(t_shader *prg, const char *path)
 		return (0);
 	}
 	free_data_and_path(fdata, fullpath, fsize);
+	while (u_loc_count)
+		prg->u_loc[--u_loc_count] = -1;
 	return (1);
 }
 
@@ -106,7 +109,7 @@ GLuint			init_program(t_shader *program, const char *path, t_uniforms uf)
 	GLchar	info_log[1024];
 
 	program->name = ft_strrchr(path, '/') + 1;
-	if (init_shaders(program, path) == 0)
+	if (init_shaders(program, path, 12) == 0)
 		return (0);
 	program->prog = glCreateProgram();
 	glAttachShader(program->prog, program->vtx_s);

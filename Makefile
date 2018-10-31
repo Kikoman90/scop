@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/10/29 19:13:47 by fsidler          ###   ########.fr        #
+#    Updated: 2018/10/31 13:38:39 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,21 +28,24 @@ DIR_OBJS = tmp
 
 HEADERS = includes
 
-SRCS =	main.c \
-		setup.c \
-		cleanup.c \
-		error.c \
+SRCS =	setup.c \
 		shader_init.c \
-		init_parser.c \
+		parser_init.c \
+		parser_utils.c \
+		mtl_parse.c \
+		attrib_parse.c \
 		obj_parse.c \
 		obj_init.c \
-		mtl_parse.c \
-		utils_parser.c \
-		node_add.c \
+		obj_get.c \
 		node_create.c \
+		node_add.c \
 		node_clean.c \
 		uniforms.c \
 		update.c \
+		events_handle.c \
+		cleanup.c \
+		error.c \
+		main.c \
 		display.c \
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))

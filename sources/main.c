@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/30 13:27:28 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 13:56:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,45 +14,6 @@
 
 //void __attribute__((constructor)) begin(); //remove after checking leaks
 //void __attribute__((destructor)) end() {}; // remove after checking leaks
-
-t_mat4x4	compute_view(t_camera cam)
-{
-	t_mat4x4	view;
-
-	view = mat4x4_transpose(quat_to_mat4x4(cam.transform.rotation));
-	view.m[12] = -vec3_dot(vec3_v4(view.v[0]), cam.transform.position);
-	view.m[13] = -vec3_dot(vec3_v4(view.v[1]), cam.transform.position);
-	view.m[14] = -vec3_dot(vec3_v4(view.v[2]), cam.transform.position);
-	return (view);
-}
-
-t_material	*get_mtl(t_mtl_node *list, unsigned int id)
-{
-	t_mtl_node	*tmp;
-
-	tmp = list;
-	while (tmp != NULL)
-	{
-		if (id == tmp->id)
-			return (tmp->mtl);
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
-
-t_gameobject	*get_gameobject(t_go_node *list, unsigned int id)
-{
-	t_go_node	*tmp;
-
-	tmp = list;
-	while (tmp != NULL)
-	{
-		if (id == tmp->id)
-			return (tmp->go);
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
 
 /*void		add_to_selection(t_go_node *selection, t_go_node *go_list, \
 	size_t *count, unsigned int id)
@@ -74,21 +35,6 @@ t_gameobject	*get_gameobject(t_go_node *list, unsigned int id)
 			*count += 1;		
 	}
 }*/
-
-void		get_model_matrices(t_go_node *go_list, t_mat4x4 *m)
-{
-	t_go_node	*tmp;
-
-	tmp = go_list;
-	while (tmp)
-	{
-		//tmp->go->mtl_id = 0;
-		m[tmp->id] = go_trs(tmp->go->transform);
-		//printf("model_matrix[%d]\n", tmp->id);
-		//display_mat4x4(m[tmp->id], "MAT");
-		tmp = tmp->next;
-	}
-}
 
 /*void		handle_picking(t_go_node *selection, t_go_node *go_list, \
 	size_t *count)
@@ -135,6 +81,7 @@ void		draw_ms_fbo(t_env *env, t_mat4x4 *m)
 		glDrawElements(GL_TRIANGLES, tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
 		tmp = tmp->next;
 	}
+	// draw_world_axes_and_grid(env);
 }
 
 void		draw_pick_fbo(t_env *env, t_mat4x4 *m)
@@ -159,10 +106,7 @@ void		draw_pick_fbo(t_env *env, t_mat4x4 *m)
 static void	draw(t_env *env)
 {
 	if (env->go_mat_update)
-	{
-		printf("MAT_UPDATE_NEEDED\n");
 		env->go_mat_update = mat_update(&env->go_mat, env->go_count);
-	}
 	if (env->go_mat)
 	{
 		env->go_mat[0] = mat4x4_mult(env->proj_mat, compute_view(env->camera));
@@ -174,7 +118,8 @@ static void	draw(t_env *env)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		draw_pick_fbo(env, env->go_mat);
 		// handle_picking(env->selection, env->go_list, &env->selection_count);
-		// draw_handles();
+		// draw_handles(); // no depth test ?
+		// draw_mini_axes(env) // no depth test !
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, env->ms_fbo);
 		glBlitFramebuffer(0, 0, WIN_W, WIN_H, 0, 0, WIN_W, WIN_H, \
@@ -184,17 +129,21 @@ static void	draw(t_env *env)
 
 static void	loop(t_env *env)
 {
-	SDL_Event	event;
+	uint32_t	last_time;
+	uint32_t	cur_time;
+	double		delta_time;
 
+	cur_time = SDL_GetTicks();
 	while (env->loop == 1)
 	{
+		last_time = cur_time;
+		cur_time = SDL_GetTicks();
+		delta_time = (cur_time - last_time) / 1000.0;
+		// SDL_Delay(1.0f/60.0f);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//HandleEventsAndInput(){
-		SDL_PollEvent(&event);
-		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
-			env->loop = 0;
-		//}
+		rotate_gameobjects(env->go_list, delta_time);
+		handle_events_and_input(env);
 		draw(env);
 		SDL_GL_SwapWindow(env->window);
 	}

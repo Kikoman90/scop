@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:13:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 11:48:19 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 13:50:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,13 @@ typedef struct			s_parser
 	char				*data;
 }						t_parser;
 
+/*
+** parser_utils.c		=> 5 functions
+*/
 t_vec3					vec3_atof(char *data, unsigned int *seed, int clamp01);
-unsigned int			skip_line(char *data, unsigned int seed);
 unsigned int			check_idx_count(char *data, unsigned int seed, int idx);
-
-t_idx_attrib			*free_attrib(t_idx_attrib *list);
+unsigned int			skip_line(char *data, unsigned int seed);
+t_idx_attrib			*check_attrib_list(t_obj_parser_var *opv, \
+							t_idx_attrib *elem, unsigned int *ret);
 
 #endif

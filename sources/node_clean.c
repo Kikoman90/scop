@@ -6,11 +6,27 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/30 13:26:20 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 13:37:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
+
+static void	clean_mtl(t_material *mtl)
+{
+	free(mtl->name);
+	free(mtl);
+	mtl = NULL;
+}
+
+void		clean_mtl_node(t_mtl_node *node, unsigned int no_free)
+{
+	if (node->mtl && !no_free)
+		clean_mtl(node->mtl);
+	node->next = NULL;
+	free(node);
+	node = NULL;
+}
 
 static void	clean_go(t_gameobject *go)
 {
@@ -37,26 +53,10 @@ static void	clean_go(t_gameobject *go)
 	go = NULL;
 }
 
-static void	clean_mtl(t_material *mtl)
-{
-	free(mtl->name);
-	free(mtl);
-	mtl = NULL;
-}
-
 void		clean_go_node(t_go_node *node, unsigned int no_free)
 {
 	if (node->go && !no_free)
 		clean_go(node->go);
-	node->next = NULL;
-	free(node);
-	node = NULL;
-}
-
-void		clean_mtl_node(t_mtl_node *node, unsigned int no_free)
-{
-	if (node->mtl && !no_free)
-		clean_mtl(node->mtl);
 	node->next = NULL;
 	free(node);
 	node = NULL;

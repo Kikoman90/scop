@@ -1,16 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_parser.c                                      :+:      :+:    :+:   */
+/*   parser_init.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:18:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 13:46:32 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 13:53:02 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
+
+static t_seed		init_seed_struct()
+{
+	t_seed	seed;
+
+	seed.line = 0;
+	seed.beginseed = 0;
+	seed.endseed = 0;
+	seed.count = 0;
+	return (seed);
+}
 
 t_idx_attrib		*free_attrib(t_idx_attrib *list)
 {
@@ -25,17 +36,6 @@ t_idx_attrib		*free_attrib(t_idx_attrib *list)
 		tmp = tmp2;
 	}
 	return (NULL);
-}
-
-t_seed				init_seed_struct()
-{
-	t_seed	seed;
-
-	seed.line = 0;
-	seed.beginseed = 0;
-	seed.endseed = 0;
-	seed.count = 0;
-	return (seed);
 }
 
 t_obj_parser_var	*init_opv(t_obj_parser_var *opv, char *name, \

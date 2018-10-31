@@ -6,44 +6,41 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/30 15:59:25 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/10/31 13:51:19 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-// update.c file
-t_mat4x4	compute_proj(float fov, float aspect, float zn, float zf)
+static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
 {
-	t_mat4x4	proj_mat;
-	float f;
+	t_camera	cam;
 
-	fov *= M_PI / 180.0f;
-	f = 1 / tanf(fov / 2);
-	proj_mat = mat4x4();
-	proj_mat.m[0] = f / aspect;
-	proj_mat.m[5] = f;
-	proj_mat.m[10] = -(zf + zn) / (zf - zn);
-	proj_mat.m[11] = -1;
-	proj_mat.m[14] = (-2 * zn * zf) / (zf - zn);
-	proj_mat.m[15] = 0;
-	return (proj_mat);
+	cam.transform.position = pos;
+	cam.transform.rotation = quat();
+	cam.transform.scale = vec3_f(1);
+	cam.fov = fov;
+	cam.znear = zn;
+	cam.zfar = zf;
+	return (cam);
 }
 
 /*
 ** glGetIntegerv(GL_MAX_SAMPLES, &max_samples); // multisampling
 ** printf("max samples : %d\n", max_samples); // macos = 8;
 */
-static int	check_framebuffer_status(const char *fbo_type)
+static int		check_framebuffer_status(const char *fbo_type)
 {
 	GLenum	status;
 	char	*err_msg;
 
-	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE)
-		return (1);
+	//status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	err_msg = ft_strjoin(fbo_type, FRAMEBUFFER_INCOMPLETE_ERROR);
-	switch (status)
+	switch (status = glCheckFramebufferStatus(GL_FRAMEBUFFER))
 	{
+		case GL_FRAMEBUFFER_COMPLETE:
+			free(err_msg);
+			return (1);
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
 			log_error_free(ft_strjoin_lf(err_msg, " (incomplete attachment)"));
 			break;
@@ -54,7 +51,7 @@ static int	check_framebuffer_status(const char *fbo_type)
 			log_error_free(ft_strjoin_lf(err_msg, " (samples do not match)"));
 			break;
 		case GL_FRAMEBUFFER_UNSUPPORTED:
-			log_error_free(ft_strjoin_lf(err_msg, " (internal format unsupported)"));
+			log_error_free(ft_strjoin_lf(err_msg, " (unsupported format)"));
 			break;
 		default:
 			log_error_free(err_msg);
@@ -62,7 +59,7 @@ static int	check_framebuffer_status(const char *fbo_type)
 	return (0);
 }
 
-static int	init_framebuffers(GLuint *ms_fbo, GLuint *pick_fbo)
+static int		init_framebuffers(GLuint *ms_fbo, GLuint *pick_fbo)
 {
 	GLuint	rbo[4];
 
@@ -70,10 +67,10 @@ static int	init_framebuffers(GLuint *ms_fbo, GLuint *pick_fbo)
 	glBindFramebuffer(GL_FRAMEBUFFER, *ms_fbo);
 	glGenRenderbuffers(4, &rbo[0]);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo[0]);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB8, WIN_W, WIN_H);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGB8, WIN_W, WIN_H);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo[0]);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo[1]);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_DEPTH_COMPONENT, WIN_W, WIN_H);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo[1]);
 	if (check_framebuffer_status("multisample ") == 0)
 		return (0);
@@ -88,13 +85,8 @@ static int	init_framebuffers(GLuint *ms_fbo, GLuint *pick_fbo)
 	return (check_framebuffer_status("color pick "));
 }
 
-static void	*init_sdl_gl(t_env *env)
+static void		*init_sdl_gl(t_env *env)
 {
-	env->ms_fbo = 0;
-	env->pick_fbo = 0;
-	env->def_shader.prog = 0;
-	env->pick_shader.prog = 0;
-	env->std_shader.prog = 0;
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 		return (log_error_null(SDL_INIT_ERROR));
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -107,28 +99,18 @@ static void	*init_sdl_gl(t_env *env)
 		return (log_error_null(WIN_CREATE_ERROR));
 	if (!(env->gl_context = SDL_GL_CreateContext(env->window)))
 		return (log_error_null(SDL_GetError()));
-	init_framebuffers(&env->ms_fbo, &env->pick_fbo);
+	if (!init_framebuffers(&env->ms_fbo, &env->pick_fbo))
+		return (NULL);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(0.19, 0.27, 0.41, 1);
+	glClearColor(0.2, 0.2, 0.2, 1);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable( GL_BLEND );
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glViewport(0, 0, WIN_W, WIN_H);
 	return ((void*)1);
-}
-
-static t_camera	init_camera(t_vec3 pos, float fov, float zn, float zf)
-{
-	t_camera	cam;
-
-	cam.transform.position = pos;
-	cam.transform.rotation = quat();
-	cam.transform.scale = vec3_f(1);
-	cam.fov = fov;
-	cam.znear = zn;
-	cam.zfar = zf;
-	return (cam);
 }
 
 t_env			*init_scop(t_env *env, int argc, char **argv)
