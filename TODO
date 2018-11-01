@@ -1,5 +1,7 @@
 S C O P  S C O P E :
 
+MATRICES -> not ok (node_add can't notify)
+
 * trouver le centre de l'objet (zmin, zmax, ymin, ymax, xmin, xmax)
 * ensuite recalculer les positions des vertex par rapport au nouveau centre
 * calculer les normales des faces si elles ne sont pas indiquees ou incoherentes

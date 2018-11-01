@@ -6,28 +6,32 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:35:49 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 22:04:29 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-t_mtl_node		*add_mtl_node(t_env *env, t_mtl_node *node)
+void			add_mtl_node(t_mtl_list *list, t_mtl_node *node)
 {
-	t_mtl_node	*head;
+	t_mtl_node	*tmp;
 
-	head = env->mtl_list;
-	env->mtl_count++;
-	node->id = env->mtl_count;
-	if (head == NULL)
-		return (node);
-	while (env->mtl_list->next)
-		env->mtl_list = env->mtl_list->next;
-	env->mtl_list->next = node;
-	return (head);
+	if (node)
+	{
+		node->id = ++list->count;
+		if (!list->head)
+			list->head = node;
+		else
+		{
+			tmp = list->head;
+			while (tmp && tmp->next)
+				tmp = tmp->next;
+			tmp->next = node;
+		}
+	}
 }
 
-static void		generate_pick_clr(t_gameobject *go, unsigned int id)
+static t_vec3	generate_pick_clr(unsigned int id)
 {
 	float	r;
 	float	g;
@@ -36,22 +40,25 @@ static void		generate_pick_clr(t_gameobject *go, unsigned int id)
 	r = (id & 0x000000FF) >> 0;
 	g = (id & 0x0000FF00) >> 8;
 	b = (id & 0x00FF0000) >> 16;
-	go->pick_clr = vec3_xyz(r / 255, g / 255, b / 255);
+	return (vec3_xyz(r / 255.0f, g / 255.0f, b / 255.0f));
 }
 
-t_go_node		*add_go_node(t_env *env, t_go_node *node)
+void			add_go_node(t_go_list *list, t_go_node *node)
 {
-	t_go_node	*head;
+	t_go_node	*tmp;
 
-	head = env->go_list;
-	env->go_count++;
-	env->go_mat_update = 1;
-	node->id = env->go_count;
-	generate_pick_clr(node->go, node->id);
-	if (head == NULL)
-		return (node);
-	while (env->go_list->next)
-		env->go_list = env->go_list->next;
-	env->go_list->next = node;
-	return (head);
+	if (node)
+	{
+		node->id = ++list->count;
+		node->go->pick_clr = generate_pick_clr(node->id);
+		if (!list->head)
+			list->head = node;
+		else
+		{
+			tmp = list->head;
+			while (tmp && tmp->next)
+				tmp = tmp->next;
+			tmp->next = node;
+		}
+	}
 }

@@ -1,55 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shader_init.c                                      :+:      :+:    :+:   */
+/*   shader.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/16 14:28:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 10:38:43 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 20:36:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static void		free_data_and_path(char *data, char *fpath, size_t fsize)
+static GLuint	shader_error(const char *shader_name, char *log, \
+	GLenum shader_type)
 {
-	free(fpath);
-	fpath = NULL;
-	if (data)
-	{
-		if (munmap(data, fsize) == -1)
-			log_error_free(ft_strjoin("(munmap) ", strerror(errno)));
-		data = NULL;
-	}
-}
+	char	*file_name;
+	char	*info_log;
+	char	*error_msg;
 
-static char		*read_shader_file(const char *path, size_t *data_size, int fd)
-{
-	struct stat	s;
-	char		*data;
-
-	if ((fd = open(path, O_RDWR)) == -1)
-	{
-		log_error_free(ft_strjoin("(open) ", strerror(errno)));
-		return (NULL);
-	}
-	if (fstat(fd, &s) == -1)
-	{
-		close(fd);
-		log_error_free(ft_strjoin("(fstat) ", strerror(errno)));
-		return (NULL);
-	}
-	*data_size = (size_t)s.st_size;
-	if ((data = (char*)mmap(NULL, *data_size, \
-		PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-	{
-		log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
-		close(fd);
-		return (NULL);
-	}
-	close(fd);
-	return (data);
+	if (shader_type == GL_VERTEX_SHADER)
+		file_name = ft_strjoin(shader_name, ".vert");
+	else if (shader_type == GL_FRAGMENT_SHADER)
+		file_name = ft_strjoin(shader_name, ".frag");
+	else
+		file_name = ft_strdup(shader_name);
+	info_log = ft_strjoin("\n", log);
+	error_msg = ft_strjoin_bf(ft_strjoin(SHADER_INIT_ERROR, " ("), \
+		ft_strjoin_bf(ft_strjoin_lf(file_name, ")"), info_log));
+	return ((GLuint)log_error_free(error_msg));
 }
 
 static GLuint	create_shader(const char *name, char *data, GLenum shader_type)
@@ -59,7 +38,9 @@ static GLuint	create_shader(const char *name, char *data, GLenum shader_type)
 	GLchar			info_log[1024];
 	const GLchar	*src[1];
 
-	if (!data || (sh = glCreateShader(shader_type)) == 0)
+	if (!data)
+		return (0);
+	if (!(sh = glCreateShader(shader_type)))
 		return (0);
 	src[0] = (const GLchar*)data;
 	glShaderSource(sh, 1, src, NULL);
@@ -82,28 +63,29 @@ static GLuint	init_shaders(t_shader *prg, const char *path, \
 	size_t			fsize;
 
 	fullpath = ft_strjoin(path, ".vert");
-	fdata = read_shader_file(fullpath, &fsize, 0);
+	fdata = ft_file_map(fullpath, &fsize);
 	if ((prg->vtx_s = create_shader(prg->name, fdata, GL_VERTEX_SHADER)) == 0)
 	{
-		free_data_and_path(fdata, fullpath, fsize);
+		ft_file_unmap(fdata, fsize, fullpath);
 		return (0);
 	}
-	free_data_and_path(fdata, fullpath, fsize);
+	ft_file_unmap(fdata, fsize, fullpath);
 	fullpath = ft_strjoin(path, ".frag");
-	fdata = read_shader_file(fullpath, &fsize, 0);
+	fdata = ft_file_map(fullpath, &fsize);
 	if ((prg->frg_s = create_shader(prg->name, fdata, GL_FRAGMENT_SHADER)) == 0)
 	{
-		free_data_and_path(fdata, fullpath, fsize);
+		ft_file_unmap(fdata, fsize, fullpath);
 		glDeleteShader(prg->vtx_s);
 		return (0);
 	}
-	free_data_and_path(fdata, fullpath, fsize);
+	ft_file_unmap(fdata, fsize, fullpath);
 	while (u_loc_count)
 		prg->u_loc[--u_loc_count] = -1;
 	return (1);
 }
 
-GLuint			init_program(t_shader *program, const char *path, t_uniforms uf)
+GLuint			init_program(t_shader *program, const char *path, \
+	unsigned int idx)
 {
 	GLint	success;
 	GLchar	info_log[1024];
@@ -128,6 +110,6 @@ GLuint			init_program(t_shader *program, const char *path, t_uniforms uf)
 	glDetachShader(program->prog, program->frg_s);
 	glDeleteShader(program->vtx_s);
 	glDeleteShader(program->frg_s);
-	get_uniforms(program, uf);
+	get_uniforms(program, idx);
 	return (1);
 }

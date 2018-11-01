@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:55:57 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 21:44:07 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define SCOP_H
 
 # include <time.h>
-# include <errno.h>
 
 # include "parser.h"
 
@@ -32,34 +31,6 @@
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
-
-typedef enum			e_clean_flags
-{
-	CLEAN_SDL_GL = 1 << 0,
-	CLEAN_ALL = 1 << 1
-}						t_clean_flags;
-
-typedef enum			e_uniforms
-{
-	DEF_SHADER_UNIFORMS = 1 << 0,
-	STD_SHADER_UNIFORMS = 1 << 1,
-	PICK_SHADER_UNIFORMS = 1 << 2
-}						t_uniforms;
-
-typedef struct			s_transform
-{
-	t_quaternion		rotation;
-	t_vec3				position;
-	t_vec3				scale;
-}						t_transform;
-
-typedef struct			s_vtx_attrib
-{
-	t_vec2				uv;
-	t_vec3				vertex;
-	t_vec3				normal;
-	t_vec3				color;
-}						t_vtx_attrib;
 
 typedef struct			s_gl_stack
 {
@@ -87,6 +58,27 @@ typedef struct			s_material
 	float				transparency;
 }						t_material;
 
+typedef struct			s_mtl_node
+{
+	unsigned int		id;
+	t_material			*mtl;
+	struct s_mtl_node	*next;
+}						t_mtl_node;
+
+typedef struct			s_mtl_list
+{
+	t_mtl_node			*head;
+	size_t				count;
+}						t_mtl_list;
+
+typedef struct			s_vtx_attrib
+{
+	t_vec2				uv;
+	t_vec3				vertex;
+	t_vec3				normal;
+	t_vec3				color;
+}						t_vtx_attrib;
+
 typedef struct			s_gameobject
 {
 	char				*name;
@@ -97,15 +89,8 @@ typedef struct			s_gameobject
 	size_t				idx_count;
 	unsigned int		mtl_id;
 	t_vec3				pick_clr;
-	t_gl_stack			*gl_stack;
+	t_gl_stack			gl_stack;
 }						t_gameobject;
-
-typedef struct			s_mtl_node
-{
-	unsigned int		id;
-	t_material			*mtl;
-	struct s_mtl_node	*next;
-}						t_mtl_node;
 
 typedef struct			s_go_node
 {
@@ -114,10 +99,16 @@ typedef struct			s_go_node
 	struct s_go_node	*next;
 }						t_go_node;
 
+typedef struct			s_go_list
+{
+	t_go_node			*head;
+	size_t				count;
+}						t_go_list;
+
 typedef struct			s_light
 {
-	t_gameobject		*go;
-	t_vec3				light_color;
+	t_transform			transform;
+	t_vec3				color;
 	float				intensity;
 	float				range;
 }						t_light;
@@ -130,84 +121,93 @@ typedef struct			s_camera
 	float				zfar;
 }						t_camera;
 
+typedef struct			s_win
+{
+	SDL_Window			*window;
+	SDL_GLContext		gl_context;
+	unsigned int		win_w;
+	unsigned int		win_h;
+}						t_win;
+
+typedef struct			s_gl_buffers
+{
+	GLuint				rbo[4];
+	GLuint				ms_fbo;
+	GLuint				pick_fbo;
+}						t_gl_buffers;
+
+typedef struct			s_mvp_mat
+{
+	t_mat4x4			*model;
+	t_mat4x4			view;
+	t_mat4x4			projection;
+	t_mat4x4			vp;
+	unsigned int		update_mat[3];
+}						t_mvp_mat;
+
 typedef struct			s_env
 {
 	int					loop;
-	SDL_Window			*window;
-	SDL_GLContext		gl_context;
-	GLuint				ms_fbo;
-	GLuint				pick_fbo;
-	t_shader			def_shader;
-	t_shader			pick_shader;
-	t_shader			std_shader;
+	t_win				win_env;
+	t_gl_buffers		buffers;
+	t_shader			shaders[3];
 	t_camera			camera;
 	t_light				light;
-	t_mat4x4			proj_mat;
-	t_mat4x4			*go_mat;
-	t_mtl_node			*mtl_list;
-	t_go_node			*go_list;
-	t_go_node			*selection;
-	size_t				mtl_count;
-	size_t				go_count;
-	size_t				selection_count;
-	unsigned int		go_mat_update;
+	t_mvp_mat			matrices;
+	t_mtl_list			materials;
+	t_go_list			gameobjects;
+	t_go_list			selection;
 }						t_env;
 
 /*
 ** setup.c				=> 5 functions
 */
-t_env					*init_scop(t_env *env, int argc, char **argv);
+unsigned int			init_scop(t_env *env, int argc, char **argv);
 
 /*
-** shader_init.c		=> 5 functions
+** shader.c				=> 4 functions
 */
 GLuint					init_program(t_shader *program, const char *path, \
-							t_uniforms uf);
+							unsigned int idx);
 /*
-** parser_init.c		=> 5 functions
+** parser.c				=> 5 functions
 */
-t_idx_attrib			*free_attrib(t_idx_attrib *list);
-t_obj_parser_var		*init_opv(t_obj_parser_var *opv, char *name, \
+void					init_opv(t_obj_parser_var *opv, char *name, \
 							unsigned int mtl_offset);
-void					parse_file(t_env *env, const char *path, \
-							void (*ft_parsing)(t_env*, t_parser*, char*));
+unsigned int			parser_error(const char *error, const char *fname, \
+							unsigned int fline);
+void					parse_file(t_go_list *gameobjects, \
+							t_mtl_list *materials, const char *path, \
+							void (*parse)(t_go_list*, t_mtl_list*, \
+							t_parser*, char*));
 
 /*
-** mtl_parse.c			=> 2 functions
+** mtl_parse.c			=> 3 functions
 */
-void					parse_wavefrontmtl(t_env *env, t_parser *parser, \
+void					parse_wavefrontmtl(t_go_list *gameobjects, \
+							t_mtl_list *materials, t_parser *parser, \
 							char *word);
 
 /*
 ** attrib_parse.c		=> 5 functions
 */
-void			    	parse_vtx_attrib(t_gameobject *go, \
+void					parse_vtx_attrib(t_gameobject *go, \
 							t_obj_parser_var *opv, char *data);
-unsigned int	    	parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
+unsigned int			parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
 							t_parser *parser);
 
 /*
-** obj_parse.c			=> 4 functions
+** obj_parse.c			=> 5 functions
 */
-void					parse_wavefrontobj(t_env *env, t_parser *parser, \
+void					parse_wavefrontobj(t_go_list *gameobjects, \
+							t_mtl_list *materials, t_parser *parser, \
 							char *word);
-
-/*
-** obj_init.c			=> 5 functions
-*/
-t_mat4x4				go_trs(t_transform tr);
-t_transform				init_transform(void);
-t_transform         	init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
-t_light					init_light(t_env *env, t_vec3 color, float i, \
-							float range);
-void					init_gl_objects(t_gameobject *go, size_t buf_s, \
-							size_t attr_s);
 
 /*
 ** obj_get.c			=> 4 functions
 */
 void					get_model_matrices(t_go_node *go_list, t_mat4x4 *m);
-unsigned int			get_mtl_id(t_env *env, char *mtl_name, \
+unsigned int			get_mtl_id(t_mtl_node *list, char *mtl_name, \
 							unsigned int mtl_offset);
 t_material				*get_mtl(t_mtl_node *list, unsigned int id);
 t_gameobject			*get_gameobject(t_go_node *list, unsigned int id);
@@ -222,32 +222,31 @@ t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
 /*
 ** node_add.c			=> 3 functions
 */
-t_mtl_node				*add_mtl_node(t_env *env, t_mtl_node *node);
-t_go_node				*add_go_node(t_env *env, t_go_node *node);
+void					add_mtl_node(t_mtl_list *list, t_mtl_node *node);
+void					add_go_node(t_go_list *list, t_go_node *node);
 
 /*
 ** node_clean.c			=> 4 functions
 */
-void					clean_mtl_node(t_mtl_node *node, unsigned int no_free);
-void					clean_go_node(t_go_node *node, unsigned int no_free);
-void					remove_go_node(t_go_node *list, unsigned int id, \
-							unsigned int no_f, size_t *count);
+void					clean_mtl_node(t_mtl_node *node, int free_mtl);
+void					remove_mtl_node(t_mtl_list *list, unsigned int id, \
+							int free_mtl);
+void					clean_go_node(t_go_node *node, int free_go);
+void					remove_go_node(t_go_list *list, unsigned int id, \
+							int free_go);
 
 /*
-** uniforms.c			=> 5 functions
+** buffers_bind.c		=> 2 functions
 */
-void					set_uniforms(t_env *env, t_uniforms shader_u, \
-							t_go_node *node, t_mat4x4 *m);
-void					get_uniforms(t_shader *shdr, t_uniforms shader_u);
+unsigned int			generate_framebuffers(t_gl_buffers *buffers, \
+							unsigned int win_w, unsigned int win_h);
 
 /*
-** update.c				=> 4 function
+** uniforms.c			=> 4 functions
 */
-void					rotate_gameobjects(t_go_node *list, double delta);
-unsigned int			mat_update(t_mat4x4 **mat, size_t count);
-t_mat4x4				compute_view(t_camera cam);
-t_mat4x4	    		compute_proj(float fov, float aspect, float zn, \
-							float zf);
+void					set_uniforms(t_env *env, t_go_node *node, \
+							unsigned int idx);
+void					get_uniforms(t_shader *shdr, unsigned int idx);
 
 /*
 ** events_handle.c		=> 4 functions
@@ -255,20 +254,22 @@ t_mat4x4	    		compute_proj(float fov, float aspect, float zn, \
 void					handle_events_and_input(t_env *env);
 
 /*
-** cleanup.c			=> 4 functions
+** update.c				=> 2 function
 */
-void					*clean_scop(t_env *env, t_clean_flags f);
+void					rotate_gameobjects(t_go_node *list, double delta);
+void					update_matrices(t_env *env);
 
 /*
-** error.c				=> 5 functions
+** draw.c				=> 3 functions
 */
-void					log_error(const char *msg);
-void					log_error_free(char *msg);
-void					*log_error_null(const char *msg);
-int						parser_error(const char *err, const char *fname, \
-							unsigned int fline);
-GLuint					shader_error(const char *shader_name, char *log, \
-							GLenum shader_type);
+void					draw(t_env *env);
+
+/*
+** cleanup.c			=> 3 functions
+*/
+void					clear_mtl_list(t_mtl_list *list, int free_mtl);
+void					clear_go_list(t_go_list *list, int free_go);
+unsigned int			clean_scop(t_env *env);
 
 // removal needed
 void					display_vec3(const char *p, t_vec3 v);

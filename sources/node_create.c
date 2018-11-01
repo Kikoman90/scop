@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:34:29 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 22:04:59 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,16 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 		return (log_error_null(MALLOC_ERROR));
 	go->transform = init_transform_trs(\
 		vec3_xyz(0, 0, -3), quat_tv(90, (t_vec3)VEC3_UP), (t_vec3)VEC3_ONE);
-	go->idx_count = ic;
-	if (!(go->indices = (unsigned int*)malloc(sizeof(unsigned int) * ic)) || \
-	!(go->gl_stack = (t_gl_stack*)malloc(sizeof(t_gl_stack))))
-		return (log_error_null(MALLOC_ERROR));
+	go->gl_stack.vao = 0;
+	go->gl_stack.vbo = 0;
+	go->gl_stack.ibo = 0;
 	go->mtl_id = mtl_id;
 	go->name = name;
+	go->idx_count = ic;
+	go->indices = NULL;
+	go->vtx_attrib = NULL;
+	if (!(go->indices = (unsigned int*)malloc(sizeof(unsigned int) * ic)))
+		return (log_error_null(MALLOC_ERROR));
 	return (go);
 }
 
@@ -74,7 +78,7 @@ t_go_node			*create_go_node(char *name, unsigned int mtl_id, size_t ic)
 	}
 	if (!(node->go = create_gameobject(name, mtl_id, ic)))
 	{
-		clean_go_node(node, 0);
+		clean_go_node(node, 1);
 		return (NULL);
 	}
 	node->next = NULL;

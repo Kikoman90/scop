@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/02 11:09:55 by fsidler           #+#    #+#              #
-#    Updated: 2018/10/16 19:16:11 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/01 15:17:34 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -96,6 +96,8 @@ SRCS = 	ft_isascii.c \
 	  	ft_copysign.c \
 	  	ft_signbit.c \
 		ft_wordoffset.c \
+		ft_error.c \
+		ft_file.c \
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
 

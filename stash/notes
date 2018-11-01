@@ -70,3 +70,8 @@ quaternion multiplication :
 - (Q1 * Q2).x = (w1x2 + x1w2 + y1z2 - z1y2);
 - (Q1 * Q2).y = (w1y2 - x1z2 + y1w2 + z1x2);
 - (Q1 * Q2).z = (w1z2 + x1y2 - y1x2 + z1w2);
+
+/*
+ ** glGetIntegerv(GL_MAX_SAMPLES, &max_samples); multisampling
+ ** printf("max samples : %d\n", max_samples); macos = 8;
+ */

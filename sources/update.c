@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:41:39 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 22:07:48 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,46 +27,31 @@ void			rotate_gameobjects(t_go_node *list, double delta)
 	}
 }
 
-unsigned int    mat_update(t_mat4x4 **mat, size_t count)
+void			update_matrices(t_env *env)
 {
-    if (*mat)
+	if (env->matrices.update_mat[0] == 1)
 	{
-        free (*mat);
-		*mat = NULL;
+		if (env->matrices.model)
+			free(env->matrices.model);
+		if (env->gameobjects.count == 0)
+			env->matrices.update_mat[0] = 0;
+		else if (!(env->matrices.model = (t_mat4x4*)malloc(sizeof(t_mat4x4) * \
+			env->gameobjects.count)))
+			log_error(MALLOC_ERROR);
+		else
+			env->matrices.update_mat[0] = 0;
 	}
-    if (count == 0)
-    	return (0);
-    count++;
-    if (!(*mat = (t_mat4x4*)malloc(sizeof(t_mat4x4) * count)))
-        return (1);
-    return (0);
-}
-
-t_mat4x4		compute_view(t_camera cam)
-{
-	t_mat4x4	view;
-
-	view = mat4x4_transpose(quat_to_mat4x4(cam.transform.rotation));
-	view.m[12] = -vec3_dot(vec3_v4(view.v[0]), cam.transform.position);
-	view.m[13] = -vec3_dot(vec3_v4(view.v[1]), cam.transform.position);
-	view.m[14] = -vec3_dot(vec3_v4(view.v[2]), cam.transform.position);
-	return (view);
-}
-
-// not here
-t_mat4x4	    compute_proj(float fov, float aspect, float zn, float zf)
-{
-	t_mat4x4	proj_mat;
-	float f;
-
-	fov *= M_PI / 180.0f;
-	f = 1 / tanf(fov / 2);
-	proj_mat = mat4x4();
-	proj_mat.m[0] = f / aspect;
-	proj_mat.m[5] = f;
-	proj_mat.m[10] = -(zf + zn) / (zf - zn);
-	proj_mat.m[11] = -1;
-	proj_mat.m[14] = (-2 * zn * zf) / (zf - zn);
-	proj_mat.m[15] = 0;
-	return (proj_mat);
+	if (env->matrices.update_mat[1] == 1)
+		env->matrices.view = compute_view(env->camera.transform);
+	if (env->matrices.update_mat[2] == 1)
+		env->matrices.projection = compute_projection(env->camera.fov, \
+			(float)env->win_env.win_w / env->win_env.win_h, \
+			env->camera.znear, env->camera.zfar);
+	if (env->matrices.update_mat[1] == 1 || env->matrices.update_mat[2] == 1)
+	{
+		env->matrices.vp = \
+			mat4x4_mult(env->matrices.projection, env->matrices.view);
+		env->matrices.update_mat[1] = 0;
+		env->matrices.update_mat[2] = 0;
+	}
 }

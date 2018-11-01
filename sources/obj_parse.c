@@ -6,44 +6,63 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:08:28 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 22:04:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static void		parse_go(t_env *env, t_parser *parser, t_obj_parser_var *opv, \
-					unsigned int free_opv)
+static void	init_gl_objects(t_gameobject *go, size_t buf_s, size_t attr_s)
+{
+	glGenVertexArrays(1, &go->gl_stack.vao);
+	glBindVertexArray(go->gl_stack.vao);
+	glGenBuffers(1, &go->gl_stack.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack.vbo);
+	glBufferData(GL_ARRAY_BUFFER, buf_s * go->vtx_count, &go->vtx_attrib[0], \
+		GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, buf_s, (void*)(2 * attr_s));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, buf_s, (void*)(5 * attr_s));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, buf_s, 0);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, buf_s, (void*)(8 * attr_s));
+	glEnableVertexAttribArray(0);
+	glGenBuffers(1, &go->gl_stack.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, go->gl_stack.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * go->idx_count,\
+		&go->indices[0], GL_STATIC_DRAW);
+}
+
+static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
+	t_obj_parser_var *opv)
 {
 	t_go_node		*node;
 
-	if (opv->f_seed.count > 0 && opv->f_seed.count % 3 == 0 && \
-		opv->v_seed[0].count > 0)
+	if (opv->f_seed.count > 0 && opv->v_seed[0].count > 0)
 	{
 		if (!opv->name || ft_strlen(opv->name) == 0)
-			opv->name = ft_strjoin_rf(GO_NAME, ft_itoa((int)env->go_count + 1));
+			opv->name = ft_strjoin_rf(GO_NAME, ft_itoa(gameobjects->count + 1));
 		if ((node = create_go_node(opv->name, opv->mtl_id, opv->f_seed.count)))
 		{
-			if (!parse_indices(node->go, opv, parser) || !(node->go->vtx_attrib\
-				= (t_vtx_attrib*)malloc(sizeof(t_vtx_attrib) * node->go->vtx_count)))
-				clean_go_node(node, 0);
+			if (!parse_indices(node->go, opv, parser))
+				clean_go_node(node, 1);
+			if (!(node->go->vtx_attrib = (t_vtx_attrib*)malloc(\
+				sizeof(t_vtx_attrib) * node->go->vtx_count)))
+			{
+				log_error(MALLOC_ERROR);
+				clean_go_node(node, 1);
+			}
 			parse_vtx_attrib(node->go, opv, parser->data);
 			init_gl_objects(node->go, sizeof(t_vtx_attrib), sizeof(float));
-			env->go_list = add_go_node(env, node);
+			add_go_node(gameobjects, node);
 		}
 	}
-	if (free_opv == 1)
-	{
-		opv->attrib_list = free_attrib(opv->attrib_list);
-		free(opv);
-	}
-	else
-		opv = init_opv(opv, ft_strword(parser->data, &parser->fseed), \
-			opv->mtl_offset);
+	else if (opv->name)
+		free(opv->name);
+	opv->attrib_list = free_attrib_list(opv->attrib_list);
+	init_opv(opv, ft_strword(parser->data, &parser->fseed), opv->mtl_offset);
 }
 
-static void		parse_attrib(t_obj_parser_var *opv, t_parser *parser, \
-	char *word, int f_attrib)
+static void	parse_attrib(t_parser *parser, t_obj_parser_var *opv, char *word, \
+	int f_attrib)
 {
 	t_seed	*seed;
 
@@ -71,45 +90,43 @@ static void		parse_attrib(t_obj_parser_var *opv, t_parser *parser, \
 		seed->count++;
 }
 
-char			*parse_mtllib(t_env *env, t_parser *parser, char *word)
+static void	parse_mtllib(t_go_list *gameobjects, t_mtl_list *materials, \
+	t_parser *parser)
 {
-	if (word)
-	{
-		free(word);
-		word = NULL;
-	}
-	word = ft_strjoin_rf(parser->fpath, ft_strword(parser->data, \
-							&parser->fseed));
-	parse_file(env, word, parse_wavefrontmtl);
-	free(word);
-	return (NULL);
+	char	*path;
+
+	path = ft_strjoin_rf(parser->fpath, \
+		ft_strword(parser->data, &parser->fseed));
+	parse_file(gameobjects, materials, path, parse_wavefrontmtl);
+	free(path);
 }
 
-void			parse_wavefrontobj(t_env *env, t_parser *parser, char *word)
+void		parse_wavefrontobj(t_go_list *gameobjects, \
+	t_mtl_list *materials, t_parser *parser, char *word)
 {
-	t_obj_parser_var	*opv;
+	t_obj_parser_var	opv;
 
-	if (!(opv = init_opv(NULL, NULL, env->mtl_count)))
-		return ;
+	init_opv(&opv, NULL, materials->count);
 	while (parser->fseed < parser->fsize && parser->data[parser->fseed])
 	{
 		word = ft_strword(parser->data, &parser->fseed);
 		if (word && ft_strcmp(word, "o") == 0)
-			parse_go(env, parser, opv, 0);
+			parse_go(gameobjects, parser, &opv);
 		else if (word && word[0] && word[0] == 'v')
-			parse_attrib(opv, parser, word, 0);
+			parse_attrib(parser, &opv, word, 0);
 		else if (word && ft_strcmp(word, "f") == 0)
-			parse_attrib(opv, parser, word, 1);
+			parse_attrib(parser, &opv, word, 1);
 		else if (word && ft_strcmp(word, "mtllib") == 0)
-			word = parse_mtllib(env, parser, word);
+			parse_mtllib(gameobjects, materials, parser);
 		else if (word && ft_strcmp(word, "usemtl") == 0)
-			opv->mtl_id = get_mtl_id(env, ft_strword(parser->data, \
-				&parser->fseed), opv->mtl_offset);
+			opv.mtl_id = get_mtl_id(materials->head, \
+				ft_strword(parser->data, &parser->fseed), opv.mtl_offset);
 		else if (word && ft_strcmp(word, "#") != 0 && ft_strcmp(word, "s") != 0)
 			parser_error(FILE_PREFIX_ERROR, parser->fname, parser->fline);
 		parser->fseed = skip_line(parser->data, parser->fseed);
 		if (parser->fline++ && word)
 			free(word);
 	}
-	parse_go(env, parser, opv, 1);
+	parse_go(gameobjects, parser, &opv);
+	opv.attrib_list = free_attrib_list(opv.attrib_list);
 }

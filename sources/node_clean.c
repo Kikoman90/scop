@@ -6,81 +6,95 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:37:28 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 22:04:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static void	clean_mtl(t_material *mtl)
+void		clean_mtl_node(t_mtl_node *node, int free_mtl)
 {
-	free(mtl->name);
-	free(mtl);
-	mtl = NULL;
-}
-
-void		clean_mtl_node(t_mtl_node *node, unsigned int no_free)
-{
-	if (node->mtl && !no_free)
-		clean_mtl(node->mtl);
+	if (free_mtl && node->mtl)
+	{
+		if (node->mtl->name)
+			free(node->mtl->name);
+		free(node->mtl);
+		node->mtl = NULL;
+	}
 	node->next = NULL;
 	free(node);
-	node = NULL;
 }
 
-static void	clean_go(t_gameobject *go)
+void		remove_mtl_node(t_mtl_list *list, unsigned int id, int free_mtl)
 {
-	if (go->vtx_attrib)
-	{
-		free(go->vtx_attrib);
-		go->vtx_attrib = NULL;
-	}
-	if (go->indices)
-	{
-		free(go->indices);
-		go->indices = NULL;
-	}
-	if (go->gl_stack)
-	{
-		glDeleteBuffers(1, &go->gl_stack->ibo);
-		glDeleteBuffers(1, &go->gl_stack->vbo);
-		glDeleteVertexArrays(1, &go->gl_stack->vao);
-		free(go->gl_stack);
-		go->gl_stack = NULL;
-	}
-	free(go->name);
-	free(go);
-	go = NULL;
-}
+	t_mtl_node		*tmp;
+	t_mtl_node		*tmp_prev;
 
-void		clean_go_node(t_go_node *node, unsigned int no_free)
-{
-	if (node->go && !no_free)
-		clean_go(node->go);
-	node->next = NULL;
-	free(node);
-	node = NULL;
-}
-
-void		remove_go_node(t_go_node *list, unsigned int id, \
-	unsigned int no_f, size_t *count)
-{
-	t_go_node		*tmp;
-	t_go_node		*tmp_prev;
-
-	tmp = list;
+	tmp = list->head;
 	tmp_prev = tmp;
 	while (tmp)
 	{
 		if (id == tmp->id)
 		{
 			if (tmp_prev == tmp)
-				list = tmp_prev->next;
+				list->head = tmp_prev->next;
 			else
 				tmp_prev->next = tmp->next;
-			clean_go_node(tmp, no_f);
+			clean_mtl_node(tmp, free_mtl);
 			id = 0;
-			*count -= 1;
+			list->count--;
+			tmp = tmp_prev->next;
+		}
+		else
+		{
+			tmp->id -= (id == 0) ? 1 : 0;
+			tmp_prev = tmp;
+			tmp = tmp->next;
+		}
+	}
+}
+
+void		clean_go_node(t_go_node *node, int free_go)
+{
+	if (free_go && node->go)
+	{
+		if (node->go->vtx_attrib)
+			free(node->go->vtx_attrib);
+		if (node->go->indices)
+			free(node->go->indices);
+		if (node->go->name)
+			free(node->go->name);
+		if (node->go->gl_stack.ibo)
+			glDeleteBuffers(1, &node->go->gl_stack.ibo);
+		if (node->go->gl_stack.vbo)
+			glDeleteBuffers(1, &node->go->gl_stack.vbo);
+		if (node->go->gl_stack.vao)
+			glDeleteVertexArrays(1, &node->go->gl_stack.vao);
+		free(node->go);
+		node->go = NULL;
+	}
+	node->next = NULL;
+	free(node);
+}
+
+void		remove_go_node(t_go_list *list, unsigned int id, int free_go)
+{
+	t_go_node		*tmp;
+	t_go_node		*tmp_prev;
+
+	tmp = list->head;
+	tmp_prev = tmp;
+	while (tmp)
+	{
+		if (id == tmp->id)
+		{
+			if (tmp_prev == tmp)
+				list->head = tmp_prev->next;
+			else
+				tmp_prev->next = tmp->next;
+			clean_go_node(tmp, free_go);
+			id = 0;
+			list->count--;
 			tmp = tmp_prev->next;
 		}
 		else

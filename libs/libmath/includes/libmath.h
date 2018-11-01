@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:48:48 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 18:27:55 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,13 @@ typedef struct		s_quaternion
 	t_vec3			v;
 }					t_quaternion;
 
+typedef struct		s_transform
+{
+	t_vec3			position;
+	t_quaternion	rotation;
+	t_vec3			scale;
+}					t_transform;
+
 /*
 ** vector.c			=> 5 functions
 */
@@ -94,10 +101,13 @@ t_vec3				vec3_norm(t_vec3 v);
 float				vec3_dot(t_vec3 a, t_vec3 b);
 
 /*
-** matrix.c			=> 2 functions
+** matrix.c			=> 4 functions
 */
 t_mat4x4			mat4x4(void);
 t_mat4x4			mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s);
+t_mat4x4			compute_view(t_transform cam_transform);
+t_mat4x4			compute_projection(float fov, float aspect, float zn, \
+						float zf);
 
 /*
 ** matrix_basop.c	=> 4 functions
@@ -123,6 +133,13 @@ t_quaternion		quat_tv(float theta, t_vec3 v);
 t_quaternion		quat_norm(t_quaternion q);
 t_quaternion		quat_mult(t_quaternion a, t_quaternion b);
 t_vec3				vector_rot(t_quaternion q, t_vec3 v);
+
+/*
+** transform.c		=> 3 functions
+*/
+t_mat4x4			go_trs(t_transform tr);
+t_transform			init_transform(void);
+t_transform			init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 
 // t_mat4x4			mat4x4_scale(t_vec3 s);
 // t_mat4x4			mat4x4_translate(t_vec3 t);

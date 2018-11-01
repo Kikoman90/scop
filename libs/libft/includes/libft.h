@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/24 16:07:10 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 21:18:26 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 # include <sys/stat.h>
 # include <sys/mman.h>
 # include <fcntl.h>
+
+# include <errno.h>
 
 # define UC unsigned char
 
@@ -116,6 +118,7 @@ char				*ft_strtrim(char const *s);
 char				*ft_strword(char const *s, unsigned int *offset);
 
 unsigned int		ft_wordoffset(char const *s, unsigned int offset);
+unsigned int		skip_line(char *data, unsigned int seed);
 
 char				*ft_itoa(int n);
 
@@ -138,5 +141,12 @@ t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 double				ft_round(double x);
 double				ft_fdim(double n1, double n2);
 double				ft_copysign(double n1, double n2);
+
+char				*ft_file_map(const char *path, size_t *data_size);
+void				ft_file_unmap(char *data, size_t fsize, char *fpath);
+
+unsigned int		log_error(const char *msg);
+unsigned int		log_error_free(char *msg);
+void				*log_error_null(const char *msg);
 
 #endif

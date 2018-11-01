@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_wordoffset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 12:45:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/09/17 16:32:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 21:40:27 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,13 @@ unsigned int	ft_wordoffset(char const *s, unsigned int offset)
 	wsize = word_length(s);
 	offset += wsize;
 	return (offset);
+}
+
+unsigned int	skip_line(char *data, unsigned int seed)
+{
+	while (data[seed] && data[seed] != '\n')
+		seed += 1;
+	if (data[seed] && data[seed] == '\n')
+		seed += 1;
+	return (seed);
 }

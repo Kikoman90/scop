@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:17:25 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 22:06:24 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,6 @@ unsigned int		check_idx_count(char *data, unsigned int seed, int idx)
 	if (idx == 1 && count > 3)
 		count = 3 + (count - 3) * 3;
 	return (count);
-}
-
-unsigned int		skip_line(char *data, unsigned int seed)
-{
-	while (data[seed] && data[seed] != '\n')
-		seed += 1;
-	if (data[seed] && data[seed] == '\n')
-		seed += 1;
-	return (seed);
 }
 
 static unsigned int	cmp_attrib(t_idx_attrib *att1, t_idx_attrib *att2, \
@@ -91,4 +82,19 @@ t_idx_attrib		*check_attrib_list(t_obj_parser_var *opv, \
 	else
 		opv->attrib_list = attrib_ret;
 	return (attrib_ret);
+}
+
+t_idx_attrib		*free_attrib_list(t_idx_attrib *list)
+{
+	t_idx_attrib	*tmp;
+	t_idx_attrib	*tmp2;
+
+	tmp = list;
+	while (tmp)
+	{
+		tmp2 = tmp->next;
+		free(tmp);
+		tmp = tmp2;
+	}
+	return (NULL);
 }

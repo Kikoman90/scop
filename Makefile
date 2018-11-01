@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/10/31 13:38:39 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/01 21:01:39 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,22 +29,22 @@ DIR_OBJS = tmp
 HEADERS = includes
 
 SRCS =	setup.c \
-		shader_init.c \
-		parser_init.c \
+		shader.c \
+		parser.c \
 		parser_utils.c \
 		mtl_parse.c \
 		attrib_parse.c \
 		obj_parse.c \
-		obj_init.c \
 		obj_get.c \
 		node_create.c \
 		node_add.c \
 		node_clean.c \
+		buffers_bind.c \
 		uniforms.c \
-		update.c \
 		events_handle.c \
+		update.c \
+		draw.c \
 		cleanup.c \
-		error.c \
 		main.c \
 		display.c \
 

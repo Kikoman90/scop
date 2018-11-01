@@ -14,7 +14,7 @@ struct 				LightProps {
 uniform vec3		viewPos;
 uniform LightProps	light;
 uniform float		fade;
-//uniform sampler2D	TextureSampler;
+uniform sampler2D	TextureSampler;
 
 out vec4			FragColor;
 

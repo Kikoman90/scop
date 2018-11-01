@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:35:18 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 21:47:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ static t_vec3		feed_attrib(t_seed *v_seed, char *data, unsigned int idx, \
 
 	i = 1;
 	seed = v_seed->beginseed;
-	while (i <= idx && i <= v_seed->count && seed < v_seed->endseed && data[seed])
+	while (i <= idx && i <= v_seed->count && seed < v_seed->endseed && \
+		data[seed])
 	{
 		if ((word = ft_strword(data, &seed)) && ft_strcmp(word, v) == 0)
 		{
@@ -39,8 +40,8 @@ static t_vec3		feed_attrib(t_seed *v_seed, char *data, unsigned int idx, \
 	return ((t_vec3)VEC3_ZERO);
 }
 
-void			    parse_vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
-    char *data)
+void				parse_vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
+	char *data)
 {
 	unsigned int	i;
 	t_idx_attrib	*tmp;
@@ -57,17 +58,17 @@ void			    parse_vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
 				data, tmp->attrib[1], "vt"));
 			go->vtx_attrib[i].normal = vec3_norm(feed_attrib(&opv->v_seed[2], \
 				data, tmp->attrib[2], "vn"));
-			go->vtx_attrib[i].color = vec3_xyz(
-				sinf( go->vtx_attrib[i].vertex.x ), \
-				sinf( go->vtx_attrib[i].vertex.y ), \
-				sinf( go->vtx_attrib[i].vertex.z ));
+			go->vtx_attrib[i].color = vec3_xyz(\
+				sinf(go->vtx_attrib[i].vertex.x), \
+				sinf(go->vtx_attrib[i].vertex.y), \
+				sinf(go->vtx_attrib[i].vertex.z));
 			i++;
 		}
 		tmp = tmp->next;
 	}
 }
 
-static unsigned int *get_ret_indices(t_obj_parser_var *opv, char *data, \
+static unsigned int	*get_ret_indices(t_obj_parser_var *opv, char *data, \
 	unsigned int seed)
 {
 	unsigned int	i;
@@ -76,7 +77,7 @@ static unsigned int *get_ret_indices(t_obj_parser_var *opv, char *data, \
 	t_idx_attrib	f_tmp;
 
 	if (!(ret = (unsigned int*)malloc(sizeof(unsigned int) * opv->f_count)))
-			return (log_error_null(MALLOC_ERROR));
+		return (log_error_null(MALLOC_ERROR));
 	i = 0;
 	while (i < opv->f_count)
 	{
@@ -96,13 +97,13 @@ static unsigned int *get_ret_indices(t_obj_parser_var *opv, char *data, \
 	return (ret);
 }
 
-static unsigned int feed_indices(t_gameobject *go, unsigned int *indices, \
+static unsigned int	feed_indices(t_gameobject *go, unsigned int *indices, \
 	unsigned int i, unsigned int count)
 {
 	unsigned int	j;
 	unsigned int	ri;
 	unsigned int	ii;
-	
+
 	if (!indices)
 		return (0);
 	ii = 0;
@@ -123,7 +124,7 @@ static unsigned int feed_indices(t_gameobject *go, unsigned int *indices, \
 	return (1);
 }
 
-unsigned int	    parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
+unsigned int		parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
 	t_parser *parser)
 {
 	unsigned int	i;

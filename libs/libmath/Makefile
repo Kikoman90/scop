@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/12 17:25:31 by fsidler           #+#    #+#              #
-#    Updated: 2018/10/23 16:53:40 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/01 15:57:48 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SRCS =	vector.c \
 		matrix_advop.c \
 		matrix_basop.c \
 		quaternion.c \
+		transform.c \
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
 

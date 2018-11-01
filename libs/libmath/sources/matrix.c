@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/23 18:09:41 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 21:39:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,32 @@ t_mat4x4	mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s)
 	trs.m[10] = s.z * rot_mat.m[10];
 	trs.m[14] = t.z;
 	return (trs);
+}
+
+t_mat4x4	compute_view(t_transform cam_transform)
+{
+	t_mat4x4	view;
+
+	view = mat4x4_transpose(quat_to_mat4x4(cam_transform.rotation));
+	view.m[12] = -vec3_dot(vec3_v4(view.v[0]), cam_transform.position);
+	view.m[13] = -vec3_dot(vec3_v4(view.v[1]), cam_transform.position);
+	view.m[14] = -vec3_dot(vec3_v4(view.v[2]), cam_transform.position);
+	return (view);
+}
+
+t_mat4x4	compute_projection(float fov, float aspect, float zn, float zf)
+{
+	t_mat4x4	proj_mat;
+	float		f;
+
+	fov *= M_PI / 180.0f;
+	f = 1 / tanf(fov / 2);
+	proj_mat = mat4x4();
+	proj_mat.m[0] = f / aspect;
+	proj_mat.m[5] = f;
+	proj_mat.m[10] = -(zf + zn) / (zf - zn);
+	proj_mat.m[11] = -1;
+	proj_mat.m[14] = (-2 * zn * zf) / (zf - zn);
+	proj_mat.m[15] = 0;
+	return (proj_mat);
 }

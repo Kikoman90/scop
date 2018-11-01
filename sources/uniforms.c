@@ -6,28 +6,20 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 19:11:34 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/31 13:14:01 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/01 22:07:11 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static void	set_def_uniforms(t_shader shader, t_light light, float fade) // and a texture
+static void	set_def_uniforms(t_shader shader, float fade) // and a texture
 {
-	glUniform3fv(shader.u_loc[3], 1, &light.go->transform.position.x);
-	glUniform3fv(shader.u_loc[4], 1, &light.light_color.x);
-	glUniform1f(shader.u_loc[5], light.intensity);
-	glUniform1f(shader.u_loc[6], light.range);
 	glUniform1f(shader.u_loc[7], fade);
 	// [8] texture uniform
 }
 
-static void	set_std_uniforms(t_shader shader, t_light light, t_material *mtl)
+static void	set_std_uniforms(t_shader shader, t_material *mtl)
 {
-	glUniform3fv(shader.u_loc[3], 1, &light.go->transform.position.x);
-	glUniform3fv(shader.u_loc[4], 1, &light.light_color.x);
-	glUniform1f(shader.u_loc[5], light.intensity);
-	glUniform1f(shader.u_loc[6], light.range);
 	glUniform3fv(shader.u_loc[7], 1, &mtl->clr_amb.x);
 	glUniform3fv(shader.u_loc[8], 1, &mtl->clr_dif.x);
 	glUniform3fv(shader.u_loc[9], 1, &mtl->clr_spc.x);
@@ -35,44 +27,38 @@ static void	set_std_uniforms(t_shader shader, t_light light, t_material *mtl)
 	glUniform1f(shader.u_loc[11], mtl->transparency);
 }
 
-// 27 LINES -> set_pick_uniforms function ? 6 functions ?
-void		set_uniforms(t_env *env, t_uniforms shader_u, t_go_node *node, \
-	t_mat4x4 *m)
+void		set_uniforms(t_env *env, t_go_node *node, unsigned int idx)
 {
 	t_shader	shader;
 	t_vec3		view;
 
-	if (shader_u & PICK_SHADER_UNIFORMS)
-	{
-		shader = env->pick_shader;
+	shader = env->shaders[idx];
+	glUniformMatrix4fv(shader.u_loc[0], 1, GL_FALSE, \
+		&(env->matrices.model[node->id - 1].m[0]));
+	glUniformMatrix4fv(shader.u_loc[1], 1, GL_FALSE, &(env->matrices.vp.m[0]));
+	if (idx == 1)
 		glUniform3fv(shader.u_loc[2], 1, &node->go->pick_clr.x);
-	}
 	else
 	{
 		view = vector_rot(env->camera.transform.rotation, (t_vec3)VEC3_FRONT);
-		if (shader_u & DEF_SHADER_UNIFORMS)
-		{
-			shader = env->def_shader;
-			set_def_uniforms(shader, env->light, 0.9);//
-				// , env->texture_set[env->current_tex], env->def_fade);
-		}
-		else if (shader_u & STD_SHADER_UNIFORMS)
-		{
-			shader = env->std_shader;
-			set_std_uniforms(shader, env->light, \
-				get_mtl(env->mtl_list, node->go->mtl_id));
-		}
 		glUniform3fv(shader.u_loc[2], 1, &view.x);
+		glUniform3fv(shader.u_loc[3], 1, &env->light.transform.position.x);
+		glUniform3fv(shader.u_loc[4], 1, &env->light.color.x);
+		glUniform1f(shader.u_loc[5], env->light.intensity);
+		glUniform1f(shader.u_loc[6], env->light.range);
+		if (idx == 0)
+			set_def_uniforms(shader, 0.9f); // env->texture_set[env->current_tex], env->def_fade);
+		else if (idx == 2)
+			set_std_uniforms(shader, \
+				get_mtl(env->materials.head, node->go->mtl_id));
 	}
-	glUniformMatrix4fv(shader.u_loc[0], 1, GL_FALSE, &(m[node->id].m[0]));
-	glUniformMatrix4fv(shader.u_loc[1], 1, GL_FALSE, &(m[0].m[0]));
 }
 
-void        get_uniforms(t_shader *shdr, t_uniforms shader_u)
+void		get_uniforms(t_shader *shdr, unsigned int idx)
 {
 	shdr->u_loc[0] = glGetUniformLocation(shdr->prog, "m");
 	shdr->u_loc[1] = glGetUniformLocation(shdr->prog, "vp");
-	if (shader_u & PICK_SHADER_UNIFORMS)
+	if (idx == 1)
 		shdr->u_loc[2] = glGetUniformLocation(shdr->prog, "pickClr");
 	else
 	{
@@ -81,12 +67,12 @@ void        get_uniforms(t_shader *shdr, t_uniforms shader_u)
 		shdr->u_loc[4] = glGetUniformLocation(shdr->prog, "light.color");
 		shdr->u_loc[5] = glGetUniformLocation(shdr->prog, "light.intensity");
 		shdr->u_loc[6] = glGetUniformLocation(shdr->prog, "light.range");
-		if (shader_u & DEF_SHADER_UNIFORMS)
+		if (idx == 0)
 		{
 			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "fade");
-			//shdr->u_loc[8] = glGetUniformLocation(shdr->prog, "TextureSampler");
+			shdr->u_loc[8] = glGetUniformLocation(shdr->prog, "TextureSampler");
 		}
-		else if (shader_u & STD_SHADER_UNIFORMS)
+		else if (idx == 2)
 		{
 			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "mat.clr_amb");
 			shdr->u_loc[8] = glGetUniformLocation(shdr->prog, "mat.clr_dif");
