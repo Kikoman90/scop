@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 21:44:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/05 15:55:08 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,7 +251,7 @@ void					get_uniforms(t_shader *shdr, unsigned int idx);
 /*
 ** events_handle.c		=> 4 functions
 */
-void					handle_events_and_input(t_env *env);
+void					handle_events_and_input(t_env *env, double delta_time);
 
 /*
 ** update.c				=> 2 function

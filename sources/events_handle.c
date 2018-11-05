@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:02:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/05 18:14:30 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,20 @@ static void	handle_keyboard_events(t_env *env, SDL_Event *event)
 		env->loop = 0;
 }
 
-static void	handle_mouse_events(t_env *env, SDL_Event *event)
+static void	handle_mouse_events(t_env *env, SDL_Event *event, double delta_time, float speed)
 {
-	(void)env;
-	(void)event;
+	//SDL_SetRelativeMouseMode(SDL_TRUE); // -> setup.c
+	if (event->type == SDL_MOUSEMOTION && event->motion.state & SDL_BUTTON_RMASK)
+	{
+		env->camera.transform.rotation = quat_mult(env->camera.transform.rotation, \
+			quat_tv(-event->motion.yrel * speed * delta_time, (t_vec3)VEC3_RIGHT));
+		env->camera.transform.rotation = quat_mult(quat_tv(-event->motion.xrel \
+			* speed * delta_time, (t_vec3)VEC3_UP), env->camera.transform.rotation);
+		env->matrices.update_mat[1] = 1;
+	}
 }
 
-void		handle_events_and_input(t_env *env)
+void		handle_events_and_input(t_env *env, double delta_time)
 {
 	SDL_Event	event;
 
@@ -56,5 +63,5 @@ void		handle_events_and_input(t_env *env)
 		handle_keyboard_events(env, &event);
 	if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP ||\
 		event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEWHEEL)
-		handle_mouse_events(env, &event);
+		handle_mouse_events(env, &event, delta_time, 11.0f);
 }

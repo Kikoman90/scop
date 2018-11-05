@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:03:17 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/05 18:14:42 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,12 @@
 	}
 }*/
 
+/*void		update_objects(t_env *env, double delta)
+{
+	//if (SDL_MOUSE_BUTTON(1))
+
+}*/
+
 static void	loop(t_env *env)
 {
 	uint32_t	last_time;
@@ -69,7 +75,8 @@ static void	loop(t_env *env)
 		delta_time = (cur_time - last_time) / 1000.0;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		handle_events_and_input(env);
+		handle_events_and_input(env, delta_time);
+		//update_objects(env, delta_time);
 		rotate_gameobjects(env->gameobjects.head, delta_time);
 		draw(env);
 		SDL_GL_SwapWindow(env->win_env.window);
@@ -82,7 +89,7 @@ int			main(int argc, char **argv)
 
 	if (!init_scop(&env, argc, argv))
 		return (clean_scop(&env));
-	display_go_list(env.gameobjects.head);
+	// display_go_list(env.gameobjects.head);
 	loop(&env);
 	return (clean_scop(&env));
 }
