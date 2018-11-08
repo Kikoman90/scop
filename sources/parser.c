@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:18:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:06:10 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 20:01:49 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ void				init_opv(t_obj_parser_var *opv, char *name, \
 	opv->name = name;
 	opv->mtl_id = 0;
 	opv->mtl_offset = mtl_offset;
-	opv->attrib_fill = 0;
-	opv->attrib_list = NULL;
+	opv->f_count = 0;
+	opv->vtx_fill = 0;
 	opv->v_seed[0] = init_seed_struct();
 	opv->v_seed[1] = init_seed_struct();
 	opv->v_seed[2] = init_seed_struct();
@@ -51,16 +51,18 @@ unsigned int		parser_error(const char *error, const char *fname, \
 
 static unsigned int	init_parser(t_parser *parser, const char *path)
 {
-	size_t	path_length;
-
 	parser->fpath = NULL;
 	parser->data = NULL;
 	if (!path || ft_strlen(path) == 0)
-		return (0);
-	if (!(parser->fname = ft_strrchr(path, '/') + 1))
-		return (0);
-	path_length = ft_strlen(path) - ft_strlen(parser->fname);
-	parser->fpath = ft_strsub(path, 0, path_length);
+		return (log_error("invalid path"));
+	if (!(parser->fname = ft_strrchr(path, '/')))
+		parser->fname = path;
+	else
+	{
+		parser->fname++;
+		parser->fpath = ft_strsub(path, 0, \
+			ft_strlen(path) - ft_strlen(parser->fname));
+	}
 	if (!(parser->data = ft_file_map(path, &parser->fsize)))
 	{
 		if (parser->fpath)

@@ -11,7 +11,7 @@ out vec3		vFragPos;
 
 void	main()
 {
-	vFragPos = vec3(m * vec4(iPosition, 1.0));
-	gl_Position = vp * m * vec4(iPosition, 1.0);
-	vNormal = normalize(vec3(m * vec4(iNormal, 0.0)));
+	vFragPos = vec3(m * vec4(iPosition, 1.0f));
+	gl_Position = vp * m * vec4(iPosition, 1.0f);
+	vNormal = normalize(vec3(m * vec4(iNormal, 0.0f)));
 }

@@ -6,11 +6,12 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/05 17:34:24 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/06 17:06:08 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libmath.h"
+#include <stdio.h>//remove me
 
 t_mat4x4	mat4x4(void)
 {
@@ -46,10 +47,6 @@ t_mat4x4	compute_view(t_transform cam_transform)
 {
 	t_mat4x4	view;
 
-	/*view = mat4x4_transpose(quat_to_mat4x4(cam_transform.rotation));
-	view.m[12] = -vec3_dot(vec3_v4(view.v[0]), cam_transform.position);
-	view.m[13] = -vec3_dot(vec3_v4(view.v[1]), cam_transform.position);
-	view.m[14] = -vec3_dot(vec3_v4(view.v[2]), cam_transform.position);*/
 	view = mat4x4_transpose(quat_to_mat4x4(cam_transform.rotation));
 	view.m[3] = -vec3_dot(vec3_v4(view.v[0]), cam_transform.position);
 	view.m[7] = -vec3_dot(vec3_v4(view.v[1]), cam_transform.position);

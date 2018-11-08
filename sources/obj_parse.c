@@ -6,29 +6,29 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:04:09 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 19:55:31 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static void	init_gl_objects(t_gameobject *go, size_t buf_s, size_t attr_s)
+static void	init_vao_vbo(t_gameobject *go, size_t vtx_struct_size, \
+	size_t type_size)
 {
-	glGenVertexArrays(1, &go->gl_stack.vao);
-	glBindVertexArray(go->gl_stack.vao);
-	glGenBuffers(1, &go->gl_stack.vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, go->gl_stack.vbo);
-	glBufferData(GL_ARRAY_BUFFER, buf_s * go->vtx_count, &go->vtx_attrib[0], \
-		GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, buf_s, (void*)(2 * attr_s));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, buf_s, (void*)(5 * attr_s));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, buf_s, 0);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, buf_s, (void*)(8 * attr_s));
+	glGenVertexArrays(1, &go->vao);
+	glBindVertexArray(go->vao);
+	glGenBuffers(1, &go->vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, go->vbo);
+	glBufferData(GL_ARRAY_BUFFER, vtx_struct_size * go->vtx_count, \
+		&go->vtx_attrib[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
+		(void*)(2 * type_size));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
+		(void*)(5 * type_size));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vtx_struct_size, 0);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
+		(void*)(8 * type_size));
 	glEnableVertexAttribArray(0);
-	glGenBuffers(1, &go->gl_stack.ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, go->gl_stack.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * go->idx_count,\
-		&go->indices[0], GL_STATIC_DRAW);
 }
 
 static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
@@ -42,22 +42,18 @@ static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
 			opv->name = ft_strjoin_rf(GO_NAME, ft_itoa(gameobjects->count + 1));
 		if ((node = create_go_node(opv->name, opv->mtl_id, opv->f_seed.count)))
 		{
-			if (!parse_indices(node->go, opv, parser))
+			opv->color_delta = 0.8f / (float)((node->go->vtx_count / 3) - 1);
+			if (!parse_faces(node->go, opv, parser, NULL))
 				clean_go_node(node, 1);
-			if (!(node->go->vtx_attrib = (t_vtx_attrib*)malloc(\
-				sizeof(t_vtx_attrib) * node->go->vtx_count)))
+			else
 			{
-				log_error(MALLOC_ERROR);
-				clean_go_node(node, 1);
+				init_vao_vbo(node->go, sizeof(t_vtx_attrib), sizeof(float));
+				add_go_node(gameobjects, node);
 			}
-			parse_vtx_attrib(node->go, opv, parser->data);
-			init_gl_objects(node->go, sizeof(t_vtx_attrib), sizeof(float));
-			add_go_node(gameobjects, node);
 		}
 	}
 	else if (opv->name)
 		free(opv->name);
-	opv->attrib_list = free_attrib_list(opv->attrib_list);
 	init_opv(opv, ft_strword(parser->data, &parser->fseed), opv->mtl_offset);
 }
 
@@ -95,8 +91,11 @@ static void	parse_mtllib(t_go_list *gameobjects, t_mtl_list *materials, \
 {
 	char	*path;
 
-	path = ft_strjoin_rf(parser->fpath, \
-		ft_strword(parser->data, &parser->fseed));
+	if (!parser->fpath)
+		path = ft_strword(parser->data, &parser->fseed);
+	else
+		path = ft_strjoin_rf(parser->fpath, \
+			ft_strword(parser->data, &parser->fseed));
 	parse_file(gameobjects, materials, path, parse_wavefrontmtl);
 	free(path);
 }
@@ -128,5 +127,4 @@ void		parse_wavefrontobj(t_go_list *gameobjects, \
 			free(word);
 	}
 	parse_go(gameobjects, parser, &opv);
-	opv.attrib_list = free_attrib_list(opv.attrib_list);
 }

@@ -6,14 +6,14 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 21:47:58 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 19:32:27 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static t_vec3		feed_attrib(t_seed *v_seed, char *data, unsigned int idx, \
-	char *v)
+static t_vec3		parse_vtx_attrib(t_seed *v_seed, char *data, \
+	unsigned int idx, char *v)
 {
 	unsigned int	i;
 	unsigned int	seed;
@@ -40,97 +40,64 @@ static t_vec3		feed_attrib(t_seed *v_seed, char *data, unsigned int idx, \
 	return ((t_vec3)VEC3_ZERO);
 }
 
-void				parse_vtx_attrib(t_gameobject *go, t_obj_parser_var *opv, \
-	char *data)
+static unsigned int	get_indices(unsigned int (*out_indices)[3], \
+	t_obj_parser_var *opv, t_parser *parser, unsigned int *seed)
 {
-	unsigned int	i;
-	t_idx_attrib	*tmp;
+	char	*word;
 
-	i = 0;
-	tmp = opv->attrib_list;
-	while (tmp && i < go->vtx_count)
+	if ((word = ft_strword(parser->data, seed)) != NULL)
 	{
-		if (i == tmp->idx_ret)
-		{
-			go->vtx_attrib[i].vertex = feed_attrib(&opv->v_seed[0], \
-				data, tmp->attrib[0], "v");
-			go->vtx_attrib[i].uv = vec2_v3(feed_attrib(&opv->v_seed[1], \
-				data, tmp->attrib[1], "vt"));
-			go->vtx_attrib[i].normal = vec3_norm(feed_attrib(&opv->v_seed[2], \
-				data, tmp->attrib[2], "vn"));
-			go->vtx_attrib[i].color = vec3_xyz(\
-				sinf(go->vtx_attrib[i].vertex.x), \
-				sinf(go->vtx_attrib[i].vertex.y), \
-				sinf(go->vtx_attrib[i].vertex.z));
-			i++;
-		}
-		tmp = tmp->next;
+		(*out_indices)[0] = (unsigned int)ft_atoi(word);
+		(*out_indices)[1] = (unsigned int)ft_atoi(ft_strchr(word, '/', 1));
+		(*out_indices)[2] = (unsigned int)ft_atoi(ft_strnchr(word, '/', 2, 1));
+		free(word);
+		if ((*out_indices)[0] == 0 || (*out_indices)[0] > opv->v_seed[0].count \
+			|| (*out_indices)[1] > opv->v_seed[1].count \
+			|| (*out_indices)[2] > opv->v_seed[2].count)
+			return (parser_error(IDX_ERROR, parser->fname, opv->f_seed.line));
+		return (1);
 	}
+	return (0);
 }
 
-static unsigned int	*get_ret_indices(t_obj_parser_var *opv, char *data, \
-	unsigned int seed)
+static unsigned int	parse_face(t_gameobject *go, t_obj_parser_var *opv, \
+	t_parser *parser, unsigned int seed)
 {
-	unsigned int	i;
-	unsigned int	*ret;
-	char			*word;
-	t_idx_attrib	f_tmp;
+	unsigned int		i;
+	unsigned int		idx[3];
+	t_vtx_attrib		vtx;
 
-	if (!(ret = (unsigned int*)malloc(sizeof(unsigned int) * opv->f_count)))
-		return (log_error_null(MALLOC_ERROR));
 	i = 0;
 	while (i < opv->f_count)
 	{
-		word = ft_strword(data, &seed);
-		f_tmp.attrib[0] = (unsigned int)ft_atoi(word);
-		f_tmp.attrib[1] = (unsigned int)ft_atoi(ft_strchr(word, '/', 1));
-		f_tmp.attrib[2] = (unsigned int)ft_atoi(ft_strnchr(word, '/', 2, 1));
-		if (word)
-			free(word);
-		if (!check_attrib_list(opv, &f_tmp, &ret[i]))
+		if (!get_indices(&idx, opv, parser, &seed))
+			return (0);
+		vtx.position = parse_vtx_attrib(&opv->v_seed[0], parser->data, idx[0], "v");
+		vtx.uv = vec2_v3(parse_vtx_attrib(&opv->v_seed[1], parser->data, idx[1], "vt"));
+		vtx.normal = vec3_norm(parse_vtx_attrib(&opv->v_seed[2], parser->data, idx[2], "vn"));
+		vtx.color = vec3_f(0.1f + (float)((opv->vtx_fill + i) / 3) * opv->color_delta);
+		if (i < 3)
+			go->vtx_attrib[opv->vtx_fill + i++] = vtx;
+		else
 		{
-			free(ret);
-			return (NULL);
+			go->vtx_attrib[opv->vtx_fill + i] = go->vtx_attrib[opv->vtx_fill];
+			go->vtx_attrib[opv->vtx_fill + i].color = vtx.color;
+			go->vtx_attrib[opv->vtx_fill + i + 1] = go->vtx_attrib[opv->vtx_fill + i - 1];
+			go->vtx_attrib[opv->vtx_fill + i + 1].color = vtx.color;
+			go->vtx_attrib[opv->vtx_fill + i + 2] = vtx;
+			i += 3;
 		}
-		i++;
 	}
-	return (ret);
-}
-
-static unsigned int	feed_indices(t_gameobject *go, unsigned int *indices, \
-	unsigned int i, unsigned int count)
-{
-	unsigned int	j;
-	unsigned int	ri;
-	unsigned int	ii;
-
-	if (!indices)
-		return (0);
-	ii = 0;
-	ri = i + 3;
-	while (i < ri)
-		go->indices[i++] = indices[ii++];
-	ri += (count - 3);
-	j = i;
-	while (i < ri)
-	{
-		go->indices[j] = go->indices[i - 3];
-		go->indices[j + 1] = go->indices[i - 1];
-		go->indices[j + 2] = indices[ii++];
-		j += 3;
-		i++;
-	}
-	free(indices);
+	opv->vtx_fill += opv->f_count;
 	return (1);
 }
 
-unsigned int		parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
-	t_parser *parser)
+unsigned int		parse_faces(t_gameobject *go, t_obj_parser_var *opv, \
+	t_parser *parser, char *w)
 {
 	unsigned int	i;
 	unsigned int	seed;
 	t_seed			*f_seed;
-	char			*w;
 
 	i = 0;
 	f_seed = &opv->f_seed;
@@ -139,17 +106,18 @@ unsigned int		parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
 	{
 		if ((w = ft_strword(parser->data, &seed)) && ft_strcmp(w, "f") == 0)
 		{
-			if ((opv->f_count = check_idx_count(parser->data, seed, 0)) < 3)
+			if ((opv->f_count = check_idx_count(parser->data, seed, 1)) < 3)
 				return (parser_error(FACE_ERROR, parser->fname, f_seed->line));
-			if (!feed_indices(go, get_ret_indices(opv, parser->data, seed), \
-				i, opv->f_count))
+			if (!parse_face(go, opv, parser, seed))
+			{
+				free(w);
 				return (0);
-			i += 3 + ((opv->f_count - 3) * 3);
+			}
+			i += opv->f_count;
 		}
 		seed = skip_line(parser->data, seed);
 		if (f_seed->line++ && w)
 			free(w);
 	}
-	go->vtx_count = opv->attrib_fill;
 	return (1);
 }

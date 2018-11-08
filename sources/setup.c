@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 21:21:41 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 20:29:52 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,9 @@ static unsigned int	init_sdl_gl(t_win *win)
 		return (log_error(WIN_CREATE_ERROR));
 	if (!(win->gl_context = SDL_GL_CreateContext(win->window)))
 		return (log_error(SDL_GetError()));
+	SDL_WarpMouseInWindow(win->window, WIN_W / 2, WIN_H / 2);
+	//SDL_SetRelativeMouseMode(SDL_TRUE);
+	SDL_SetWindowGrab(win->window, SDL_TRUE);
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -108,6 +111,9 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 	while (argc-- > 1)
 		parse_file(&env->gameobjects, &env->materials, argv[argc], \
 			parse_wavefrontobj);
+	env->input.pan_speed = 5.0f;
+	env->input.zoom_speed = 1.0f;
+	env->input.orbit_speed = 8.0f;
 	env->loop = 1;
 	return (1);
 }

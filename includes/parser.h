@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:13:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 19:05:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 19:08:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,8 @@
 # include "../libs/libmath/includes/libmath.h"
 
 # define FILE_PREFIX_ERROR "invalid prefix in file "
-# define INVALID_IDX_ERROR "invalid index in file "
+# define IDX_ERROR "invalid index in file "
 # define FACE_ERROR "invalid index count in file "
-
-typedef struct			s_idx_attrib
-{
-	unsigned int		attrib[3];
-	unsigned int		idx_ret;
-	struct s_idx_attrib	*next;
-}						t_idx_attrib;
 
 typedef struct			s_seed
 {
@@ -41,8 +34,8 @@ typedef struct			s_obj_parser_var
 	unsigned int		mtl_id;
 	unsigned int		mtl_offset;
 	unsigned int		f_count;
-	unsigned int		attrib_fill;
-	t_idx_attrib		*attrib_list;
+	unsigned int		vtx_fill;
+	float				color_delta;
 	t_seed				f_seed;
 	t_seed				v_seed[3];
 }						t_obj_parser_var;
@@ -58,12 +51,9 @@ typedef struct			s_parser
 }						t_parser;
 
 /*
-** parser_utils.c		=> 5 functions
+** parser_utils.c		=> 2 functions
 */
 t_vec3					vec3_atof(char *data, unsigned int *seed, int clamp01);
 unsigned int			check_idx_count(char *data, unsigned int seed, int idx);
-t_idx_attrib			*check_attrib_list(t_obj_parser_var *opv, \
-							t_idx_attrib *elem, unsigned int *ret);
-t_idx_attrib			*free_attrib_list(t_idx_attrib *list);
 
 #endif

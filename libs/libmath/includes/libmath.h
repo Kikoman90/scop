@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 18:27:55 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/06 17:15:40 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ t_mat4x4			compute_projection(float fov, float aspect, float zn, \
 t_mat4x4			mat4x4_add(t_mat4x4 a, t_mat4x4 b);
 t_mat4x4			mat4x4_sub(t_mat4x4 a, t_mat4x4 b);
 t_mat4x4			mat4x4_transpose(t_mat4x4 mat);
+void				get_matrix_axes(t_vec3 (*axes)[3], t_mat4x4 mat);
 
 /*
 ** vector_advop.c	=> 5 functions

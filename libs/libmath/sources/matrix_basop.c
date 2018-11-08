@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/10 11:32:03 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/23 17:59:01 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/06 17:16:20 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,11 @@ t_mat4x4	mat4x4_transpose(t_mat4x4 mat)
 	swapf(&mat.m[7], &mat.m[13]);
 	swapf(&mat.m[11], &mat.m[14]);
 	return (mat);
+}
+
+void		get_matrix_axes(t_vec3 (*axes)[3], t_mat4x4 mat)
+{
+    (*axes)[0] = vec3_norm(vec3_v4(mat.v[0]));
+    (*axes)[1] = vec3_norm(vec3_v4(mat.v[1]));
+    (*axes)[2] = vec3_norm(vec3_v4(mat.v[2]));
 }

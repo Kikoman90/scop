@@ -6,13 +6,13 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/05 18:14:53 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 11:21:08 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void			rotate_gameobjects(t_go_node *list, double delta)
+void	rotate_gameobjects(t_go_node *list, double delta)
 {
 	t_quaternion	z_rot;
 	t_go_node		*tmp;
@@ -27,9 +27,9 @@ void			rotate_gameobjects(t_go_node *list, double delta)
 	}
 }
 
-void			update_matrices(t_env *env)
+void	update_matrices(t_env *env, int update)
 {
-	if (env->matrices.update_mat[0] == 1)
+	if (env->matrices.update_mat[0] == 1 || update == 0)
 	{
 		if (env->matrices.model)
 			free(env->matrices.model);
@@ -41,13 +41,14 @@ void			update_matrices(t_env *env)
 		else
 			env->matrices.update_mat[0] = 0;
 	}
-	if (env->matrices.update_mat[1] == 1)
+	if (env->matrices.update_mat[1] == 1 || update == 1)
 		env->matrices.view = compute_view(env->camera.transform);
-	if (env->matrices.update_mat[2] == 1)
+	if (env->matrices.update_mat[2] == 1 || update == 2)
 		env->matrices.projection = compute_projection(env->camera.fov, \
 			(float)env->win_env.win_w / env->win_env.win_h, \
 			env->camera.znear, env->camera.zfar);
-	if (env->matrices.update_mat[1] == 1 || env->matrices.update_mat[2] == 1)
+	if (env->matrices.update_mat[1] == 1 || env->matrices.update_mat[2] == 1 \
+		|| update == 1 || update == 2)
 	{
 		env->matrices.vp = \
 			mat4x4_mult(env->matrices.projection, env->matrices.view);
@@ -55,3 +56,10 @@ void			update_matrices(t_env *env)
 		env->matrices.update_mat[2] = 0;
 	}
 }
+
+/*void	update_view(t_camera *camera, SDL_MouseMotionEvent motion, \
+	double delta_time, float speed)
+{
+	;
+	//camera->transform.rotation = quat_norm(camera->transform.rotation);
+}*/

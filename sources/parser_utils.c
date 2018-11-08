@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:06:24 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 17:57:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,62 +39,4 @@ unsigned int		check_idx_count(char *data, unsigned int seed, int idx)
 	if (idx == 1 && count > 3)
 		count = 3 + (count - 3) * 3;
 	return (count);
-}
-
-static unsigned int	cmp_attrib(t_idx_attrib *att1, t_idx_attrib *att2, \
-	unsigned int *ret)
-{
-	if (att1->attrib[0] == att2->attrib[0] && \
-		att1->attrib[1] == att2->attrib[1] && \
-		att1->attrib[2] == att2->attrib[2])
-	{
-		*ret = att1->idx_ret;
-		return (1);
-	}
-	return (0);
-}
-
-t_idx_attrib		*check_attrib_list(t_obj_parser_var *opv, \
-	t_idx_attrib *elem, unsigned int *ret)
-{
-	t_idx_attrib	*tmp;
-	t_idx_attrib	*attrib_ret;
-
-	tmp = opv->attrib_list;
-	while (tmp && tmp->next)
-	{
-		if (cmp_attrib(tmp, elem, ret) == 1)
-			return (tmp);
-		tmp = tmp->next;
-	}
-	if (tmp && cmp_attrib(tmp, elem, ret) == 1)
-		return (tmp);
-	if (!(attrib_ret = (t_idx_attrib*)malloc(sizeof(t_idx_attrib))))
-		return (log_error_null(MALLOC_ERROR));
-	attrib_ret->idx_ret = opv->attrib_fill++;
-	attrib_ret->attrib[0] = elem->attrib[0];
-	attrib_ret->attrib[1] = elem->attrib[1];
-	attrib_ret->attrib[2] = elem->attrib[2];
-	attrib_ret->next = NULL;
-	*ret = attrib_ret->idx_ret;
-	if (tmp)
-		tmp->next = attrib_ret;
-	else
-		opv->attrib_list = attrib_ret;
-	return (attrib_ret);
-}
-
-t_idx_attrib		*free_attrib_list(t_idx_attrib *list)
-{
-	t_idx_attrib	*tmp;
-	t_idx_attrib	*tmp2;
-
-	tmp = list;
-	while (tmp)
-	{
-		tmp2 = tmp->next;
-		free(tmp);
-		tmp = tmp2;
-	}
-	return (NULL);
 }

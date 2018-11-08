@@ -28,14 +28,15 @@ void	main()
 {
 	vec3 ray = vFragPos - light.position;
 	vec3 lightDir = normalize(light.position - vFragPos);
-	float dist = -length(ray);// * -1;
+	float dist = -length(ray);
 	dist = (dist + light.range) / light.range;
-	vec3 diffuse = light.intensity * max(dot(vNormal, lightDir), 0.0) \
+	vec3 diffuse = light.intensity * max(dot(vNormal, lightDir), 0.0f) \
 		* mat.clr_dif * light.color * dist;
 	vec3 viewDir = normalize(viewPos - vFragPos);
 	vec3 reflectDir = reflect(-lightDir, vNormal);
-	vec3 specular = light.intensity * (mat.expnt_spc / 100.0f) * pow(max(dot(viewDir, reflectDir), 0.0), 32)
-		* mat.clr_spc * light.color * dist;
+	vec3 specular = light.intensity * (mat.expnt_spc / 100.0f) \
+	* pow(max(dot(viewDir, reflectDir), 0.0f), 32) \
+	* mat.clr_spc * light.color * dist;
 	vec3 final = mat.clr_amb + diffuse + specular;
 	FragColor = vec4(final, mat.transp);
 }

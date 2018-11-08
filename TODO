@@ -1,18 +1,20 @@
 S C O P  S C O P E :
 
+TRY TO PARSE FILE WITHOUT ANY PATH (example: 42.obj in executable repo)
+
 MATRICES -> not ok (node_add can't notify)
 
 * trouver le centre de l'objet (zmin, zmax, ymin, ymax, xmin, xmax)
 * ensuite recalculer les positions des vertex par rapport au nouveau centre
 * calculer les normales des faces si elles ne sont pas indiquees ou incoherentes
-* skybox (OR GRID AND AXES !)
-* handles
+
+* skybox (OR GRID AND AXES !) textures      /!\
+* handles                                   /!\
+
 * camera movement
 * a bit of UI ?
-* close button triggers SDL_QUIT 🤠 event
 
 * showFPS
-* input handler !
 
 HANDLES
 * scene axes and grid, objects local/world coordinates (switch)
@@ -22,7 +24,7 @@ HANDLES
 * ability to lock on a gameobject (camera rotates around it)
 * object basic info when hovering over it.
 
-clean everything up, reorganize structures and code/files.
+clean everything up.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 SERIALIZATION !

@@ -8,15 +8,16 @@ layout(location = 3) in vec3	iColor;
 uniform mat4	m;
 uniform mat4	vp;
 
-out vec4		vNormal;
+out vec3		vFragPos;
+out vec3		vNormal;
 out vec2		vUV;
-out vec4		vColor;
+out vec3		vColor;
 
 void main()
 {
-	vec4 worldPos = m * vec4(iPosition, 1.0);
-	gl_Position = vp * worldPos;
-	vColor = vec4(iColor, 1);
-	vNormal = m * vec4(iNormal, 1.0);
+	vFragPos = vec3(m * vec4(iPosition, 1.0f));
+	gl_Position = vp * m * vec4(iPosition, 1.0f);
+	vNormal = normalize(vec3(m * vec4(iNormal, 0.0f)));
 	vUV = iUV;
+	vColor = iColor;
 }

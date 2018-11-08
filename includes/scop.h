@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/05 15:55:08 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 18:04:45 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,6 @@
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
-
-typedef struct			s_gl_stack
-{
-	GLuint				vao;
-	GLuint				vbo;
-	GLuint				ibo;
-}						t_gl_stack;
 
 typedef struct			s_shader
 {
@@ -74,7 +67,7 @@ typedef struct			s_mtl_list
 typedef struct			s_vtx_attrib
 {
 	t_vec2				uv;
-	t_vec3				vertex;
+	t_vec3				position;
 	t_vec3				normal;
 	t_vec3				color;
 }						t_vtx_attrib;
@@ -84,12 +77,11 @@ typedef struct			s_gameobject
 	char				*name;
 	t_transform			transform;
 	t_vtx_attrib		*vtx_attrib;
-	unsigned int		*indices;
 	size_t				vtx_count;
-	size_t				idx_count;
 	unsigned int		mtl_id;
 	t_vec3				pick_clr;
-	t_gl_stack			gl_stack;
+	GLuint				vao;
+	GLuint				vbo;
 }						t_gameobject;
 
 typedef struct			s_go_node
@@ -145,6 +137,17 @@ typedef struct			s_mvp_mat
 	unsigned int		update_mat[3];
 }						t_mvp_mat;
 
+typedef struct			s_input
+{
+	float				pan_speed;
+	float				zoom_speed;
+	float				orbit_speed;
+	float				go_move_speed;
+	float				go_rot_speed;
+	float				go_scale_speed;
+	int					world_space;
+}						t_input;
+
 typedef struct			s_env
 {
 	int					loop;
@@ -157,6 +160,7 @@ typedef struct			s_env
 	t_mtl_list			materials;
 	t_go_list			gameobjects;
 	t_go_list			selection;
+	t_input				input;
 }						t_env;
 
 /*
@@ -189,12 +193,10 @@ void					parse_wavefrontmtl(t_go_list *gameobjects, \
 							char *word);
 
 /*
-** attrib_parse.c		=> 5 functions
+** attrib_parse.c		=> 4 functions
 */
-void					parse_vtx_attrib(t_gameobject *go, \
-							t_obj_parser_var *opv, char *data);
-unsigned int			parse_indices(t_gameobject *go, t_obj_parser_var *opv, \
-							t_parser *parser);
+unsigned int			parse_faces(t_gameobject *go, t_obj_parser_var *opv, \
+							t_parser *parser, char *w);
 
 /*
 ** obj_parse.c			=> 5 functions
@@ -257,7 +259,10 @@ void					handle_events_and_input(t_env *env, double delta_time);
 ** update.c				=> 2 function
 */
 void					rotate_gameobjects(t_go_node *list, double delta);
-void					update_matrices(t_env *env);
+void					update_matrices(t_env *env, int update);
+/*void					update_view(t_camera *camera, \
+							SDL_MouseMotionEvent motion, double delta_time, \
+							float speed);*/
 
 /*
 ** draw.c				=> 3 functions

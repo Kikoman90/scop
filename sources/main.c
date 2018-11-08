@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/05 18:14:42 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 20:29:50 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ static void	loop(t_env *env)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		handle_events_and_input(env, delta_time);
-		//update_objects(env, delta_time);
 		rotate_gameobjects(env->gameobjects.head, delta_time);
 		draw(env);
 		SDL_GL_SwapWindow(env->win_env.window);

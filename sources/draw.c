@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/05 16:40:39 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/08 19:37:27 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,11 @@ static void	draw_ms_fbo(t_env *env)
 	tmp = env->gameobjects.head;
 	while (tmp)
 	{
-		glBindVertexArray(tmp->go->gl_stack.vao);
+		glBindVertexArray(tmp->go->vao);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
+		//tmp->go->mtl_id = 0; // HAHAHAHAHAHA (delet this)
 		if (tmp->go->mtl_id != 0)
 		{
 			glUseProgram(env->shaders[2].prog);
@@ -35,7 +36,7 @@ static void	draw_ms_fbo(t_env *env)
 			glUseProgram(env->shaders[0].prog);
 			set_uniforms(env, tmp, 0);
 		}
-		glDrawElements(GL_TRIANGLES, tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
+		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vtx_count);
 		tmp = tmp->next;
 	}
 	// draw_world_axes_and_grid(env);
@@ -50,11 +51,11 @@ static void	draw_pick_fbo(t_env *env)
 	{
 		glUseProgram(env->shaders[1].prog);
 		set_uniforms(env, tmp, 1);
-		glBindVertexArray(tmp->go->gl_stack.vao);
+		glBindVertexArray(tmp->go->vao);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 		glDisableVertexAttribArray(3);
-		glDrawElements(GL_TRIANGLES, tmp->go->idx_count, GL_UNSIGNED_INT, NULL);
+		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vtx_count);
 		tmp = tmp->next;
 	}
 }
@@ -129,7 +130,7 @@ static void	draw_handles(t_go_list *selection)
 
 void		draw(t_env *env)
 {
-	update_matrices(env);
+	update_matrices(env, -1);
 	if (env->matrices.model && env->gameobjects.count > 0)
 	{
 		get_model_matrices(env->gameobjects.head, env->matrices.model);
