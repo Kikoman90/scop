@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 20:29:50 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:33:49 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,9 @@
 
 static void	loop(t_env *env)
 {
-	uint32_t	last_time;
-	uint32_t	cur_time;
-	double		delta_time;
+	uint32_t		last_time;
+	uint32_t		cur_time;
+	double			delta_time;
 
 	cur_time = SDL_GetTicks();
 	while (env->loop == 1)

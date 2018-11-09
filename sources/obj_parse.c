@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 19:55:31 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:28:19 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,25 @@ static void	init_vao_vbo(t_gameobject *go, size_t vtx_struct_size, \
 	glEnableVertexAttribArray(0);
 }
 
+static void	redefine_vertices(t_gameobject *go)
+{
+	unsigned int	i;
+	t_vec3			center;
+
+	i = 0;
+	center.x = (go->bounds[0] + go->bounds[1]) / 2;
+	center.y = (go->bounds[2] + go->bounds[3]) / 2;
+	center.z = (go->bounds[4] + go->bounds[5]) / 2;
+	while (i < go->vtx_count)
+	{
+		go->vtx_attrib[i].position = \
+			vec3_sub(go->vtx_attrib[i].position, center);
+		//go->vtx_attrib[i].normal =
+			
+		i++;
+	}
+}
+
 static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
 	t_obj_parser_var *opv)
 {
@@ -47,6 +66,7 @@ static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
 				clean_go_node(node, 1);
 			else
 			{
+				redefine_vertices(node->go);
 				init_vao_vbo(node->go, sizeof(t_vtx_attrib), sizeof(float));
 				add_go_node(gameobjects, node);
 			}

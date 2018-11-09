@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 18:04:45 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:33:34 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ typedef struct			s_gameobject
 	size_t				vtx_count;
 	unsigned int		mtl_id;
 	t_vec3				pick_clr;
+	float				bounds[6];
 	GLuint				vao;
 	GLuint				vbo;
 }						t_gameobject;

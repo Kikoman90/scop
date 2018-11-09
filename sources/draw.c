@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 19:37:27 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:28:37 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	draw_ms_fbo(t_env *env)
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
-		//tmp->go->mtl_id = 0; // HAHAHAHAHAHA (delet this)
+		tmp->go->mtl_id = 0; // HAHAHAHAHAHA
 		if (tmp->go->mtl_id != 0)
 		{
 			glUseProgram(env->shaders[2].prog);

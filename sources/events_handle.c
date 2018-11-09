@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 20:30:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:33:26 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ static void	handle_mouse_events(t_env *env, SDL_Event *event, \
 				env->camera.transform.position, \
 				vec3_scale(axes[1], event->motion.yrel * delta_time));
 		}
-		else
+		else if (event->motion.state & SDL_BUTTON_LMASK)
 		{
 			env->camera.transform.rotation = quat_mult(\
 				env->camera.transform.rotation, quat_tv(-event->motion.yrel \
@@ -157,7 +157,10 @@ void		handle_events_and_input(t_env *env, double delta_time)
 		if (keyboard_state[SDL_SCANCODE_LSHIFT] || keyboard_state[SDL_SCANCODE_RSHIFT])
 			lshift_pressed = 1;
 		if (keyboard_state[SDL_SCANCODE_DELETE])
+		{
 			SDL_SetWindowGrab(env->win_env.window, SDL_FALSE);
+			//SDL_SetRelativeMouseMode(SDL_FALSE);
+		}
 		if (event.type == SDL_WINDOWEVENT)
 			handle_window_events(env, &event);
 		else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEMOTION \

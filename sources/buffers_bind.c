@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/01 21:06:52 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 21:48:41 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 17:31:40 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ static unsigned int	check_framebuffer_status(const char *fbo_type)
 unsigned int		generate_framebuffers(t_gl_buffers *buffers, \
 	unsigned int win_w, unsigned int win_h)
 {
+	glEnable(GL_MULTISAMPLE);
 	glBindFramebuffer(GL_FRAMEBUFFER, buffers->ms_fbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, buffers->rbo[0]);
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGB8, win_w, win_h);

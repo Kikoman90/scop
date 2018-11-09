@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 20:29:52 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:28:10 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,14 @@ static unsigned int	init_sdl_gl(t_win *win)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, \
 		SDL_GL_CONTEXT_PROFILE_CORE);
 	if (!(win->window = SDL_CreateWindow("SCOP_42", SDL_WINDOWPOS_CENTERED, \
-		SDL_WINDOWPOS_CENTERED, WIN_W, WIN_H, SDL_WINDOW_RESIZABLE \
-		| SDL_WINDOW_OPENGL)))
+		SDL_WINDOWPOS_CENTERED, WIN_W, WIN_H, SDL_WINDOW_INPUT_GRABBED |\
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL)))
 		return (log_error(WIN_CREATE_ERROR));
 	if (!(win->gl_context = SDL_GL_CreateContext(win->window)))
 		return (log_error(SDL_GetError()));
 	SDL_WarpMouseInWindow(win->window, WIN_W / 2, WIN_H / 2);
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
-	SDL_SetWindowGrab(win->window, SDL_TRUE);
+	//SDL_SetWindowGrab(win->window, SDL_TRUE);
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -84,7 +84,7 @@ static t_light		init_light(t_vec3 color, float intensity, float range)
 {
 	t_light	light;
 
-	light.transform = init_transform_trs(vec3_xyz(0.5f, 1.2f, 0.0f), \
+	light.transform = init_transform_trs(vec3_xyz(0.0f, 1.2f, 0.0f), \
 		quat(), (t_vec3)VEC3_ONE);
 	light.color = color;
 	light.intensity = intensity;
@@ -107,13 +107,13 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 		!init_program(&env->shaders[2], "resources/shaders/standard", 2))
 		return (0);
 	env->camera = init_camera(vec3_xyz(0, 0, 3.0f), 80.0f, 0.001f, 50.0f);
-	env->light = init_light((t_vec3)VEC3_ONE, 1.5f, 12.0f);
+	env->light = init_light((t_vec3)VEC3_ONE, 1.5f, 20.0f);
 	while (argc-- > 1)
 		parse_file(&env->gameobjects, &env->materials, argv[argc], \
 			parse_wavefrontobj);
 	env->input.pan_speed = 5.0f;
 	env->input.zoom_speed = 1.0f;
-	env->input.orbit_speed = 8.0f;
+	env->input.orbit_speed = 15.0f;
 	env->loop = 1;
 	return (1);
 }

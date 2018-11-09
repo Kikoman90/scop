@@ -1,0 +1,64 @@
+S C O P  S C O P E :
+
+TRY TO PARSE FILE WITHOUT ANY PATH (example: 42.obj in executable repo)
+
+MATRICES -> not ok (node_add can't notify)
+
+* trouver le centre de l'objet (zmin, zmax, ymin, ymax, xmin, xmax)
+* ensuite recalculer les positions des vertex par rapport au nouveau centre
+* calculer les normales des faces si elles ne sont pas indiquees ou incoherentes
+
+* skybox (OR GRID AND AXES !) textures      /!\
+* handles                                   /!\
+
+* camera movement
+* a bit of UI ?
+
+* showFPS
+
+HANDLES
+* scene axes and grid, objects local/world coordinates (switch)
+    all sorts of handles and gizmos (e.g. light gizmos)
+* small coordinate system in the bottom right to indicate world axes
+
+* ability to lock on a gameobject (camera rotates around it)
+* object basic info when hovering over it.
+
+clean everything up.
+have a good stack of obj and mtl files for the corrector.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+SERIALIZATION !
+
+IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
+IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)
+
+* import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
+
+test the parsing (multiple objects, no objects... etc)
+
+remove this file before finishing the project
+remove .vscode before finishing the project
+remove display.c
+remove stash folder with everything it contains
+
+libmath is not clean (norminette, unixcase...)
+norminette on all (EVERYTHING)
+check 42 headers
+check scop LEAKS (try different setup interruptions...)
+check everything
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+O U T  O F  S C O P E :
+
+pick_fbo => use a tiny frustrum that surrounds the mouse (ray)
+
+* error logger (console log "pops" up when there is a debug/error)
+-> it's like a sidebar on top of the folder window, that slides up (you can lock it to keep it docked, small notifications as exclamation mark)
+
+* float field and toggle for fps capping (e.g. toggle[/] and [60fps])
+* vector / math libraries in c++ with operators lh +(rh) lh =(rh)
+* 3d textures and tetrahedrons eventually
+
+gameObject = { rendering properties, physics properties, audio properties, behaviour(s), matter properties etc. };

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/11/26 11:39:02 by fsidler           #+#    #+#             */
-/*   Updated: 2015/12/01 13:53:58 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 15:31:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	*ft_memset(void *s, int c, size_t n)
 {
-	size_t			i;
+	size_t	i;
 
 	i = 0;
 	while (i < n)
@@ -23,4 +23,16 @@ void	*ft_memset(void *s, int c, size_t n)
 		i++;
 	}
 	return (s);
+}
+
+void	ft_fmemset(float *s, float v, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < n)
+	{
+		s[i] = v;
+		i++;
+	}
 }

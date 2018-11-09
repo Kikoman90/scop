@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 18:09:45 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:16:13 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,15 +52,17 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 
 	if (!(go = (t_gameobject*)malloc(sizeof(t_gameobject))))
 		return (log_error_null(MALLOC_ERROR));
+	go->name = name;
 	go->transform = init_transform_trs(\
 		vec3_xyz(0, 0, -3), quat_tv(90, (t_vec3)VEC3_UP), (t_vec3)VEC3_ONE);
-	go->vao = 0;
-	go->vbo = 0;
-	go->mtl_id = mtl_id;
-	go->name = name;
-	go->vtx_count = vc;
 	if (!(go->vtx_attrib = (t_vtx_attrib*)malloc(sizeof(t_vtx_attrib) * vc)))
 		return (log_error_null(MALLOC_ERROR));
+	go->vtx_count = vc;
+	go->mtl_id = mtl_id;
+	go->pick_clr = (t_vec3)VEC3_ZERO;
+	ft_fmemset(go->bounds, 0, 6);
+	go->vao = 0;
+	go->vbo = 0;
 	return (go);
 }
 

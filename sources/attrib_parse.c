@@ -6,13 +6,13 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 19:32:27 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/09 20:27:48 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static t_vec3		parse_vtx_attrib(t_seed *v_seed, char *data, \
+static t_vec3		get_vtx_attrib(t_seed *v_seed, char *data, \
 	unsigned int idx, char *v)
 {
 	unsigned int	i;
@@ -40,7 +40,45 @@ static t_vec3		parse_vtx_attrib(t_seed *v_seed, char *data, \
 	return ((t_vec3)VEC3_ZERO);
 }
 
-static unsigned int	get_indices(unsigned int (*out_indices)[3], \
+static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
+	char *data, unsigned int idx[4])
+{
+	static int		recalc = 0;
+	t_vtx_attrib	vtx;
+
+	vtx.position = get_vtx_attrib(&opv->v_seed[0], data, idx[0], "v");
+	(vtx.position.x < go->bounds[0]) ? go->bounds[0] = vtx.position.x : \
+		(vtx.position.x > go->bounds[1]) ? go->bounds[1] = vtx.position.x : 0;
+	(vtx.position.y < go->bounds[2]) ? go->bounds[2] = vtx.position.y : \
+		(vtx.position.y > go->bounds[3]) ? go->bounds[3] = vtx.position.y : 0;
+	(vtx.position.z < go->bounds[4]) ? go->bounds[4] = vtx.position.z : \
+		(vtx.position.z > go->bounds[5]) ? go->bounds[5] = vtx.position.z : 0;
+	vtx.uv = vec2_v3(get_vtx_attrib(&opv->v_seed[1], data, idx[1], "vt"));
+	vtx.normal = vec3_norm(get_vtx_attrib(&opv->v_seed[2], data, idx[2], "vn"));
+	if (!recalc && vtx.normal.x == 0 && vtx.normal.y == 0 && vtx.normal.z == 0)
+		recalc = 1;
+	if (idx[3] > 1 && recalc-- == 1)
+	{
+		vtx.normal = vec3_norm(vec3_cross(vec3_sub(\
+			go->vtx_attrib[opv->vtx_fill - idx[3]].position, \
+			go->vtx_attrib[opv->vtx_fill - 1].position), vec3_sub(\
+			go->vtx_attrib[opv->vtx_fill - idx[3]].position, vtx.position)));
+		go->vtx_attrib[opv->vtx_fill - 2].normal = vtx.normal;
+		go->vtx_attrib[opv->vtx_fill - 1].normal = vtx.normal;
+	}
+	vtx.color = vec3_f(0.1f + (float)(opv->vtx_fill / 3) * opv->color_delta);
+	return (vtx);
+}
+
+/* vtx_color = get_vtx_color(opv->vtx_fill, opv->color_delta);
+if ((opv->vtx_fill + 1) % 3 == 0)
+	vtx.color.x += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
+else if ((opv->vtx_fill + 2) % 3 == 0)
+	vtx.color.y += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
+else
+	vtx.color.z += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;*/
+
+static unsigned int	get_indices(unsigned int (*out_indices)[4], \
 	t_obj_parser_var *opv, t_parser *parser, unsigned int *seed)
 {
 	char	*word;
@@ -63,32 +101,28 @@ static unsigned int	get_indices(unsigned int (*out_indices)[3], \
 static unsigned int	parse_face(t_gameobject *go, t_obj_parser_var *opv, \
 	t_parser *parser, unsigned int seed)
 {
-	unsigned int		i;
-	unsigned int		idx[3];
+	unsigned int		idx[4];
 	t_vtx_attrib		vtx;
 
-	i = 0;
-	while (i < opv->f_count)
+	idx[3] = 0;
+	while (idx[3] < opv->f_count)
 	{
 		if (!get_indices(&idx, opv, parser, &seed))
 			return (0);
-		vtx.position = parse_vtx_attrib(&opv->v_seed[0], parser->data, idx[0], "v");
-		vtx.uv = vec2_v3(parse_vtx_attrib(&opv->v_seed[1], parser->data, idx[1], "vt"));
-		vtx.normal = vec3_norm(parse_vtx_attrib(&opv->v_seed[2], parser->data, idx[2], "vn"));
-		vtx.color = vec3_f(0.1f + (float)((opv->vtx_fill + i) / 3) * opv->color_delta);
-		if (i < 3)
-			go->vtx_attrib[opv->vtx_fill + i++] = vtx;
+		vtx = get_vtx(go, opv, parser->data, idx);
+		if (idx[3] < 3)
+			go->vtx_attrib[opv->vtx_fill++] = vtx;
 		else
 		{
-			go->vtx_attrib[opv->vtx_fill + i] = go->vtx_attrib[opv->vtx_fill];
-			go->vtx_attrib[opv->vtx_fill + i].color = vtx.color;
-			go->vtx_attrib[opv->vtx_fill + i + 1] = go->vtx_attrib[opv->vtx_fill + i - 1];
-			go->vtx_attrib[opv->vtx_fill + i + 1].color = vtx.color;
-			go->vtx_attrib[opv->vtx_fill + i + 2] = vtx;
-			i += 3;
+			go->vtx_attrib[opv->vtx_fill] = \
+				go->vtx_attrib[opv->vtx_fill - idx[3]];
+			go->vtx_attrib[++opv->vtx_fill] = go->vtx_attrib[opv->vtx_fill - 2];
+			opv->vtx_fill++;
+			go->vtx_attrib[opv->vtx_fill++] = vtx;
+			idx[3] += 2;
 		}
+		idx[3]++;
 	}
-	opv->vtx_fill += opv->f_count;
 	return (1);
 }
 
