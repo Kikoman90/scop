@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/11/01 21:01:39 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/10 17:51:46 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ HEADERS = includes
 
 SRCS =	setup.c \
 		shader.c \
+		tga_loader.c \
 		parser.c \
 		parser_utils.c \
 		mtl_parse.c \

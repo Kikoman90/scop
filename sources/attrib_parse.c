@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 20:27:48 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 18:50:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,12 @@ static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
 	t_vtx_attrib	vtx;
 
 	vtx.position = get_vtx_attrib(&opv->v_seed[0], data, idx[0], "v");
-	(vtx.position.x < go->bounds[0]) ? go->bounds[0] = vtx.position.x : \
-		(vtx.position.x > go->bounds[1]) ? go->bounds[1] = vtx.position.x : 0;
-	(vtx.position.y < go->bounds[2]) ? go->bounds[2] = vtx.position.y : \
-		(vtx.position.y > go->bounds[3]) ? go->bounds[3] = vtx.position.y : 0;
-	(vtx.position.z < go->bounds[4]) ? go->bounds[4] = vtx.position.z : \
-		(vtx.position.z > go->bounds[5]) ? go->bounds[5] = vtx.position.z : 0;
+	(vtx.position.x < go->bounds[0]) ? go->bounds[0] = vtx.position.x : 0;
+	(vtx.position.x > go->bounds[1]) ? go->bounds[1] = vtx.position.x : 0;
+	(vtx.position.y < go->bounds[2]) ? go->bounds[2] = vtx.position.y : 0;
+	(vtx.position.y > go->bounds[3]) ? go->bounds[3] = vtx.position.y : 0;
+	(vtx.position.z < go->bounds[4]) ? go->bounds[4] = vtx.position.z : 0;
+	(vtx.position.z > go->bounds[5]) ? go->bounds[5] = vtx.position.z : 0;
 	vtx.uv = vec2_v3(get_vtx_attrib(&opv->v_seed[1], data, idx[1], "vt"));
 	vtx.normal = vec3_norm(get_vtx_attrib(&opv->v_seed[2], data, idx[2], "vn"));
 	if (!recalc && vtx.normal.x == 0 && vtx.normal.y == 0 && vtx.normal.z == 0)
@@ -66,17 +66,18 @@ static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
 		go->vtx_attrib[opv->vtx_fill - 2].normal = vtx.normal;
 		go->vtx_attrib[opv->vtx_fill - 1].normal = vtx.normal;
 	}
-	vtx.color = vec3_f(0.1f + (float)(opv->vtx_fill / 3) * opv->color_delta);
+	//vtx.color = vec3_f(0.1f + (float)(opv->vtx_fill / 3) * opv->color_delta);
+	vtx.color = vec3_f(0.1f);
+	//vtx_color = get_vtx_color(opv->vtx_fill, opv->color_delta);
+	if ((opv->vtx_fill + 1) % 3 == 0)
+		vtx.color.x += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
+	else if ((opv->vtx_fill + 2) % 3 == 0)
+		vtx.color.y += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
+	else
+		vtx.color.z += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
 	return (vtx);
 }
 
-/* vtx_color = get_vtx_color(opv->vtx_fill, opv->color_delta);
-if ((opv->vtx_fill + 1) % 3 == 0)
-	vtx.color.x += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
-else if ((opv->vtx_fill + 2) % 3 == 0)
-	vtx.color.y += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
-else
-	vtx.color.z += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;*/
 
 static unsigned int	get_indices(unsigned int (*out_indices)[4], \
 	t_obj_parser_var *opv, t_parser *parser, unsigned int *seed)

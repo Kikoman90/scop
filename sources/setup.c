@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 20:28:10 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 18:52:14 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,6 @@ static unsigned int	init_sdl_gl(t_win *win)
 	if (!(win->gl_context = SDL_GL_CreateContext(win->window)))
 		return (log_error(SDL_GetError()));
 	SDL_WarpMouseInWindow(win->window, WIN_W / 2, WIN_H / 2);
-	//SDL_SetRelativeMouseMode(SDL_TRUE);
-	//SDL_SetWindowGrab(win->window, SDL_TRUE);
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -66,6 +64,12 @@ static unsigned int	init_sdl_gl(t_win *win)
 	glViewport(0, 0, WIN_W, WIN_H);
 	return (1);
 }
+
+/*
+** SDL_SetRelativeMouseMode(SDL_TRUE);
+** SDL_SetWindowGrab(win->window, SDL_TRUE);
+** glEnable(GL_TEXTURE_2D);
+*/
 
 static t_camera		init_camera(t_vec3 pos, float fov, float zn, float zf)
 {
@@ -102,6 +106,20 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 	glGenRenderbuffers(4, &env->buffers.rbo[0]);
 	if (!generate_framebuffers(&env->buffers, WIN_W, WIN_H))
 		return (0);
+		/*
+		*/
+	if (!get_tga_texture(&env->tex, "resources/textures/yousavedme.tga"))
+		return (0);
+	glGenTextures(1, &env->tex.id);
+	glBindTexture(GL_TEXTURE_2D, env->tex.id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, env->tex.width, \
+		env->tex.height, 0, env->tex.format, GL_UNSIGNED_BYTE, env->tex.texels);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	free(env->tex.texels);
+	env->fade = 0.0f;
+		/*
+		*/
 	if (!init_program(&env->shaders[0], "resources/shaders/default", 0) || \
 		!init_program(&env->shaders[1], "resources/shaders/pick", 1) || \
 		!init_program(&env->shaders[2], "resources/shaders/standard", 2))

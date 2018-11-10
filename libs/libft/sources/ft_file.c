@@ -6,16 +6,16 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/01 14:26:55 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 21:42:14 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 13:13:10 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_file_map(const char *path, size_t *data_size)
+void	*ft_file_map(const char *path, size_t *data_size)
 {
 	int			fd;
-	char		*data;
+	void		*data;
 	struct stat	file_stat;
 
 	if ((fd = open(path, O_RDWR)) == -1)
@@ -30,8 +30,8 @@ char	*ft_file_map(const char *path, size_t *data_size)
 		return (NULL);
 	}
 	*data_size = (size_t)file_stat.st_size;
-	if ((data = (char*)mmap(NULL, *data_size, \
-		PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+	if ((data = mmap(NULL, *data_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, \
+		fd, 0)) == MAP_FAILED)
 	{
 		log_error_free(ft_strjoin("(mmap) ", strerror(errno)));
 		close(fd);
@@ -41,7 +41,7 @@ char	*ft_file_map(const char *path, size_t *data_size)
 	return (data);
 }
 
-void	ft_file_unmap(char *data, size_t fsize, char *fpath)
+void	ft_file_unmap(void *data, size_t fsize, char *fpath)
 {
 	if (fpath)
 	{

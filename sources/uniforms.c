@@ -6,16 +6,18 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 19:11:34 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:07:11 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 18:44:55 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static void	set_def_uniforms(t_shader shader, float fade) // and a texture
+static void	set_def_uniforms(t_shader shader, float fade, GLuint tex_id)
 {
 	glUniform1f(shader.u_loc[7], fade);
-	// [8] texture uniform
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex_id);
+	glUniform1i(shader.u_loc[8], 0);
 }
 
 static void	set_std_uniforms(t_shader shader, t_material *mtl)
@@ -47,7 +49,7 @@ void		set_uniforms(t_env *env, t_go_node *node, unsigned int idx)
 		glUniform1f(shader.u_loc[5], env->light.intensity);
 		glUniform1f(shader.u_loc[6], env->light.range);
 		if (idx == 0)
-			set_def_uniforms(shader, 0.9f); // env->texture_set[env->current_tex], env->def_fade);
+			set_def_uniforms(shader, env->fade, env->tex.id);
 		else if (idx == 2)
 			set_std_uniforms(shader, \
 				get_mtl(env->materials.head, node->go->mtl_id));

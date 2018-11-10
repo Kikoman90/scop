@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 15:29:19 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 13:13:26 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,8 +143,8 @@ double				ft_round(double x);
 double				ft_fdim(double n1, double n2);
 double				ft_copysign(double n1, double n2);
 
-char				*ft_file_map(const char *path, size_t *data_size);
-void				ft_file_unmap(char *data, size_t fsize, char *fpath);
+void				*ft_file_map(const char *path, size_t *data_size);
+void				ft_file_unmap(void *data, size_t fsize, char *fpath);
 
 unsigned int		log_error(const char *msg);
 unsigned int		log_error_free(char *msg);

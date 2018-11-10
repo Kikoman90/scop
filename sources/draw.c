@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 20:28:37 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 18:40:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ void		draw(t_env *env)
 	update_matrices(env, -1);
 	if (env->matrices.model && env->gameobjects.count > 0)
 	{
+		// glBindTexture(GL_TEXTURE_2D, 0);
 		get_model_matrices(env->gameobjects.head, env->matrices.model);
 		glBindFramebuffer(GL_FRAMEBUFFER, env->buffers.ms_fbo);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

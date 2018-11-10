@@ -31,8 +31,5 @@ void main()
 	if(diffuseCoefficient > 0.0)
     	specularCoefficient = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
 	vec3 specular = light.intensity * specularCoefficient * vColor * light.color * dist;
-	FragColor = vec4(diffuse + specular, 1.0f);
-	
-	//FragColor = vec4(vColor, 1.0f);
-	//FragColor = mix(texture(TextureSampler, vUV).rgba, vColor, fade);
+	FragColor = mix(texture(TextureSampler, vUV).rgba, vec4(diffuse + specular, 1.0f), fade);
 }

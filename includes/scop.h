@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 20:33:34 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 18:44:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,13 @@
 # include <time.h>
 
 # include "parser.h"
+# include "texture.h"
 
 # include <SDL2/SDL.h>
-# include <OpenGL/gl3.h>
 
 # define WIN_W 1080
 # define WIN_H 900
 
-# define MALLOC_ERROR "memory allocation failure"
 # define SDL_INIT_ERROR "failed to initialize sdl"
 # define WIN_CREATE_ERROR "failed to create window"
 # define SHADER_INIT_ERROR "shader initialization failed"
@@ -162,6 +161,8 @@ typedef struct			s_env
 	t_go_list			gameobjects;
 	t_go_list			selection;
 	t_input				input;
+	t_texture			tex; // remove and clean
+	float				fade; // remove
 }						t_env;
 
 /*

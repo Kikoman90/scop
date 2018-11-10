@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 20:33:26 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/10 18:49:35 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,16 @@ static void	handle_keyboard_events(t_env *env, const Uint8 *keyboard_state, \
 			env->camera.transform.position, \
 			vec3_scale(axes[1], delta_time * env->input.pan_speed));
 		//update_matrices(env, 1);		
+	}
+	else if (keyboard_state[SDL_SCANCODE_PAGEUP])
+	{
+		env->fade += 1.105f * delta_time;
+		env->fade = ft_fclamp(env->fade, 0.0f, 1.0f);
+	}
+	else if (keyboard_state[SDL_SCANCODE_PAGEDOWN])
+	{
+		env->fade -= 1.105f * delta_time;
+		env->fade = ft_fclamp(env->fade, 0.0f, 1.0f);
 	}
 }
 
