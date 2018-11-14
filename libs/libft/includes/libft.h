@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/10 13:13:26 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/12 19:07:44 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,8 @@ int					ft_strnequ(char const *s1, char const *s2, size_t n);
 
 int					ft_abs(int n);
 int					ft_signbit(float n);
+
+unsigned char		ft_bitrev(unsigned char c);
 
 void				ft_lstdelone(t_list **alst, void (*del)(void *, size_t));
 void				ft_lstdel(t_list **alst, void (*del)(void *, size_t));

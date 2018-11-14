@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/10 18:40:09 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:43:44 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static void	draw_ms_fbo(t_env *env)
 {
 	t_go_node	*tmp;
+	int			shdr_idx;
 
 	tmp = env->gameobjects.head;
 	while (tmp)
@@ -23,18 +24,20 @@ static void	draw_ms_fbo(t_env *env)
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
-		tmp->go->mtl_id = 0; // HAHAHAHAHAHA
+		//tmp->go->mtl_id = 0; // HAHAHAHAHAHA
 		if (tmp->go->mtl_id != 0)
 		{
-			glUseProgram(env->shaders[2].prog);
-			set_uniforms(env, tmp, 2);
+			shdr_idx = get_shader_idx(&env->shaders, "default");
+			glUseProgram(env->shaders[shdr_idx].prog);
+			set_uniforms(env, &env->shaders[shdr_idx], tmp);
 			glDisableVertexAttribArray(2);
 			glDisableVertexAttribArray(3);
 		}
 		else
 		{
-			glUseProgram(env->shaders[0].prog);
-			set_uniforms(env, tmp, 0);
+			shdr_idx = get_shader_idx(&env->shaders, "standard");
+			glUseProgram(env->shaders[shdr_idx].prog);
+			set_uniforms(env, &env->shaders[shdr_idx], tmp);
 		}
 		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vtx_count);
 		tmp = tmp->next;
@@ -45,12 +48,14 @@ static void	draw_ms_fbo(t_env *env)
 static void	draw_pick_fbo(t_env *env)
 {
 	t_go_node	*tmp;
+	int			shdr_idx;
 
 	tmp = env->gameobjects.head;
+	shdr_idx = get_shader_idx(&env->shaders, "pick");
 	while (tmp)
 	{
-		glUseProgram(env->shaders[1].prog);
-		set_uniforms(env, tmp, 1);
+		glUseProgram(env->shaders[shdr_idx].prog);
+		set_uniforms(env, &env->shaders[shdr_idx], tmp);
 		glBindVertexArray(tmp->go->vao);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);

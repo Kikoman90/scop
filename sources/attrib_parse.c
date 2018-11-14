@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/10 18:50:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 13:38:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,15 +66,7 @@ static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
 		go->vtx_attrib[opv->vtx_fill - 2].normal = vtx.normal;
 		go->vtx_attrib[opv->vtx_fill - 1].normal = vtx.normal;
 	}
-	//vtx.color = vec3_f(0.1f + (float)(opv->vtx_fill / 3) * opv->color_delta);
-	vtx.color = vec3_f(0.1f);
-	//vtx_color = get_vtx_color(opv->vtx_fill, opv->color_delta);
-	if ((opv->vtx_fill + 1) % 3 == 0)
-		vtx.color.x += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
-	else if ((opv->vtx_fill + 2) % 3 == 0)
-		vtx.color.y += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
-	else
-		vtx.color.z += 0.1f + 0.5f * (float)(opv->vtx_fill / 3) * opv->color_delta;
+	vtx.color = vtx_color(opv->vtx_fill, opv->color_delta);
 	return (vtx);
 }
 

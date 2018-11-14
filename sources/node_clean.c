@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 18:09:35 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/13 20:27:04 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,11 @@ void		remove_mtl_node(t_mtl_list *list, unsigned int id, int free_mtl)
 			else
 				tmp_prev->next = tmp->next;
 			clean_mtl_node(tmp, free_mtl);
-			id = 0;
 			list->count--;
 			tmp = tmp_prev->next;
 		}
 		else
 		{
-			tmp->id -= (id == 0) ? 1 : 0;
 			tmp_prev = tmp;
 			tmp = tmp->next;
 		}
@@ -89,13 +87,11 @@ void		remove_go_node(t_go_list *list, unsigned int id, int free_go)
 			else
 				tmp_prev->next = tmp->next;
 			clean_go_node(tmp, free_go);
-			id = 0;
 			list->count--;
 			tmp = tmp_prev->next;
 		}
 		else
 		{
-			tmp->id -= (id == 0) ? 1 : 0;
 			tmp_prev = tmp;
 			tmp = tmp->next;
 		}

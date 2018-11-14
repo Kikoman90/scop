@@ -6,20 +6,37 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 12:24:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:05:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:42:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
+int				get_shader_idx(t_shader (*tab)[6], const char *name)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (i < 6)
+	{
+		if (ft_strcmp(name, (*tab)[i].name) == 0)
+			return (i);
+		i++;
+	}
+	printf("-1\n");
+	return (-1);
+}
+
 void			get_model_matrices(t_go_node *go_list, t_mat4x4 *m)
 {
-	t_go_node	*tmp;
+	t_go_node		*tmp;
+	unsigned int	i;
 
 	tmp = go_list;
+	i = 0;
 	while (tmp)
 	{
-		m[tmp->id - 1] = go_trs(tmp->go->transform);
+		m[i++] = go_trs(tmp->go->transform);
 		tmp = tmp->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 18:16:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:04:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void		display_gameobject(t_gameobject *obj)
 			display_vec3("vtx_pos", obj->vtx_attrib[i].position);
 			display_vec2("vtx_uv", obj->vtx_attrib[i].uv);
 			display_vec3("vtx_nrm", obj->vtx_attrib[i].normal);
-			display_vec3("vtx_clr", obj->vtx_attrib[i].color);
+			//display_vec3("vtx_clr", obj->vtx_attrib[i].color);
 			i++;
 		}
 		printf("\n");

@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/11/10 17:51:46 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/14 19:57:25 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,9 @@ HEADERS = includes
 
 SRCS =	setup.c \
 		shader.c \
+		color.c \
 		tga_loader.c \
+		textures.c \
 		parser.c \
 		parser_utils.c \
 		mtl_parse.c \
@@ -41,7 +43,8 @@ SRCS =	setup.c \
 		node_add.c \
 		node_clean.c \
 		buffers_bind.c \
-		uniforms.c \
+		uniforms_get.c \
+		uniforms_set.c \
 		events_handle.c \
 		update.c \
 		draw.c \

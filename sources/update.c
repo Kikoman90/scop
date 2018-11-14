@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/08 11:21:08 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 20:52:49 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,19 @@ void	update_matrices(t_env *env, int update)
 			env->matrices.update_mat[0] = 0;
 	}
 	if (env->matrices.update_mat[1] == 1 || update == 1)
-		env->matrices.view = compute_view(env->camera.transform);
+		env->matrices.v = compute_view(env->camera.transform);
 	if (env->matrices.update_mat[2] == 1 || update == 2)
-		env->matrices.projection = compute_projection(env->camera.fov, \
+		env->matrices.p = compute_projection(env->camera.fov, \
 			(float)env->win_env.win_w / env->win_env.win_h, \
 			env->camera.znear, env->camera.zfar);
-	if (env->matrices.update_mat[1] == 1 || env->matrices.update_mat[2] == 1 \
+	/*if (env->matrices.update_mat[1] == 1 || env->matrices.update_mat[2] == 1 \
 		|| update == 1 || update == 2)
 	{
 		env->matrices.vp = \
 			mat4x4_mult(env->matrices.projection, env->matrices.view);
 		env->matrices.update_mat[1] = 0;
 		env->matrices.update_mat[2] = 0;
-	}
+	}*/
 }
 
 /*void	update_view(t_camera *camera, SDL_MouseMotionEvent motion, \

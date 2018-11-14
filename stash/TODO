@@ -1,60 +1,78 @@
+--------------------------------------------------------------------------------
+
 S C O P  S C O P E :
-
-TRY TO PARSE FILE WITHOUT ANY PATH (example: 42.obj in executable repo)
-
-MATRICES -> not ok (node_add can't notify)
 
 * skybox (OR GRID AND AXES !) textures      /!\
 * handles                                   /!\
-
-* camera movement
-* a bit of UI ?
-
 * showFPS
+* move light
 
 HANDLES
 * scene axes and grid, objects local/world coordinates (switch)
     all sorts of handles and gizmos (e.g. light gizmos)
 * small coordinate system in the bottom right to indicate world axes
 
-* ability to lock on a gameobject (camera rotates around it)
-* object basic info when hovering over it.
+stop auto-rotate when editing rotation of object
+
+* input :
+Y - [Z] -> activate/deactivate auto-rotate
+Y - blender numpad ([1/ctrl1] = front/back view, [3/ctrl3]..., [5] ortho/perspective)
+N - [W/E/R] move/rotate/scale
+N - [X] switch world/local space
+Y - [C] switch face colors (grayscale/rgb)
+Y - [shift right mouse] : pan
+Y - [ctrl right mouse] or [mouse wheel] : zoom
+Y - [right mouse] : rotate camera
+Y - [tab] -> exit window grab
+Y - [s] -> switch skybox
+Y - [t] -> switch texture
+N - selection ([left mouse], [shift...)
+Y - [space] -> default shader FADE
+esc
+
+* a bit of UI ?
 
 clean everything up.
+norminette on all.
 have a good stack of obj and mtl files for the corrector.
 
-------------------------------------------------------------------------------------------------------------------------------------------------
-SERIALIZATION !
-
-IMPORTANT : algo to sort the vertices and indices (eventually i would like to just indicate order with mouse drag or whatever)
-IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)
-
-* import button for .obj files with import flags/toggles -> texture, material, animation, rigging, normals etc.
-
-test the parsing (multiple objects, no objects... etc)
-
-remove this file before finishing the project
 remove .vscode before finishing the project
 remove display.c
-remove stash folder with everything it contains
+remove stash folder content except TODO
 
-libmath is not clean (norminette, unixcase...)
-norminette on all (EVERYTHING)
-check 42 headers
-check scop LEAKS (try different setup interruptions...)
-check everything
+--------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 O U T  O F  S C O P E :
 
+SERIALIZATION !
+
+IMPORTANT : algo to sort the vertices and indices
+IMPORTANT : Drawcall analysis (slider shows each primitive being renderered)
+
+* import button for .obj files with import flags/toggles -> texture, material,
+    animation, rigging, normals etc.
+
 pick_fbo => use a tiny frustrum that surrounds the mouse (ray)
 
+* ability to lock on a gameobject (camera rotates around it)
+* object basic info when hovering over it.
 * error logger (console log "pops" up when there is a debug/error)
--> it's like a sidebar on top of the folder window, that slides up (you can lock it to keep it docked, small notifications as exclamation mark)
+-> it's like a sidebar on top of the folder window, that slides up
+    (you can lock it to keep it docked, small notifications as exclamation mark)
 
 * float field and toggle for fps capping (e.g. toggle[/] and [60fps])
 * vector / math libraries in c++ with operators lh +(rh) lh =(rh)
 * 3d textures and tetrahedrons eventually
 
-gameObject = { rendering properties, physics properties, audio properties, behaviour(s), matter properties etc. };
+gameObject = {
+    rendering properties,
+    physics properties,
+    audio properties,
+    behaviour(s),
+    matter properties,
+    etc.
+};
+
+--------------------------------------------------------------------------------

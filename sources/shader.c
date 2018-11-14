@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/16 14:28:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 20:36:21 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:17:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static GLuint	shader_error(const char *shader_name, char *log, \
 	return ((GLuint)log_error_free(error_msg));
 }
 
-static GLuint	create_shader(const char *name, char *data, GLenum shader_type)
+static GLuint	shader_source(const char *name, char *data, GLenum shader_type)
 {
 	GLuint			sh;
 	GLint			success;
@@ -55,7 +55,7 @@ static GLuint	create_shader(const char *name, char *data, GLenum shader_type)
 	return (sh);
 }
 
-static GLuint	init_shaders(t_shader *prg, const char *path, \
+static GLuint	get_shaders(t_shader *prg, const char *path, \
 	unsigned int u_loc_count)
 {
 	char			*fullpath;
@@ -64,7 +64,7 @@ static GLuint	init_shaders(t_shader *prg, const char *path, \
 
 	fullpath = ft_strjoin(path, ".vert");
 	fdata = ft_file_map(fullpath, &fsize);
-	if ((prg->vtx_s = create_shader(prg->name, fdata, GL_VERTEX_SHADER)) == 0)
+	if ((prg->vtx_s = shader_source(prg->name, fdata, GL_VERTEX_SHADER)) == 0)
 	{
 		ft_file_unmap(fdata, fsize, fullpath);
 		return (0);
@@ -72,7 +72,7 @@ static GLuint	init_shaders(t_shader *prg, const char *path, \
 	ft_file_unmap(fdata, fsize, fullpath);
 	fullpath = ft_strjoin(path, ".frag");
 	fdata = ft_file_map(fullpath, &fsize);
-	if ((prg->frg_s = create_shader(prg->name, fdata, GL_FRAGMENT_SHADER)) == 0)
+	if ((prg->frg_s = shader_source(prg->name, fdata, GL_FRAGMENT_SHADER)) == 0)
 	{
 		ft_file_unmap(fdata, fsize, fullpath);
 		glDeleteShader(prg->vtx_s);
@@ -84,14 +84,14 @@ static GLuint	init_shaders(t_shader *prg, const char *path, \
 	return (1);
 }
 
-GLuint			init_program(t_shader *program, const char *path, \
-	unsigned int idx)
+static GLuint	create_program(t_shader *program, const char *path, \
+	char *name)
 {
 	GLint	success;
 	GLchar	info_log[1024];
 
-	program->name = ft_strrchr(path, '/') + 1;
-	if (init_shaders(program, path, 12) == 0)
+	program->name = ft_strdup(name);
+	if (get_shaders(program, path, 12) == 0)
 		return (0);
 	program->prog = glCreateProgram();
 	glAttachShader(program->prog, program->vtx_s);
@@ -110,6 +110,37 @@ GLuint			init_program(t_shader *program, const char *path, \
 	glDetachShader(program->prog, program->frg_s);
 	glDeleteShader(program->vtx_s);
 	glDeleteShader(program->frg_s);
-	get_uniforms(program, idx);
+	get_uniforms(program);
+	return (1);
+}
+
+unsigned int	init_shaders(unsigned int nb, const char *path, \
+	t_shader *shader)
+{
+	DIR				*dir;
+	struct dirent	*dp;
+	char			*fullpath;
+	unsigned int	i;
+
+	i = 0;
+	dir = opendir(path);
+	while (i < nb && (dp = readdir(dir)))
+	{
+		if (dp->d_name[0] != '.')
+		{
+			fullpath = ft_strjoin_rf(path, ft_strjoin_rf(dp->d_name, \
+				ft_strjoin("/", dp->d_name)));
+			if (!create_program(shader + i, fullpath, dp->d_name))
+			{
+				free(fullpath);
+				return (0);
+			}
+			free(fullpath);
+			i++;
+		}
+	}
+	if (i != nb)
+		return (log_error_free(ft_strjoin(MISSING_FILE_ERROR, " (shaders)")));
+	closedir(dir);
 	return (1);
 }

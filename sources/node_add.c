@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 22:04:29 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 19:55:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,29 +18,21 @@ void			add_mtl_node(t_mtl_list *list, t_mtl_node *node)
 
 	if (node)
 	{
-		node->id = ++list->count;
+		list->count++;
 		if (!list->head)
+		{
+			node->id = 1;
 			list->head = node;
+		}
 		else
 		{
 			tmp = list->head;
 			while (tmp && tmp->next)
 				tmp = tmp->next;
+			node->id = tmp->id + 1;
 			tmp->next = node;
 		}
 	}
-}
-
-static t_vec3	generate_pick_clr(unsigned int id)
-{
-	float	r;
-	float	g;
-	float	b;
-
-	r = (id & 0x000000FF) >> 0;
-	g = (id & 0x0000FF00) >> 8;
-	b = (id & 0x00FF0000) >> 16;
-	return (vec3_xyz(r / 255.0f, g / 255.0f, b / 255.0f));
 }
 
 void			add_go_node(t_go_list *list, t_go_node *node)
@@ -49,16 +41,20 @@ void			add_go_node(t_go_list *list, t_go_node *node)
 
 	if (node)
 	{
-		node->id = ++list->count;
-		node->go->pick_clr = generate_pick_clr(node->id);
+		list->count++;
 		if (!list->head)
+		{
+			node->id = 20;
 			list->head = node;
+		}
 		else
 		{
 			tmp = list->head;
 			while (tmp && tmp->next)
 				tmp = tmp->next;
+			node->id = tmp->id + 1;
 			tmp->next = node;
 		}
+		node->go->pick_clr = generate_pick_clr(node->id);
 	}
 }

@@ -1,3 +1,10 @@
+
+/*
+** SDL_SetRelativeMouseMode(SDL_TRUE);
+** SDL_SetWindowGrab(win->window, SDL_TRUE);
+** glEnable(GL_TEXTURE_2D);
+*/
+
 MEMO (RM: row-major / CM: column-major)
 	
     CM | 1 0 0 2 | | 1 0 0  0 | -> | 1 0 0  2 |

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 20:16:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 19:55:36 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 		return (log_error_null(MALLOC_ERROR));
 	go->name = name;
 	go->transform = init_transform_trs(\
-		vec3_xyz(0, 0, -3), quat_tv(90, (t_vec3)VEC3_UP), (t_vec3)VEC3_ONE);
+		vec3_xyz(0, 0, -3), quat_tv(0, (t_vec3)VEC3_UP), (t_vec3)VEC3_ONE);
 	if (!(go->vtx_attrib = (t_vtx_attrib*)malloc(sizeof(t_vtx_attrib) * vc)))
 		return (log_error_null(MALLOC_ERROR));
 	go->vtx_count = vc;

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 19:11:34 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/10 18:44:55 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 19:43:02 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,7 @@
 
 static void	set_def_uniforms(t_shader shader, float fade, GLuint tex_id)
 {
-	glUniform1f(shader.u_loc[7], fade);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex_id);
-	glUniform1i(shader.u_loc[8], 0);
+	
 }
 
 static void	set_std_uniforms(t_shader shader, t_material *mtl)
@@ -42,7 +39,8 @@ void		set_uniforms(t_env *env, t_go_node *node, unsigned int idx)
 		glUniform3fv(shader.u_loc[2], 1, &node->go->pick_clr.x);
 	else
 	{
-		view = vector_rot(env->camera.transform.rotation, (t_vec3)VEC3_FRONT);
+		//view = vector_rot(env->camera.transform.rotation, (t_vec3)VEC3_FRONT);
+		view = env->camera.transform.position;
 		glUniform3fv(shader.u_loc[2], 1, &view.x);
 		glUniform3fv(shader.u_loc[3], 1, &env->light.transform.position.x);
 		glUniform3fv(shader.u_loc[4], 1, &env->light.color.x);
@@ -56,31 +54,4 @@ void		set_uniforms(t_env *env, t_go_node *node, unsigned int idx)
 	}
 }
 
-void		get_uniforms(t_shader *shdr, unsigned int idx)
-{
-	shdr->u_loc[0] = glGetUniformLocation(shdr->prog, "m");
-	shdr->u_loc[1] = glGetUniformLocation(shdr->prog, "vp");
-	if (idx == 1)
-		shdr->u_loc[2] = glGetUniformLocation(shdr->prog, "pickClr");
-	else
-	{
-		shdr->u_loc[2] = glGetUniformLocation(shdr->prog, "viewPos");
-		shdr->u_loc[3] = glGetUniformLocation(shdr->prog, "light.position");
-		shdr->u_loc[4] = glGetUniformLocation(shdr->prog, "light.color");
-		shdr->u_loc[5] = glGetUniformLocation(shdr->prog, "light.intensity");
-		shdr->u_loc[6] = glGetUniformLocation(shdr->prog, "light.range");
-		if (idx == 0)
-		{
-			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "fade");
-			shdr->u_loc[8] = glGetUniformLocation(shdr->prog, "TextureSampler");
-		}
-		else if (idx == 2)
-		{
-			shdr->u_loc[7] = glGetUniformLocation(shdr->prog, "mat.clr_amb");
-			shdr->u_loc[8] = glGetUniformLocation(shdr->prog, "mat.clr_dif");
-			shdr->u_loc[9] = glGetUniformLocation(shdr->prog, "mat.clr_spc");
-			shdr->u_loc[10] = glGetUniformLocation(shdr->prog, "mat.expnt_spc");
-			shdr->u_loc[11] = glGetUniformLocation(shdr->prog, "mat.transp");
-		}
-	}
-}
+

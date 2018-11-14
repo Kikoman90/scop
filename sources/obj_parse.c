@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/09 20:28:19 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 15:49:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,10 @@ static void	init_vao_vbo(t_gameobject *go, size_t vtx_struct_size, \
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
 		(void*)(5 * type_size));
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vtx_struct_size, 0);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, vtx_struct_size, \
 		(void*)(8 * type_size));
 	glEnableVertexAttribArray(0);
+	// free(go->vtx_attrib); can i do this ?
 }
 
 static void	redefine_vertices(t_gameobject *go)
@@ -44,8 +45,6 @@ static void	redefine_vertices(t_gameobject *go)
 	{
 		go->vtx_attrib[i].position = \
 			vec3_sub(go->vtx_attrib[i].position, center);
-		//go->vtx_attrib[i].normal =
-			
 		i++;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/10 18:52:14 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:45:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,20 @@
 
 static void			init_default(t_env *env)
 {
+	unsigned int	i;
+
 	env->win_env.window = NULL;
 	env->win_env.gl_context = NULL;
 	env->win_env.win_w = WIN_W;
 	env->win_env.win_h = WIN_H;
-	env->buffers.rbo[0] = 0;
-	env->buffers.rbo[1] = 0;
-	env->buffers.rbo[2] = 0;
-	env->buffers.rbo[3] = 0;
+	i = 0;
+	while (i < 4)
+		env->buffers.rbo[i++] = 0;
 	env->buffers.ms_fbo = 0;
 	env->buffers.pick_fbo = 0;
-	env->shaders[0].prog = 0;
-	env->shaders[1].prog = 0;
-	env->shaders[2].prog = 0;
+	i = 0;
+	while (i < 6)
+		env->shaders[i++].prog = 0;
 	env->matrices.model = NULL;
 	env->matrices.update_mat[0] = 1;
 	env->matrices.update_mat[1] = 1;
@@ -35,8 +36,8 @@ static void			init_default(t_env *env)
 	env->materials.count = 0;
 	env->gameobjects.head = NULL;
 	env->gameobjects.count = 0;
-	env->selection.head = 0;
-	env->selection.count = 0;
+	env->cur_sky = 0;
+	env->cur_tex = 0;
 }
 
 static unsigned int	init_sdl_gl(t_win *win)
@@ -65,12 +66,6 @@ static unsigned int	init_sdl_gl(t_win *win)
 	return (1);
 }
 
-/*
-** SDL_SetRelativeMouseMode(SDL_TRUE);
-** SDL_SetWindowGrab(win->window, SDL_TRUE);
-** glEnable(GL_TEXTURE_2D);
-*/
-
 static t_camera		init_camera(t_vec3 pos, float fov, float zn, float zf)
 {
 	t_camera	cam;
@@ -84,16 +79,38 @@ static t_camera		init_camera(t_vec3 pos, float fov, float zn, float zf)
 	return (cam);
 }
 
-static t_light		init_light(t_vec3 color, float intensity, float range)
+static unsigned int	init_light(t_light *light, t_vec3 color, float intensity, \
+	float range)
 {
-	t_light	light;
-
-	light.transform = init_transform_trs(vec3_xyz(0.0f, 1.2f, 0.0f), \
+	if (!(light->texture_id = \
+		gen_texture("resources/gizmos/light.tga", get_tga_texture)))
+		return (0);
+	light->transform = init_transform_trs(vec3_xyz(0.0f, 1.2f, 0.0f), \
 		quat(), (t_vec3)VEC3_ONE);
-	light.color = color;
-	light.intensity = intensity;
-	light.range = range;
-	return (light);
+	light->color = color;
+	light->intensity = intensity;
+	light->range = range;
+	light->id = 1;
+	light->pick_clr = generate_pick_clr(light->id);
+	return (1);
+}
+
+void				init_input(t_inputstate *input)
+{
+	input->pan_speed = 5.0f;
+	input->zoom_speed = 1.0f;
+	input->orbit_speed = 15.0f;
+	input->fade = 1.0f;
+	input->face_rgb = 0;
+	input->auto_rotate = 1;
+}
+
+void				init_selection(t_selection *selection)
+{
+	selection->list.head = NULL;
+	selection->list.count = 0;
+	selection->mode = 0;
+	selection->localspace = 1;
 }
 
 unsigned int		init_scop(t_env *env, int argc, char **argv)
@@ -104,34 +121,21 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 	glGenFramebuffers(1, &env->buffers.ms_fbo);
 	glGenFramebuffers(1, &env->buffers.pick_fbo);
 	glGenRenderbuffers(4, &env->buffers.rbo[0]);
-	if (!generate_framebuffers(&env->buffers, WIN_W, WIN_H))
+	printf("segfault between here\n");
+	if (!generate_framebuffers(&env->buffers, WIN_W, WIN_H) ||\
+		!init_shaders(6, "resources/shaders/", &env->shaders[0]) ||\
+		!init_textures(3, "resources/textures/", &env->textures[0]) ||\
+		!init_skyboxes(1, "resources/skyboxes/", &env->skyboxes[0]))
 		return (0);
-		/*
-		*/
-	if (!get_tga_texture(&env->tex, "resources/textures/yousavedme.tga"))
-		return (0);
-	glGenTextures(1, &env->tex.id);
-	glBindTexture(GL_TEXTURE_2D, env->tex.id);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, env->tex.width, \
-		env->tex.height, 0, env->tex.format, GL_UNSIGNED_BYTE, env->tex.texels);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	free(env->tex.texels);
-	env->fade = 0.0f;
-		/*
-		*/
-	if (!init_program(&env->shaders[0], "resources/shaders/default", 0) || \
-		!init_program(&env->shaders[1], "resources/shaders/pick", 1) || \
-		!init_program(&env->shaders[2], "resources/shaders/standard", 2))
-		return (0);
-	env->camera = init_camera(vec3_xyz(0, 0, 3.0f), 80.0f, 0.001f, 50.0f);
-	env->light = init_light((t_vec3)VEC3_ONE, 1.5f, 20.0f);
+	printf("and here\n");	
 	while (argc-- > 1)
 		parse_file(&env->gameobjects, &env->materials, argv[argc], \
 			parse_wavefrontobj);
-	env->input.pan_speed = 5.0f;
-	env->input.zoom_speed = 1.0f;
-	env->input.orbit_speed = 15.0f;
+	if (!init_light(&env->light, (t_vec3)VEC3_ONE, 1.5f, 20))
+		return (0);
+	init_camera(vec3_xyz(0, 0, 3), 80, 0.001f, 50);
+	init_input(&env->input);
+	init_selection(&env->selection);
 	env->loop = 1;
 	return (1);
 }

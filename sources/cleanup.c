@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/01 21:16:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:40:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void			clear_go_list(t_go_list *list, int free_go)
 unsigned int	clean_scop(t_env *env)
 {
 	clear_mtl_list(&env->materials, 1);
-	clear_go_list(&env->selection, 0);
+	//clear_go_list(&env->selection, 0);
 	clear_go_list(&env->gameobjects, 1);
 	if (env->matrices.model)
 		free(env->matrices.model);
@@ -74,3 +74,5 @@ unsigned int	clean_scop(t_env *env)
 		SDL_DestroyWindow(env->win_env.window);
 	return (0);
 }
+// THIS IS NOT OK, THERE ARE 6 SHADERS, AND TEXTURES AND SKYBOXES TO FREE
+// along with other stuff

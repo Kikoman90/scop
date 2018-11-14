@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/10 18:49:35 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:39:10 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,11 @@ static void	handle_window_events(t_env *env, SDL_Event *event)
 static void	handle_keyboard_events(t_env *env, const Uint8 *keyboard_state, \
 		double delta_time)
 {
+	static int	fade_in = 0;
 	t_vec3	axes[3];
 
-	(void)delta_time;
 	get_matrix_axes(&axes, mat4x4_transpose(quat_to_mat4x4(env->camera.transform.rotation)));
+	//get_matrix_axes(&axes, env->matrices.v); THIS IS BETTER
 	if (keyboard_state[SDL_SCANCODE_ESCAPE])
 		env->loop = 0;
 	else if (keyboard_state[SDL_SCANCODE_RIGHT])
@@ -84,15 +85,13 @@ static void	handle_keyboard_events(t_env *env, const Uint8 *keyboard_state, \
 			vec3_scale(axes[1], delta_time * env->input.pan_speed));
 		//update_matrices(env, 1);		
 	}
-	else if (keyboard_state[SDL_SCANCODE_PAGEUP])
+	else if (keyboard_state[SDL_SCANCODE_SPACE])
 	{
-		env->fade += 1.105f * delta_time;
-		env->fade = ft_fclamp(env->fade, 0.0f, 1.0f);
-	}
-	else if (keyboard_state[SDL_SCANCODE_PAGEDOWN])
-	{
-		env->fade -= 1.105f * delta_time;
-		env->fade = ft_fclamp(env->fade, 0.0f, 1.0f);
+		env->input.fade += (fade_in) ? -1.1f * delta_time : 1.1f * delta_time;
+		if ((env->input.fade = ft_fclamp(env->input.fade, 0.0f, 1.0f)) == 1.0f)
+			fade_in = 1;
+		else if (env->input.fade == 0)
+			fade_in = 0;
 	}
 }
 
@@ -102,6 +101,7 @@ static void	handle_mouse_events(t_env *env, SDL_Event *event, \
 	t_vec3	axes[3];
 
 	get_matrix_axes(&axes, mat4x4_transpose(quat_to_mat4x4(env->camera.transform.rotation)));
+	//get_matrix_axes(&axes, env->matrices.v); THIS IS BETTER
 	if (event->type == SDL_MOUSEMOTION)// && event->motion.state & SDL_BUTTON_RMASK)
 	{
 		if (event->motion.state & SDL_BUTTON_RMASK)

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/10 19:06:25 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/14 21:44:22 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ static void	loop(t_env *env)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		handle_events_and_input(env, delta_time);
-		rotate_gameobjects(env->gameobjects.head, delta_time);
+		if (env->input.auto_rotate)
+			rotate_gameobjects(env->gameobjects.head, delta_time);
 		draw(env);
 		SDL_GL_SwapWindow(env->win_env.window);
 	}
@@ -88,7 +89,7 @@ int			main(int argc, char **argv)
 
 	if (!init_scop(&env, argc, argv))
 		return (clean_scop(&env));
-	// display_go_list(env.gameobjects.head);
+	display_go_list(env.gameobjects.head);
 	loop(&env);
 	return (clean_scop(&env));
 }

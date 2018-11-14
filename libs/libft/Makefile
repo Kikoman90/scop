@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/02 11:09:55 by fsidler           #+#    #+#              #
-#    Updated: 2018/11/01 15:17:34 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/12 19:08:00 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,7 @@ SRCS = 	ft_isascii.c \
 		ft_atof.c \
 		ft_atof_f.c \
 	 	ft_bzero.c \
+		ft_bitrev.c \
 		ft_clamp.c \
 	  	ft_memccpy.c \
 	  	ft_memcpy.c \
