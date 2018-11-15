@@ -22,7 +22,7 @@ out vec4			FragColor;
 
 void main()
 {
-	vec3 f_color = vec3(vColor);
+	vec3 f_color;
 	if (rgb)
 		f_color = vColor.rgb;
 	else
@@ -40,8 +40,7 @@ void main()
 	vec3 view_dir = normalize(view_pos - vFragPos);
 	vec3 reflect_dir = reflect(-light_dir, vNormal);	
 	if(diffuse_coefficient > 0.0)
-    	specular_coefficient = pow(max(dot(view_dir, reflect_dir), 0.0f), 32);
+    	specular_coefficient = pow(max(dot(view_dir, reflect_dir), 0.0f), 256);
 	vec3 specular = light.intensity * specular_coefficient * clr_mix * light.color * dist;
-
 	FragColor = vec4(diffuse + specular, alpha);
 }

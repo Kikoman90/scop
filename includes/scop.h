@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 20:58:18 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 19:14:43 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,28 @@
 
 # define SDL_INIT_ERROR "failed to initialize sdl"
 # define WIN_CREATE_ERROR "failed to create window"
-# define MISSING_FILE_ERROR "missing file at path "
 # define SHADER_INIT_ERROR "shader initialization failed"
 # define FRAMEBUFFER_INCOMPLETE_ERROR "framebuffer imcomplete"
 
 # define GO_NAME "gameobject_"
 # define MTL_NAME "material_"
+
+# define GO_ID_OFFSET 0x14
+# define MTL_ID_OFFSET 0x1
+
+typedef enum				e_handlemode
+{
+	SCOP_TRANSLATE = 1 << 1,
+	SCOP_ROTATE = 1 << 2,
+	SCOP_SCALE = 1 << 3
+}							t_handlemode;
+
+typedef struct				s_vertex_data
+{
+	GLuint					vao;
+	GLuint					vbo;
+	size_t					count;
+}							t_vertex_data;
 
 typedef struct				s_shader
 {
@@ -77,12 +93,10 @@ typedef struct				s_gameobject
 	char					*name;
 	t_transform				transform;
 	t_vtx_attrib			*vtx_attrib;
-	size_t					vtx_count;
+	t_vertex_data			vertex_data;
 	unsigned int			mtl_id;
 	t_vec3					pick_clr;
 	float					bounds[6];
-	GLuint					vao;
-	GLuint					vbo;
 }							t_gameobject;
 
 typedef struct				s_go_node
@@ -155,38 +169,34 @@ typedef struct				s_mvp_mat
 
 typedef struct				s_inputstate
 {
+	unsigned int			cur_sky;
+	unsigned int			cur_tex;
 	float					pan_speed;
 	float					zoom_speed;
 	float					orbit_speed;
 	float					fade;
 	int						face_rgb;
 	int						auto_rotate;
-}							t_inputstate;
-
-typedef struct				s_selection
-{
-	t_transform_list		list;
-	int						mode;
 	int						localspace;
-}							t_selection;
+	t_handlemode			selection_mode;
+}							t_inputstate;
 
 typedef struct				s_env
 {
-	int						loop;
 	t_win					win_env;
 	t_gl_buffers			buffers;
 	t_shader				shaders[6];
-	t_camera				camera;
-	t_light					light;
-	t_mvp_mat				matrices;
-	t_mtl_list				materials;
-	t_go_list				gameobjects;
-	t_selection				selection;
-	t_inputstate			input;
+	t_vertex_data			primitives[6];
+	GLuint					textures[6];
 	GLuint					skyboxes[2];
-	GLuint					textures[4];
-	unsigned int			cur_sky;
-	unsigned int			cur_tex;
+	t_light					light;
+	t_camera				camera;
+	t_mvp_mat				matrices;
+	t_go_list				gameobjects;
+	t_mtl_list				materials;
+	t_transform_list		selection;
+	t_inputstate			input;
+	int						loop;
 }							t_env;
 
 /*

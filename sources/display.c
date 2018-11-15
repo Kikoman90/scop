@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 21:04:25 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 19:17:35 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,11 @@ void		display_mat4x4(t_mat4x4 mat, const char *msg)
 	ft_putendl("-----------------");
 }
 
+void		display_vec4(const char *p, t_vec4 v)
+{
+	printf("%s : {%f, %f, %f, %f}\n", p, v.x, v.y, v.z, v.w);
+}
+
 void		display_vec3(const char *p, t_vec3 v)
 {
 	printf("%s : {%f, %f, %f}\n", p, v.x, v.y, v.z);
@@ -62,8 +67,8 @@ void		display_gameobject(t_gameobject *obj)
 	i = 0;
 	printf("display object (name : %s)\n", obj->name);
 	printf("material id : %d\n", obj->mtl_id);
-	printf("vtx_count : %zu\n", obj->vtx_count);
-	while (i < obj->vtx_count)
+	printf("vtx_count : %zu\n", obj->vertex_data.count);
+	while (i < obj->vertex_data.count)
 	{
 		j = i + 3;
 		while (i < j)
@@ -72,7 +77,7 @@ void		display_gameobject(t_gameobject *obj)
 			display_vec3("vtx_pos", obj->vtx_attrib[i].position);
 			display_vec2("vtx_uv", obj->vtx_attrib[i].uv);
 			display_vec3("vtx_nrm", obj->vtx_attrib[i].normal);
-			//display_vec3("vtx_clr", obj->vtx_attrib[i].color);
+			display_vec4("vtx_clr", obj->vtx_attrib[i].color);
 			i++;
 		}
 		printf("\n");

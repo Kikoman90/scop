@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 20:52:49 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 12:15:42 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,18 @@ void	update_matrices(t_env *env, int update)
 			env->matrices.update_mat[0] = 0;
 	}
 	if (env->matrices.update_mat[1] == 1 || update == 1)
+	{
 		env->matrices.v = compute_view(env->camera.transform);
+		env->matrices.update_mat[1] = 0;//
+	}
 	if (env->matrices.update_mat[2] == 1 || update == 2)
+	{
 		env->matrices.p = compute_projection(env->camera.fov, \
 			(float)env->win_env.win_w / env->win_env.win_h, \
 			env->camera.znear, env->camera.zfar);
+		env->matrices.update_mat[2] = 0;
+	}
+		
 	/*if (env->matrices.update_mat[1] == 1 || env->matrices.update_mat[2] == 1 \
 		|| update == 1 || update == 2)
 	{

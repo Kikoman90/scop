@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 15:49:09 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 19:05:39 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 static void	init_vao_vbo(t_gameobject *go, size_t vtx_struct_size, \
 	size_t type_size)
 {
-	glGenVertexArrays(1, &go->vao);
-	glBindVertexArray(go->vao);
-	glGenBuffers(1, &go->vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, go->vbo);
-	glBufferData(GL_ARRAY_BUFFER, vtx_struct_size * go->vtx_count, \
+	glGenVertexArrays(1, &go->vertex_data.vao);
+	glBindVertexArray(go->vertex_data.vao);
+	glGenBuffers(1, &go->vertex_data.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, go->vertex_data.vbo);
+	glBufferData(GL_ARRAY_BUFFER, vtx_struct_size * go->vertex_data.count, \
 		&go->vtx_attrib[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
 		(void*)(2 * type_size));
@@ -29,7 +29,6 @@ static void	init_vao_vbo(t_gameobject *go, size_t vtx_struct_size, \
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, vtx_struct_size, \
 		(void*)(8 * type_size));
 	glEnableVertexAttribArray(0);
-	// free(go->vtx_attrib); can i do this ?
 }
 
 static void	redefine_vertices(t_gameobject *go)
@@ -41,7 +40,7 @@ static void	redefine_vertices(t_gameobject *go)
 	center.x = (go->bounds[0] + go->bounds[1]) / 2;
 	center.y = (go->bounds[2] + go->bounds[3]) / 2;
 	center.z = (go->bounds[4] + go->bounds[5]) / 2;
-	while (i < go->vtx_count)
+	while (i < go->vertex_data.count)
 	{
 		go->vtx_attrib[i].position = \
 			vec3_sub(go->vtx_attrib[i].position, center);
@@ -60,7 +59,7 @@ static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
 			opv->name = ft_strjoin_rf(GO_NAME, ft_itoa(gameobjects->count + 1));
 		if ((node = create_go_node(opv->name, opv->mtl_id, opv->f_seed.count)))
 		{
-			opv->color_delta = 0.8f / (float)((node->go->vtx_count / 3) - 1);
+			opv->color_delta = 0.8f / (float)((opv->f_seed.count / 3) - 1);
 			if (!parse_faces(node->go, opv, parser, NULL))
 				clean_go_node(node, 1);
 			else

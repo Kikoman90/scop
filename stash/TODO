@@ -39,6 +39,8 @@ have a good stack of obj and mtl files for the corrector.
 remove .vscode before finishing the project
 remove display.c
 remove stash folder content except TODO
+remove unused libft functions/files. from libft.h TOO
+remove unused libmath functions/files. from libmath.h TOO
 
 --------------------------------------------------------------------------------
 

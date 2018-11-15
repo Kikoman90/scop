@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 21:44:22 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 13:33:03 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int			main(int argc, char **argv)
 
 	if (!init_scop(&env, argc, argv))
 		return (clean_scop(&env));
-	display_go_list(env.gameobjects.head);
+	//display_go_list(env.gameobjects.head);
 	loop(&env);
 	return (clean_scop(&env));
 }

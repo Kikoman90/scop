@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 12:24:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 21:42:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 13:38:50 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ void			get_model_matrices(t_go_node *go_list, t_mat4x4 *m)
 	i = 0;
 	while (tmp)
 	{
-		m[i++] = go_trs(tmp->go->transform);
+		m[i++] = go_trs(tmp->go->transform); // YES
+		//m[tmp->id - GO_ID_OFFSET] = go_trs(tmp->go->transform); // no
+		//i++;// no
 		tmp = tmp->next;
 	}
 }

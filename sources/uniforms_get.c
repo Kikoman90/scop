@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/14 13:47:20 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 21:12:32 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 13:34:04 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ static void get_default_shader_uniforms(t_shader *shader)
     shader->u_loc[8] = glGetUniformLocation(shader->prog, "view_pos");
     shader->u_loc[9] = glGetUniformLocation(shader->prog, "fade");
     shader->u_loc[10] = glGetUniformLocation(shader->prog, "rgb");
+    int i = 0;
+    while (i < 13)
+    {
+        printf("U_LOC[%d] = %d\n", i, shader->u_loc[i]);
+        i++;
+    }
 }
 
 static void get_standard_shader_uniforms(t_shader *shader)
@@ -52,6 +58,7 @@ static void get_gizmos_shader_uniforms(t_shader *shader)
 
 void		get_uniforms(t_shader *shader)
 {
+    printf("shader_name = %s | prog = %u\n", shader->name, shader->prog);
     if (ft_strcmp(shader->name, "default") == 0)
         get_default_shader_uniforms(shader);
     else if (ft_strcmp(shader->name, "standard") == 0)

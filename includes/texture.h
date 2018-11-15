@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/10 11:36:52 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 20:41:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 19:20:01 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,6 @@
 
 # include <OpenGL/gl3.h>
 
-# include <dirent.h>
-
-# define MALLOC_ERROR "memory allocation failure"
 # define INVALID_TGA "invalid or unsupported TGA format"
 
 typedef struct  s_texture
@@ -33,7 +30,7 @@ typedef struct  s_texture
     GLubyte     *texels;
 }               t_texture;
 
-#pragma pack(push, 1)
+#pragma pack(push, 1) // does it work without it
 typedef struct  s_tga_header
 {
     GLubyte     id_length;
@@ -49,7 +46,7 @@ typedef struct  s_tga_header
     GLubyte     pixel_depth;
     GLubyte     image_descriptor;
 }               t_tga_header;
-#pragma pack(pop)
+#pragma pack(pop) // does it work without it (-2 bytes ?)
 
 /*
 ** tga_loader.c => 5 functions
@@ -63,7 +60,7 @@ short           clrmap_index(t_tga_header *header, GLubyte *clrmap, \
                     GLubyte *data, short *pixel);
 unsigned int    texture_format(t_texture *tex, GLenum format, \
                     GLint internal_format, unsigned int bpp);
-GLuint			gen_texture(const char *path, \
+GLuint			create_texture(const char *path, \
                     unsigned int (get_texture)(t_texture *, const char *));
 unsigned int    init_textures(unsigned int nb, const char *path, GLuint *id);
 unsigned int    init_skyboxes(unsigned int nb, const char *path, GLuint *id);

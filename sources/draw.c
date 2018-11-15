@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 21:43:44 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 19:07:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,14 @@ static void	draw_ms_fbo(t_env *env)
 	tmp = env->gameobjects.head;
 	while (tmp)
 	{
-		glBindVertexArray(tmp->go->vao);
+		glBindVertexArray(tmp->go->vertex_data.vao);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
-		//tmp->go->mtl_id = 0; // HAHAHAHAHAHA
+		// tmp->go->mtl_id = 0; // HAHAHAHAHAHA
 		if (tmp->go->mtl_id != 0)
 		{
-			shdr_idx = get_shader_idx(&env->shaders, "default");
+			shdr_idx = get_shader_idx(&env->shaders, "standard");
 			glUseProgram(env->shaders[shdr_idx].prog);
 			set_uniforms(env, &env->shaders[shdr_idx], tmp);
 			glDisableVertexAttribArray(2);
@@ -35,13 +35,19 @@ static void	draw_ms_fbo(t_env *env)
 		}
 		else
 		{
-			shdr_idx = get_shader_idx(&env->shaders, "standard");
+			shdr_idx = get_shader_idx(&env->shaders, "default");
+			//printf("prog_id = %u\n", env->shaders[shdr_idx].prog);
 			glUseProgram(env->shaders[shdr_idx].prog);
 			set_uniforms(env, &env->shaders[shdr_idx], tmp);
 		}
-		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vtx_count);
+		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vertex_data.count);
 		tmp = tmp->next;
 	}
+	shdr_idx = get_shader_idx(&env->shaders, "skybox");
+	glUseProgram(env->shaders[shdr_idx].prog);
+	set_uniforms(env, &env->shaders[shdr_idx], NULL);
+	glBindVertexArray(env->primitives[0].vao);
+	glDrawArrays(GL_TRIANGLES, 0, env->primitives[0].count);
 	// draw_world_axes_and_grid(env);
 }
 
@@ -56,11 +62,11 @@ static void	draw_pick_fbo(t_env *env)
 	{
 		glUseProgram(env->shaders[shdr_idx].prog);
 		set_uniforms(env, &env->shaders[shdr_idx], tmp);
-		glBindVertexArray(tmp->go->vao);
+		glBindVertexArray(tmp->go->vertex_data.vao);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 		glDisableVertexAttribArray(3);
-		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vtx_count);
+		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vertex_data.count);
 		tmp = tmp->next;
 	}
 }
@@ -138,7 +144,7 @@ void		draw(t_env *env)
 	update_matrices(env, -1);
 	if (env->matrices.model && env->gameobjects.count > 0)
 	{
-		// glBindTexture(GL_TEXTURE_2D, 0);
+		glDepthFunc(GL_LESS);
 		get_model_matrices(env->gameobjects.head, env->matrices.model);
 		glBindFramebuffer(GL_FRAMEBUFFER, env->buffers.ms_fbo);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/01 13:21:24 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/12 19:07:44 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 19:14:23 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,12 @@
 # include <fcntl.h>
 
 # include <errno.h>
+# include <dirent.h>
 
 # define UC unsigned char
+
+# define MALLOC_ERROR "memory allocation failure"
+# define MISSING_FILE_ERROR "missing file at path "
 
 typedef struct		s_list
 {
@@ -148,8 +152,12 @@ double				ft_copysign(double n1, double n2);
 void				*ft_file_map(const char *path, size_t *data_size);
 void				ft_file_unmap(void *data, size_t fsize, char *fpath);
 
+void        		ft_free_file_names(char **names, unsigned int nb);
+char				**ft_get_file_names(const char *dir_path, unsigned int nb);
+
 unsigned int		log_error(const char *msg);
 unsigned int		log_error_free(char *msg);
 void				*log_error_null(const char *msg);
+void				*log_error_null_free(char *msg);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:09 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 19:55:28 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 11:12:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void			add_mtl_node(t_mtl_list *list, t_mtl_node *node)
 		list->count++;
 		if (!list->head)
 		{
-			node->id = 1;
+			node->id = MTL_ID_OFFSET;
 			list->head = node;
 		}
 		else
@@ -44,7 +44,7 @@ void			add_go_node(t_go_list *list, t_go_node *node)
 		list->count++;
 		if (!list->head)
 		{
-			node->id = 20;
+			node->id = GO_ID_OFFSET;
 			list->head = node;
 		}
 		else
@@ -57,4 +57,5 @@ void			add_go_node(t_go_list *list, t_go_node *node)
 		}
 		node->go->pick_clr = generate_pick_clr(node->id);
 	}
+	// need to update model matrices
 }

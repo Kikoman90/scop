@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/16 14:28:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 21:17:21 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/15 19:15:22 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ static GLuint	create_program(t_shader *program, const char *path, \
 	GLchar	info_log[1024];
 
 	program->name = ft_strdup(name);
-	if (get_shaders(program, path, 12) == 0)
+	if (get_shaders(program, path, 13) == 0)
 		return (0);
 	program->prog = glCreateProgram();
 	glAttachShader(program->prog, program->vtx_s);
@@ -117,30 +117,26 @@ static GLuint	create_program(t_shader *program, const char *path, \
 unsigned int	init_shaders(unsigned int nb, const char *path, \
 	t_shader *shader)
 {
-	DIR				*dir;
-	struct dirent	*dp;
-	char			*fullpath;
 	unsigned int	i;
+	char			**file_names;
+	char			*fullpath;
 
+	if (!(file_names = ft_get_file_names(path, nb)))
+		return (0);
 	i = 0;
-	dir = opendir(path);
-	while (i < nb && (dp = readdir(dir)))
+	while (i < nb)
 	{
-		if (dp->d_name[0] != '.')
+		fullpath = ft_strjoin_rf(path, ft_strjoin_rf(file_names[i], \
+			ft_strjoin("/", file_names[i])));
+		if (!create_program(shader + i, fullpath, file_names[i]))
 		{
-			fullpath = ft_strjoin_rf(path, ft_strjoin_rf(dp->d_name, \
-				ft_strjoin("/", dp->d_name)));
-			if (!create_program(shader + i, fullpath, dp->d_name))
-			{
-				free(fullpath);
-				return (0);
-			}
 			free(fullpath);
-			i++;
+			ft_free_file_names(file_names, nb);
+			return (0);
 		}
+		free(fullpath);
+		i++;
 	}
-	if (i != nb)
-		return (log_error_free(ft_strjoin(MISSING_FILE_ERROR, " (shaders)")));
-	closedir(dir);
+	ft_free_file_names(file_names, nb);
 	return (1);
 }
