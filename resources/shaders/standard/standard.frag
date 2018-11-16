@@ -34,7 +34,7 @@ void	main()
 	vec3 view_dir = normalize(view_pos - vFragPos);
 	vec3 reflect_dir = reflect(-light_dir, vNormal);	
 	if(diffuse_coefficient > 0.0)
-    	specular_coefficient = pow(max(dot(view_dir, reflect_dir), 0.0f), 256);
-	vec3 specular = light.intensity * (mat.expnt_spc / 100.0f) * specular_coefficient * mat.clr_spc * light.color * dist;
+    	specular_coefficient = pow(max(dot(view_dir, reflect_dir), 0.0f), mat.expnt_spc);
+	vec3 specular = light.intensity * specular_coefficient * mat.clr_spc * light.color * dist;
 	FragColor = vec4(mat.clr_amb + diffuse + specular, mat.transp);
 }

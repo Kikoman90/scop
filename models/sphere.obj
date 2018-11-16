@@ -1,6 +1,8 @@
 # Blender v2.78 (sub 0) OBJ File: 'light_obj.blend'
 # www.blender.org
 o sphere
+mtllib 42.mtl
+usemtl Material
 v 0.000000 -1.600000 0.000000
 v 1.157772 -0.715551 0.841160
 v -0.442221 -0.715552 1.361039

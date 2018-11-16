@@ -6,12 +6,12 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/13 18:31:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 19:22:06 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 19:58:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>//
 #include "texture.h"
-
 
 short           	clrmap_index(t_tga_header *header, GLubyte *clrmap, \
     GLubyte *data, short *pixel)
@@ -131,7 +131,7 @@ unsigned int	init_textures(unsigned int nb, const char *path, GLuint *id)
 	i = 0;
 	while (i < nb)
 	{
-		fullpath = ft_strjoin_rf(path, file_names[i]);
+		fullpath = ft_strjoin(path, file_names[i]);
 		if (!(*(id + i) = create_texture(fullpath, get_tga_texture)))
 		{
 			free(fullpath);

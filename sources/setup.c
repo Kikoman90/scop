@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 19:20:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 22:26:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static void			init_default(t_env *env)
 
 	env->buffers.ms_fbo = 0;
 	env->buffers.pick_fbo = 0;
-	i = 4;
-	while (i--)
-		env->buffers.rbo[i] = 0;
+	i = 3;
+	while (i > 0)
+		env->buffers.rbo[i--] = 0;
 	while (i < 6)
 	{
 		env->shaders[i].prog = 0;
@@ -28,6 +28,7 @@ static void			init_default(t_env *env)
 		env->primitives[i].vbo = 0;
 		env->textures[i++] = 0;
 	}
+	env->textures[i] = 0;
 	i = 0;
 	while (i < 2)
 		env->skyboxes[i++] = 0;
@@ -53,8 +54,8 @@ static unsigned int	init_sdl_gl(t_win *win)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, \
 		SDL_GL_CONTEXT_PROFILE_CORE);
 	if (!(win->window = SDL_CreateWindow("SCOP_42", SDL_WINDOWPOS_CENTERED, \
-		SDL_WINDOWPOS_CENTERED, WIN_W, WIN_H, SDL_WINDOW_INPUT_GRABBED |\
-		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL)))
+		SDL_WINDOWPOS_CENTERED, WIN_W, WIN_H, SDL_WINDOW_RESIZABLE |\
+		SDL_WINDOW_OPENGL)))
 		return (log_error(WIN_CREATE_ERROR));
 	if (!(win->gl_context = SDL_GL_CreateContext(win->window)))
 		return (log_error(SDL_GetError()));
@@ -82,15 +83,17 @@ static t_camera		init_camera(t_vec3 pos, float fov, float zn, float zf)
 	return (cam);
 }
 
-static unsigned int	init_light(t_light *light, t_vec3 color, float intensity, \
+static unsigned int	init_light(t_light *light, t_vec3 pos, float intensity, \
 	float range)
 {
 	if (!(light->texture_id = \
 		create_texture("resources/gizmos/light.tga", get_tga_texture)))
 		return (0);
-	light->transform = init_transform_trs(vec3_xyz(-3.0f, 1.2f, 0.0f), \
-		quat(), (t_vec3)VEC3_ONE);
-	light->color = color;
+	light->transform = init_transform_trs(pos, quat(), (t_vec3)VEC3_ONE);
+	light->color[0] = vec3_xyz(1.0f, 0.62f, 0.45f);
+	light->color[1] = vec3_xyz(0.5f, 0.9f, 0.67f);
+	light->color[2] = vec3_xyz(0.6f, 0.6f, 0.6f);
+	light->color[3] = vec3_xyz(0.3f, 0.6f, 0.92f);
 	light->intensity = intensity;
 	light->range = range;
 	light->id = 1;
@@ -101,10 +104,10 @@ static unsigned int	init_light(t_light *light, t_vec3 color, float intensity, \
 void				init_input(t_inputstate *input)
 {
 	input->cur_tex = 0;
-	input->cur_sky = 0;
-	input->pan_speed = 5.0f;
+	input->cur_sky = 2;
+	input->pan_speed = 1.0f;
+	input->rot_speed = 15.0f;
 	input->zoom_speed = 1.0f;
-	input->orbit_speed = 15.0f;
 	input->fade = 1.0f;
 	input->face_rgb = 0;
 	input->auto_rotate = 1;
@@ -113,12 +116,12 @@ void				init_input(t_inputstate *input)
 }
 
 unsigned int		init_primitives(unsigned int nb, const char *path, \
-	t_vertex_data *primitive)
+	t_geometry *primitive)
 {
-	t_go_list		list;
 	unsigned int	i;
-	char			**file_names;
 	char			*fullpath;
+	char			**file_names;
+	t_go_list		list;
 
 	if (!(file_names = ft_get_file_names(path, nb)))
 		return (0);
@@ -129,13 +132,13 @@ unsigned int		init_primitives(unsigned int nb, const char *path, \
 	{
 		fullpath = ft_strjoin(path, file_names[i]);
 		parse_file(&list, NULL, fullpath, parse_wavefrontobj);
-		(primitive + i)->vao = list.head->go->vertex_data.vao;
-		(primitive + i)->vbo = list.head->go->vertex_data.vbo;
-		(primitive + i++)->count = list.head->go->vertex_data.count;
-		free(list.head->go->vtx_attrib);
-		free(list.head->go->name);
-		free(list.head->go);
-		remove_go_node(&list, GO_ID_OFFSET, 0);
+		(primitive + i)->name = ft_strdup(list.head->go->name);
+		(primitive + i)->vao = list.head->go->vao;
+		(primitive + i)->vbo = list.head->go->vbo;
+		(primitive + i++)->count = list.head->go->vtx_count;
+		list.head->go->vao = 0;
+		list.head->go->vbo = 0;
+		remove_go_node(&list, GO_ID_OFFSET, 1);
 		free(fullpath);
 	}
 	ft_free_file_names(file_names, nb);
@@ -152,12 +155,12 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 	glGenRenderbuffers(4, &env->buffers.rbo[0]);
 	if (!generate_framebuffers(&env->buffers, WIN_W, WIN_H) ||\
 		!init_shaders(6, "resources/shaders/", &env->shaders[0]) ||\
-		!init_primitives(1, "resources/primitives/", &env->primitives[0]) ||\
-		!init_textures(3, "resources/textures/", &env->textures[0]) ||\
-		!init_skyboxes(1, "resources/skyboxes/", &env->skyboxes[0]) ||\
-		!init_light(&env->light, vec3_xyz(0.96f, 0.6f, 0.4f), 1.5f, 10))
+		!init_primitives(2, "resources/primitives/", &env->primitives[0]) ||\
+		!init_textures(7, "resources/textures/", &env->textures[0]) ||\
+		!init_skyboxes(4, "resources/skyboxes/", &env->skyboxes[0]) ||\
+		!init_light(&env->light, vec3_xyz(-3, 1.2f, 0), 2.5f, 20))
 		return (0);
-	env->camera = init_camera(vec3_xyz(0, 0, 3), 80, 0.001f, 50);
+	env->camera = init_camera(vec3_xyz(0, 0, 3), 90, 0.001f, 100);
 	env->matrices.update_mat[0] = 1;
 	env->matrices.update_mat[1] = 1;
 	env->matrices.update_mat[2] = 1;

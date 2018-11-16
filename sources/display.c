@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 11:23:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 19:17:35 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 21:36:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,8 @@ void		display_gameobject(t_gameobject *obj)
 	i = 0;
 	printf("display object (name : %s)\n", obj->name);
 	printf("material id : %d\n", obj->mtl_id);
-	printf("vtx_count : %zu\n", obj->vertex_data.count);
-	while (i < obj->vertex_data.count)
+	printf("vtx_count : %zu\n", obj->vtx_count);
+	while (i < obj->vtx_count)
 	{
 		j = i + 3;
 		while (i < j)

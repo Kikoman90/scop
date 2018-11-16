@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/15 16:37:58 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 19:20:36 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 14:57:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void        ft_free_file_names(char **names, unsigned int nb)
     while (nb--)
     {
         free(names[nb]);
-        names = NULL;
+        names[nb] = NULL;
     }   
     free(names);
     names = NULL;

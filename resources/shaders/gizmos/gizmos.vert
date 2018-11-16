@@ -29,6 +29,6 @@ void main()
     mv[2][1] = 0;
     mv[2][2] = 1;
 	
-    gl_Position = p * mv * vec4(iPosition, 1);
     vUV = iUV;
+    gl_Position = p * mv * vec4(iPosition, 1);
 }

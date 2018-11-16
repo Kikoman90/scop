@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 13:23:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 22:06:56 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ static t_vec3		get_vtx_attrib(t_seed *v_seed, char *data, \
 				free(word);
 				return (vec3_atof(data, &seed, 0));
 			}
+			i++;
 		}
 		seed = skip_line(data, seed);
 		if (v_seed->line++ && word)
 			free(word);
-		i++;
 	}
 	return ((t_vec3)VEC3_ZERO);
 }

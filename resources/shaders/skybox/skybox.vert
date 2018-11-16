@@ -9,7 +9,7 @@ out vec3        vUVW;
 
 void main()
 {
-    vUVW = iPosition;
+    vUVW = vec3(-iPosition.x, iPosition.y, iPosition.z);
     mat4 view = v;
     view[3][0] = 0;
     view[3][1] = 0;

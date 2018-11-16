@@ -6,179 +6,146 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 13:50:31 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 21:10:33 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void		resize_window(t_env *env)
+static void	handle_window_events(t_env *env, SDL_Event *event)
 {
 	int	w;
 	int	h;
 
-	SDL_GetWindowSize(env->win_env.window, &w, &h);
-	glViewport(0, 0, w, h);
-	generate_framebuffers(&env->buffers, w, h);
-	env->win_env.win_w = w;
-	env->win_env.win_h = h;
-	env->matrices.update_mat[2] = 1;
-}
-
-static void	handle_window_events(t_env *env, SDL_Event *event)
-{
 	if (event->window.event == SDL_WINDOWEVENT_CLOSE)
 		env->loop = 0;
 	else if (event->window.event == SDL_WINDOWEVENT_RESIZED)
-		resize_window(env);
+	{
+		SDL_GetWindowSize(env->win_env.window, &w, &h);
+		glViewport(0, 0, w, h);
+		generate_framebuffers(&env->buffers, w, h);
+		env->win_env.win_w = w;
+		env->win_env.win_h = h;
+		env->matrices.update_mat[2] = 1;
+	}
 }
 
-static void	handle_keyboard_events(t_env *env, const Uint8 *keyboard_state, \
-		double delta_time)
+void		update_view(t_env *env, t_vec3 d, t_handlemode mode)
 {
-	static int	fade_in = 0;
-	t_vec3	axes[3];
+	t_transform	tr;
+	t_vec3		axes[3];
 
-	get_matrix_axes(&axes, mat4x4_transpose(quat_to_mat4x4(env->camera.transform.rotation)));
-	//get_matrix_axes(&axes, env->matrices.v); THIS IS BETTER
-	if (keyboard_state[SDL_SCANCODE_ESCAPE])
-		env->loop = 0;
-	else if (keyboard_state[SDL_SCANCODE_RIGHT])
+	tr = env->camera.transform;
+	get_matrix_axes(&axes, mat4x4_transpose(quat_to_mat4x4(tr.rotation)));
+	if (mode & SCOP_TRANSLATE)
 	{
-		env->camera.transform.position = vec3_add(\
-			env->camera.transform.position, \
-			vec3_scale(axes[0], delta_time * env->input.pan_speed));
-		//update_matrices(env, 1);
+		d = vec3_scale(d, env->input.pan_speed * env->delta_time);
+		tr.position = vec3_add(tr.position, vec3_scale(axes[0], d.x));
+		tr.position = vec3_add(tr.position, vec3_scale(axes[1], d.y));
+		tr.position = vec3_add(tr.position, vec3_scale(axes[2], d.z));
 	}
-	else if (keyboard_state[SDL_SCANCODE_LEFT])
+	else if (mode & SCOP_SCALE)
+		tr.position = vec3_add(tr.position, vec3_scale(\
+			axes[2], d.z * env->input.zoom_speed * env->delta_time));
+	else if (mode & SCOP_ROTATE)
 	{
-		env->camera.transform.position = vec3_sub(\
-			env->camera.transform.position, \
-			vec3_scale(axes[0], delta_time * env->input.pan_speed));
-		//update_matrices(env, 1);		
+		d = vec3_scale(d, env->input.rot_speed * env->delta_time);
+		tr.rotation = quat_mult(tr.rotation, quat_tv(d.y, (t_vec3)VEC3_RIGHT));
+		tr.rotation = quat_mult(quat_tv(d.x, (t_vec3)VEC3_UP), tr.rotation);
 	}
-	else if (keyboard_state[SDL_SCANCODE_UP])
-	{
-		env->camera.transform.position = vec3_sub(\
-			env->camera.transform.position, \
-			vec3_scale(axes[2], delta_time * env->input.pan_speed));
-		//update_matrices(env, 1);
-	}
-	else if (keyboard_state[SDL_SCANCODE_DOWN])
-	{
-		env->camera.transform.position = vec3_add(\
-			env->camera.transform.position, \
-			vec3_scale(axes[2], delta_time * env->input.pan_speed));
-		//update_matrices(env, 1);
-	}
-	else if (keyboard_state[SDL_SCANCODE_KP_MINUS])
-	{
-		env->camera.transform.position = vec3_sub(\
-			env->camera.transform.position, \
-			vec3_scale(axes[1], delta_time * env->input.pan_speed));
-		//update_matrices(env, 1);
-	}
-	else if (keyboard_state[SDL_SCANCODE_KP_PLUS])
-	{
-		env->camera.transform.position = vec3_add(\
-			env->camera.transform.position, \
-			vec3_scale(axes[1], delta_time * env->input.pan_speed));
-		//update_matrices(env, 1);		
-	}
-	else if (keyboard_state[SDL_SCANCODE_SPACE])
-	{
-		env->input.fade += (fade_in) ? -1.1f * delta_time : 1.1f * delta_time;
-		if ((env->input.fade = ft_fclamp(env->input.fade, 0.0f, 1.0f)) == 1.0f)
-			fade_in = 1;
-		else if (env->input.fade == 0)
-			fade_in = 0;
-	}
+	env->camera.transform = tr;
+	env->matrices.update_mat[1] = 1;
 }
 
 static void	handle_mouse_events(t_env *env, SDL_Event *event, \
-	double delta_time, int lsp)
+	const Uint8 *kstate)
 {
-	t_vec3	axes[3];
-
-	get_matrix_axes(&axes, mat4x4_transpose(quat_to_mat4x4(env->camera.transform.rotation)));
-	//get_matrix_axes(&axes, env->matrices.v); THIS IS BETTER
-	if (event->type == SDL_MOUSEMOTION)// && event->motion.state & SDL_BUTTON_RMASK)
+	if (event->type == SDL_MOUSEMOTION)
 	{
 		if (event->motion.state & SDL_BUTTON_RMASK)
 		{
-			env->camera.transform.position = vec3_add(\
-				env->camera.transform.position, \
-				vec3_scale(axes[2], event->motion.yrel * delta_time * env->input.zoom_speed));
-		}
-		else if (lsp)
-		{
-			env->camera.transform.position = vec3_add(\
-				env->camera.transform.position, \
-				vec3_scale(axes[0], -event->motion.xrel * delta_time));
-			env->camera.transform.position = vec3_add(\
-				env->camera.transform.position, \
-				vec3_scale(axes[1], event->motion.yrel * delta_time));
+			if (kstate[SDL_SCANCODE_LSHIFT] || kstate[SDL_SCANCODE_RSHIFT])
+				update_view(env, vec3_xyz(-event->motion.xrel, \
+					event->motion.yrel, 0), SCOP_TRANSLATE);
+			else if (kstate[SDL_SCANCODE_LCTRL] || kstate[SDL_SCANCODE_RCTRL])		
+				update_view(env, vec3_xyz(0, 0, event->motion.yrel), \
+					SCOP_SCALE);
+			else
+				update_view(env, vec3_xyz(\
+					-event->motion.xrel, -event->motion.yrel, 0), SCOP_ROTATE);
 		}
 		else if (event->motion.state & SDL_BUTTON_LMASK)
 		{
-			env->camera.transform.rotation = quat_mult(\
-				env->camera.transform.rotation, quat_tv(-event->motion.yrel \
-				* env->input.orbit_speed * delta_time, (t_vec3)VEC3_RIGHT));
-			env->camera.transform.rotation = quat_mult(quat_tv(\
-				-event->motion.xrel * env->input.orbit_speed * delta_time, \
-				(t_vec3)VEC3_UP), env->camera.transform.rotation);
+			;// selection and handle manip
 		}
-		//update_matrices(env, 1);		
-		//update_view(&env->camera, event->motion, delta_time, 11.2f);
 	}
 	else if (event->type == SDL_MOUSEWHEEL)
-	{
-		env->camera.transform.position = vec3_add(\
-			env->camera.transform.position, \
-			vec3_scale(axes[2], -event->wheel.y * env->input.zoom_speed \
-			* delta_time));
-		//update_matrices(env, 1);		
-	}
-	else if (event->type == SDL_MOUSEBUTTONDOWN)
-	{
+		update_view(env, vec3_xyz(0, 0, -event->wheel.y), SCOP_SCALE);
+}
 
-	}
-	else if (event->type == SDL_MOUSEBUTTONUP)
-	{
+static void	handle_smooth_keys(t_env *env, const Uint8 *keyboard_state)
+{
+	if (keyboard_state[SDL_SCANCODE_RIGHT])
+		update_view(env, vec3_xyz(8, 0, 0), SCOP_TRANSLATE);
+	else if (keyboard_state[SDL_SCANCODE_LEFT])
+		update_view(env, vec3_xyz(-8, 0, 0), SCOP_TRANSLATE);
+	else if (keyboard_state[SDL_SCANCODE_UP])
+		update_view(env, vec3_xyz(0, 0, -8), SCOP_TRANSLATE);
+	else if (keyboard_state[SDL_SCANCODE_DOWN])
+		update_view(env, vec3_xyz(0, 0, 8), SCOP_TRANSLATE);
+	else if (keyboard_state[SDL_SCANCODE_KP_MINUS])
+		update_view(env, vec3_xyz(0, -8, 0), SCOP_TRANSLATE);
+	else if (keyboard_state[SDL_SCANCODE_KP_PLUS])
+		update_view(env, vec3_xyz(0, 8, 0), SCOP_TRANSLATE);
+}
 
+static void	handle_key_events(t_env *env, Uint8 scancode)
+{
+	if (scancode == SDL_SCANCODE_ESCAPE)
+		env->loop = 0;
+	else if (scancode == SDL_SCANCODE_Z)
+		env->input.auto_rotate = (env->input.auto_rotate) ? 0 : 1;
+	else if (scancode == SDL_SCANCODE_X)
+		env->input.localspace = (env->input.localspace) ? 0 : 1;
+	else if (scancode == SDL_SCANCODE_C)
+		env->input.face_rgb = (env->input.face_rgb) ? 0 : 1;
+	else if (scancode == SDL_SCANCODE_S)
+		env->input.cur_sky += (env->input.cur_sky == 3) ? -3 : 1;
+	else if (scancode == SDL_SCANCODE_T)
+		env->input.cur_tex += (env->input.cur_tex == 5) ? -5 : 1;
+	else if (scancode == SDL_SCANCODE_W)
+		env->input.selection_mode = SCOP_TRANSLATE;
+	else if (scancode == SDL_SCANCODE_E)
+		env->input.selection_mode = SCOP_ROTATE;
+	else if (scancode == SDL_SCANCODE_R)
+		env->input.selection_mode = SCOP_SCALE;
+	else if (scancode == SDL_SCANCODE_SPACE)
+	{
+		if (env->input.fade)
+			env->input.fade_coef = (env->input.fade_coef >= 0) ? -1.05f : 1.05f;
+		else
+			env->input.fade_coef = 1.05f;
 	}
 }
 
-void		handle_events_and_input(t_env *env, double delta_time)
+void		handle_events_and_input(t_env *env)
 {
 	SDL_Event	event;
 	const Uint8	*keyboard_state;
-	int			lshift_pressed;
 
-	lshift_pressed = 0;
+	keyboard_state = SDL_GetKeyboardState(NULL);
+	handle_smooth_keys(env, keyboard_state);
 	while (SDL_PollEvent(&event))
 	{
-		/*else if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_LSHIFT)
-		{
-			lshift_pressed = 1;
-			printf("LSHIFT\n");
-		}*/
-		keyboard_state = SDL_GetKeyboardState(NULL);
-		if (keyboard_state[SDL_SCANCODE_LSHIFT] || keyboard_state[SDL_SCANCODE_RSHIFT])
-			lshift_pressed = 1;
-		if (keyboard_state[SDL_SCANCODE_DELETE])
-		{
-			SDL_SetWindowGrab(env->win_env.window, SDL_FALSE);
-			//SDL_SetRelativeMouseMode(SDL_FALSE);
-		}
 		if (event.type == SDL_WINDOWEVENT)
 			handle_window_events(env, &event);
-		else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEMOTION \
-			|| event.type == SDL_MOUSEWHEEL)
-			handle_mouse_events(env, &event, delta_time, lshift_pressed);
-		//	handle_keyboard_events(env, keyboard_state, delta_time);
+		else if (event.type == SDL_MOUSEBUTTONDOWN ||\
+			event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEMOTION ||\
+			event.type == SDL_MOUSEWHEEL)
+			handle_mouse_events(env, &event, keyboard_state);
+		else if (event.type == SDL_KEYDOWN)
+			handle_key_events(env, event.key.keysym.scancode);
+		else if (event.type == SDL_QUIT)
+			env->loop = 0;
 	}
-	keyboard_state = SDL_GetKeyboardState(NULL);
-	handle_keyboard_events(env, keyboard_state, delta_time);
-	update_matrices(env, 1);
 }

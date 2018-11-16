@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 19:16:22 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 21:34:41 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,10 @@ void		clean_go_node(t_go_node *node, int free_go)
 			free(node->go->vtx_attrib);
 		if (node->go->name)
 			free(node->go->name);
-		if (node->go->vertex_data.vbo)
-			glDeleteBuffers(1, &node->go->vertex_data.vbo);
-		if (node->go->vertex_data.vao)
-			glDeleteVertexArrays(1, &node->go->vertex_data.vao);
+		if (node->go->vbo)
+			glDeleteBuffers(1, &node->go->vbo);
+		if (node->go->vao)
+			glDeleteVertexArrays(1, &node->go->vao);
 		free(node->go);
 		node->go = NULL;
 	}

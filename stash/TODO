@@ -2,35 +2,28 @@
 
 S C O P  S C O P E :
 
-* skybox (OR GRID AND AXES !) textures      /!\
-* handles                                   /!\
-* showFPS
+* handles (TODO)
+* showFPS (TODO)
+
+SELECTION (TODO)
+* stop auto-rotate when editing rotation of object (TODO)
 * move light
 
 HANDLES
-* scene axes and grid, objects local/world coordinates (switch)
-    all sorts of handles and gizmos (e.g. light gizmos)
+* scene axes and grid, objects local/world axes
 * small coordinate system in the bottom right to indicate world axes
 
-stop auto-rotate when editing rotation of object
-
 * input :
-Y - [Z] -> activate/deactivate auto-rotate
-Y - blender numpad ([1/ctrl1] = front/back view, [3/ctrl3]..., [5] ortho/perspective)
-N - [W/E/R] move/rotate/scale
-N - [X] switch world/local space
-Y - [C] switch face colors (grayscale/rgb)
-Y - [shift right mouse] : pan
-Y - [ctrl right mouse] or [mouse wheel] : zoom
-Y - [right mouse] : rotate camera
-Y - [tab] -> exit window grab
-Y - [s] -> switch skybox
-Y - [t] -> switch texture
-N - selection ([left mouse], [shift...)
-Y - [space] -> default shader FADE
-esc
-
-* a bit of UI ?
+- [Z] -> activate/deactivate auto-rotate (DONE)
+- [X] -> switch world/local space (DONE)
+- [C] -> switch face colors (grayscale/rgb) (DONE)
+- [SPACE] -> default shader FADE (DONE)
+- [S] -> switch skybox (DONE)
+- [T] -> switch texture (DONE)
+- [W/E/R] -> move/rotate/scale (DONE)
+- [ESC] -> quit (DONE)
+- selection ([left mouse], [shift...) (TODO)
+N - blender numpad ([1/ctrl1] = front/back view, [3/ctrl3]..., [5] ortho/perspective)
 
 clean everything up.
 norminette on all.

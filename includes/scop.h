@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 19:14:43 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 21:29:24 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,13 @@ typedef enum				e_handlemode
 	SCOP_SCALE = 1 << 3
 }							t_handlemode;
 
-typedef struct				s_vertex_data
+typedef struct				s_geometry
 {
+	char					*name;
 	GLuint					vao;
 	GLuint					vbo;
 	size_t					count;
-}							t_vertex_data;
+}							t_geometry;
 
 typedef struct				s_shader
 {
@@ -93,7 +94,9 @@ typedef struct				s_gameobject
 	char					*name;
 	t_transform				transform;
 	t_vtx_attrib			*vtx_attrib;
-	t_vertex_data			vertex_data;
+	size_t					vtx_count;
+	GLuint					vao;
+	GLuint					vbo;
 	unsigned int			mtl_id;
 	t_vec3					pick_clr;
 	float					bounds[6];
@@ -128,7 +131,7 @@ typedef struct				s_transform_list
 typedef struct				s_light
 {
 	t_transform				transform;
-	t_vec3					color;
+	t_vec3					color[4];
 	float					intensity;
 	float					range;
 	t_vec3					pick_clr;
@@ -172,9 +175,10 @@ typedef struct				s_inputstate
 	unsigned int			cur_sky;
 	unsigned int			cur_tex;
 	float					pan_speed;
+	float					rot_speed;
 	float					zoom_speed;
-	float					orbit_speed;
 	float					fade;
+	float					fade_coef;
 	int						face_rgb;
 	int						auto_rotate;
 	int						localspace;
@@ -186,9 +190,9 @@ typedef struct				s_env
 	t_win					win_env;
 	t_gl_buffers			buffers;
 	t_shader				shaders[6];
-	t_vertex_data			primitives[6];
-	GLuint					textures[6];
-	GLuint					skyboxes[2];
+	t_geometry				primitives[6];
+	GLuint					textures[7];
+	GLuint					skyboxes[4];
 	t_light					light;
 	t_camera				camera;
 	t_mvp_mat				matrices;
@@ -196,6 +200,7 @@ typedef struct				s_env
 	t_mtl_list				materials;
 	t_transform_list		selection;
 	t_inputstate			input;
+	double					delta_time;
 	int						loop;
 }							t_env;
 
@@ -309,8 +314,7 @@ void						get_uniforms(t_shader *shader);
 /*
 ** events_handle.c			=> 4 functions
 */
-void						handle_events_and_input(t_env *env, \
-								double delta_time);
+void						handle_events_and_input(t_env *env);
 
 /*
 ** update.c					=> 2 function

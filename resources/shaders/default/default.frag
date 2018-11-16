@@ -33,6 +33,9 @@ void main()
 
 	float dist = (-length(vFragPos - light.position) + light.range) / light.range;
 	vec3 light_dir = normalize(light.position - vFragPos);
+
+	vec3 ambient = 0.3f * clr_mix * light.color * dist;
+
 	float diffuse_coefficient = dot(vNormal, light_dir);
 	vec3 diffuse = light.intensity * max(diffuse_coefficient, 0.0f) * clr_mix * light.color * dist;
 	
@@ -42,5 +45,5 @@ void main()
 	if(diffuse_coefficient > 0.0)
     	specular_coefficient = pow(max(dot(view_dir, reflect_dir), 0.0f), 256);
 	vec3 specular = light.intensity * specular_coefficient * clr_mix * light.color * dist;
-	FragColor = vec4(diffuse + specular, alpha);
+	FragColor = vec4(ambient + diffuse + specular, alpha);
 }

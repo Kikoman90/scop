@@ -6,12 +6,11 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/10 12:04:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 10:46:39 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/16 22:26:53 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "texture.h"
-#include <stdio.h>//
 
 static void         read_tga_mapped(t_texture *tex, t_tga_header *header, \
     GLubyte *data, unsigned int bpp)
@@ -94,8 +93,7 @@ static unsigned int set_tga_format(t_texture *tex, t_tga_header *header)
 
     pixel_depth = (header->image_type == 1 || header->image_type == 9) ? \
         header->clrmap_size : header->pixel_depth;
-    if ((image_type = header->image_type) == 1 || image_type == 2 ||\
-         image_type == 9 || image_type == 10)
+    if ((image_type = header->image_type) == 1 || image_type == 2)
 	{
 		if (pixel_depth == 15)
             return (texture_format(tex, GL_RGB, GL_RGB5, 2));
@@ -106,7 +104,7 @@ static unsigned int set_tga_format(t_texture *tex, t_tga_header *header)
 		else if (pixel_depth == 32)
             return (texture_format(tex, GL_RGBA, GL_RGBA8, 4));
 	}
-    else if (image_type == 3 || image_type == 11)
+    else if (image_type == 3)
     {
         if (pixel_depth == 8)
             return (texture_format(tex, GL_RED, GL_R8, 1));
@@ -116,8 +114,6 @@ static unsigned int set_tga_format(t_texture *tex, t_tga_header *header)
 	return (log_error(INVALID_TGA));
 }
 
-// il faut gerer la compression RLE ou alors ne pas la gerer, sinon ca crashe !
-// if (header.image_type == 9 || 10 || 11)
 unsigned int        get_tga_texture(t_texture *out_tex, const char *path)
 {
 	t_tga_header    header;
@@ -136,11 +132,11 @@ unsigned int        get_tga_texture(t_texture *out_tex, const char *path)
 	if (!(out_tex->texels = (GLubyte*)malloc(\
         sizeof(GLubyte) * out_tex->width * out_tex->height * bpp)))
 		return (log_error(MALLOC_ERROR));
-	if (header.image_type == 1 || header.image_type == 9)
+	if (header.image_type == 1)
 	    read_tga_mapped(out_tex, &header, data, bpp);
-	else if (header.image_type == 2 || header.image_type == 10)
+	else if (header.image_type == 2)
 	    read_tga_truecolor(out_tex, &header, data, bpp);
-	else if (header.image_type == 3 || header.image_type == 11)
+	else if (header.image_type == 3)
 	    read_tga_grayscale(out_tex, &header, data, bpp);
 	ft_file_unmap(data, data_size, NULL);
 	return (1);
