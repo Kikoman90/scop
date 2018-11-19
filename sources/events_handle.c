@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 21:10:33 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 20:54:33 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,28 @@ static void	handle_mouse_events(t_env *env, SDL_Event *event, \
 		}
 		else if (event->motion.state & SDL_BUTTON_LMASK)
 		{
-			;// selection and handle manip
+			// if a handle is selected 
+			//handle manip
 		}
+	}
+	else if (event->type == SDL_MOUSEBUTTONDOWN)
+	{
+		if (event->button.button == SDL_BUTTON_LEFT)
+		{
+			// first -> handle intersections. if no intersection -> object selection
+			//
+			picking_check(env, event->button.x, event->button.y, kstate[SDL_SCANCODE_LSHIFT]);
+		}
+	}
+	else if (event->type == SDL_MOUSEBUTTONUP)
+	{
+		if (event->button.button == SDL_BUTTON_LEFT)
+			env->selection.active = 0;
 	}
 	else if (event->type == SDL_MOUSEWHEEL)
 		update_view(env, vec3_xyz(0, 0, -event->wheel.y), SCOP_SCALE);
 }
+// LASTLY, SETUP AN ORTHO PROJECTION FOR THE HANDLES
 
 static void	handle_smooth_keys(t_env *env, const Uint8 *keyboard_state)
 {
@@ -106,7 +122,7 @@ static void	handle_key_events(t_env *env, Uint8 scancode)
 	else if (scancode == SDL_SCANCODE_Z)
 		env->input.auto_rotate = (env->input.auto_rotate) ? 0 : 1;
 	else if (scancode == SDL_SCANCODE_X)
-		env->input.localspace = (env->input.localspace) ? 0 : 1;
+		env->selection.localspace = (env->selection.localspace) ? 0 : 1;
 	else if (scancode == SDL_SCANCODE_C)
 		env->input.face_rgb = (env->input.face_rgb) ? 0 : 1;
 	else if (scancode == SDL_SCANCODE_S)
@@ -114,11 +130,11 @@ static void	handle_key_events(t_env *env, Uint8 scancode)
 	else if (scancode == SDL_SCANCODE_T)
 		env->input.cur_tex += (env->input.cur_tex == 5) ? -5 : 1;
 	else if (scancode == SDL_SCANCODE_W)
-		env->input.selection_mode = SCOP_TRANSLATE;
+		env->selection.mode = SCOP_TRANSLATE;
 	else if (scancode == SDL_SCANCODE_E)
-		env->input.selection_mode = SCOP_ROTATE;
+		env->selection.mode = SCOP_ROTATE;
 	else if (scancode == SDL_SCANCODE_R)
-		env->input.selection_mode = SCOP_SCALE;
+		env->selection.mode = SCOP_SCALE;
 	else if (scancode == SDL_SCANCODE_SPACE)
 	{
 		if (env->input.fade)

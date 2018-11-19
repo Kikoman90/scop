@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/11/14 19:57:25 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/19 17:00:14 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,6 +45,7 @@ SRCS =	setup.c \
 		buffers_bind.c \
 		uniforms_get.c \
 		uniforms_set.c \
+		selection.c \
 		events_handle.c \
 		update.c \
 		draw.c \

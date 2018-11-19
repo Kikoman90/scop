@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 22:22:46 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 20:53:42 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ GLuint	get_primitive_vao(t_geometry (*primitives)[6], size_t *count, \
 	i = 0;
 	while (i < 6)
 	{
-		if (ft_strcmp((*primitives)[i].name, name) == 0)
+		if ((*primitives)[i].name && ft_strcmp((*primitives)[i].name, name) == 0)
 		{
 			*count = (*primitives)[i].count;
 			return ((*primitives)[i].vao);
@@ -31,12 +31,71 @@ GLuint	get_primitive_vao(t_geometry (*primitives)[6], size_t *count, \
 	return (0);
 }
 
+static void	draw_handles(t_env *env)
+{
+	t_shader	shader;
+	size_t	count;
+	GLuint	vao;
+
+	glDisable(GL_DEPTH_TEST);
+	shader = env->shaders[get_shader_idx(&env->shaders, "primitive")];
+	glUseProgram(shader.prog);
+	selection_transform(&env->selection);
+	set_uniforms(env, &shader, NULL);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	if (env->selection.mode & SCOP_TRANSLATE)
+	{
+		vao = get_primitive_vao(&env->primitives, &count, "cone");
+		glBindVertexArray(vao);
+		//
+		env->selection.rot[0] = mat4x4_trs(vec3_xyz(8, 0, 0), quat_tv(90, (t_vec3)VEC3_FRONT), (t_vec3)VEC3_ONE);
+		env->selection.rot[1] = mat4x4_trs(vec3_xyz(0, 8, 0), quat(), (t_vec3)VEC3_ONE);
+		env->selection.rot[2] = mat4x4_trs(vec3_xyz(0, 0, 8), quat_tv(-90, (t_vec3)VEC3_RIGHT), (t_vec3)VEC3_ONE);
+		glUniformMatrix4fv(shader.u_loc[3], 3, GL_FALSE, &env->selection.rot[0].m[0]);
+		env->selection.colors[0] = vec3_norm(vec3_xyz(0.9f, 0.1f, 0.1f));
+		env->selection.colors[1] = vec3_norm(vec3_xyz(0.1f, 0.9f, 0.1f));
+		env->selection.colors[2] = vec3_norm(vec3_xyz(0.1f, 0.1f, 0.9f));
+		env->selection.colors[3] = vec3_norm(vec3_xyz(0.45f, 0.45f, 0.1f));
+		glUniform3fv(shader.u_loc[4], 4, &env->selection.colors[0].x);
+		//
+		glDrawArraysInstanced(GL_TRIANGLES, 0, count, 3);
+
+		vao = get_primitive_vao(&env->primitives, &count, "line");
+		glBindVertexArray(vao);
+
+		//
+		env->selection.rot[0] = mat4x4_trs(vec3_xyz(4, 0, 0), quat_tv(90, (t_vec3)VEC3_FRONT), (t_vec3)VEC3_ONE);
+		env->selection.rot[1] = mat4x4_trs(vec3_xyz(0, 4, 0), quat(), (t_vec3)VEC3_ONE);
+		env->selection.rot[2] = mat4x4_trs(vec3_xyz(0, 0, 4), quat_tv(-90, (t_vec3)VEC3_RIGHT), (t_vec3)VEC3_ONE);
+		glUniformMatrix4fv(shader.u_loc[3], 3, GL_FALSE, &env->selection.rot[0].m[0]);
+		env->selection.colors[0] = vec3_norm(vec3_xyz(0.9f, 0.1f, 0.1f));
+		env->selection.colors[1] = vec3_norm(vec3_xyz(0.1f, 0.9f, 0.1f));
+		env->selection.colors[2] = vec3_norm(vec3_xyz(0.1f, 0.1f, 0.9f));
+		env->selection.colors[3] = vec3_norm(vec3_xyz(0.45f, 0.45f, 0.1f));
+		glUniform3fv(shader.u_loc[4], 4, &env->selection.colors[0].x);
+		//
+		glDrawArraysInstanced(GL_LINES, 0, count, 3);
+
+	}
+	else if (env->selection.mode & SCOP_ROTATE)
+	{
+		
+	}
+	else if (env->selection.mode & SCOP_SCALE)
+	{
+
+	}
+	glEnable(GL_DEPTH_TEST);
+}
+
 static void	draw_ms_fbo(t_env *env)
 {
 	t_go_node	*tmp;
 	int			shdr_idx;
 	size_t		count;
-	GLuint		light_vao;
+	GLuint		p_vao;
 
 	tmp = env->gameobjects.head;
 	while (tmp)
@@ -62,7 +121,6 @@ static void	draw_ms_fbo(t_env *env)
 		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vtx_count);
 		tmp = tmp->next;
 	}
-
 	//
 	glDisable(GL_CULL_FACE);
 	glDepthFunc(GL_LEQUAL);
@@ -73,19 +131,25 @@ static void	draw_ms_fbo(t_env *env)
 	glDisableVertexAttribArray(3);
 	glUseProgram(env->shaders[shdr_idx].prog);
 	set_uniforms(env, &env->shaders[shdr_idx], NULL);
-	glBindVertexArray(env->primitives[0].vao);
-	glDrawArrays(GL_TRIANGLES, 0, env->primitives[0].count);
+	p_vao = get_primitive_vao(&env->primitives, &count, "cube");
+	glBindVertexArray(p_vao);
+	glDrawArrays(GL_TRIANGLES, 0, count);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 	//
+	//glEnable()
 	shdr_idx = get_shader_idx(&env->shaders, "gizmos");
 	glUseProgram(env->shaders[shdr_idx].prog);
 	set_uniforms(env, &env->shaders[shdr_idx], NULL);
-	light_vao = get_primitive_vao(&env->primitives, &count, "plane");
-	glBindVertexArray(light_vao);
+	p_vao = get_primitive_vao(&env->primitives, &count, "plane");
+	glBindVertexArray(p_vao);
 	glEnableVertexAttribArray(2);
 	glDrawArrays(GL_TRIANGLES, 0, count);
 
+	//
+	if (env->selection.list.count > 0)
+		draw_handles(env);
+	//
 	// draw_world_axes_and_grid(env);
 }
 
@@ -93,89 +157,29 @@ static void	draw_pick_fbo(t_env *env)
 {
 	t_go_node	*tmp;
 	int			shdr_idx;
+	size_t		count;
+	GLuint		p_vao;
 
 	tmp = env->gameobjects.head;
 	shdr_idx = get_shader_idx(&env->shaders, "pick");
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
 	while (tmp)
 	{
 		glUseProgram(env->shaders[shdr_idx].prog);
 		set_uniforms(env, &env->shaders[shdr_idx], tmp);
 		glBindVertexArray(tmp->go->vao);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-		glDisableVertexAttribArray(3);
 		glDrawArrays(GL_TRIANGLES, 0, tmp->go->vtx_count);
 		tmp = tmp->next;
 	}
+	shdr_idx = get_shader_idx(&env->shaders, "pick");
+	glUseProgram(env->shaders[shdr_idx].prog);
+	set_uniforms(env, &env->shaders[shdr_idx], NULL);
+	p_vao = get_primitive_vao(&env->primitives, &count, "plane");
+	glBindVertexArray(p_vao);
+	glDrawArrays(GL_TRIANGLES, 0, count);
 }
-
-/*void		add_to_selection(t_go_list *selection, t_go_node *go_list, \
-	size_t *count, unsigned int id)
-{
-	t_go_node	*tmp;
-
-	tmp = selection;
-	if (tmp == NULL && (selection = get_go_node(go_list, id)))
-		*count += 1;
-	else
-	{
-		while (tmp->next != NULL)
-		{
-			if (id == tmp->id)
-				return ;
-			tmp = tmp->next;
-		}
-		if (id != tmp->id && (tmp->next = get_go_node(go_list, id)))
-			*count += 1;
-	}
-}*/
-
-// rect_selection ?
-
-// create_primitive(type, param**)
-// create_primitive(cone, height, radius)
-// create_primitive(arrow, ...)
-// create_primitive(cylinder);
-// return a gl_stack;
-// also indicate number of subdivisions for the primitive construction
-
-/*void		handle_picking(t_go_list *selection, t_go_list *gameobjects)
-{
-	int				x;
-	int				y;
-	unsigned int	picked_id;
-	unsigned char	data[3];
-
-	(void)selection;
-	(void)gameobjects;
-	if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(1)) // key and button states in struct
-	{
-		glReadPixels(x, y, 1, 1, GL_RGB, GL_UNSIGNED_INT, data);
-		picked_id = data[0] + data[1] * 256 + data[2] * 256 * 256;
-		// hold shift manage
-		if (picked_id != 0)
-		{
-			printf("picked id = %u\n", picked_id);
-			//add_to_selection(selection, gameobjects, picked_id);
-		}
-	}
-}
-
-static void	draw_handles(t_go_list *selection)
-{
-	t_go_node	*tmp;
-	t_vec3		handle_pos;
-
-	handle_pos = (t_vec3)VEC3_ZERO;
-	tmp = selection->head;
-	while (tmp)
-	{
-		handle_pos = vec3_add(handle_pos, tmp->go->transform.position);
-		tmp = tmp->next;
-	}
-	handle_pos = vec3_scale(handle_pos, 1.0f / (float)selection->count);
-	//drawCone(..., handle_pos);
-}*/
 
 void		draw(t_env *env)
 {
@@ -197,6 +201,6 @@ void		draw(t_env *env)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, env->buffers.ms_fbo);
 		glBlitFramebuffer(0, 0, env->win_env.win_w, env->win_env.win_h, \
 			0, 0, env->win_env.win_w, env->win_env.win_h, \
-			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	}
 }

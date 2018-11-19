@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/25 15:13:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 20:41:23 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 18:51:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 
 # define FILE_PREFIX_ERROR "invalid prefix in file "
 # define IDX_ERROR "invalid index in file "
-# define FACE_ERROR "invalid index count in file "
 
 typedef struct			s_seed
 {

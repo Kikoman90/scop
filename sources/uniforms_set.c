@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/14 13:47:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 21:47:03 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 20:32:07 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,11 @@ void		set_uniforms(t_env *env, t_shader *shdr, t_go_node *node)
         set_gizmos_shader_uniforms(env, shdr);
     else if (ft_strcmp(shdr->name, "primitive") == 0)
     {
-        //glUniformMatrix4fv(shdr->u_loc[0], 1, GL_FALSE, &env->selection);
+        t_mat4x4 lol = go_trs(env->selection.transform);
+        glUniformMatrix4fv(shdr->u_loc[0], 1, GL_FALSE, &lol.m[0]);
         glUniformMatrix4fv(shdr->u_loc[1], 1, GL_FALSE, &env->matrices.v.m[0]);
         glUniformMatrix4fv(shdr->u_loc[2], 1, GL_FALSE, &env->matrices.p.m[0]);
-        glUniform1i(shdr->u_loc[3], env->input.localspace);
+        glUniform1i(shdr->u_loc[5], env->selection.localspace);
     }
     else if (ft_strcmp(shdr->name, "skybox") == 0)
     {

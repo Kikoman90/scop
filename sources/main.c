@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 20:20:42 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 18:34:21 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,46 +14,6 @@
 
 // void __attribute__((constructor)) begin(); //remove after checking leaks
 // void __attribute__((destructor)) end(); // remove after checking leaks
-
-/*void		add_to_selection(t_go_node *selection, t_go_node *go_list, \
-	size_t *count, unsigned int id)
-{
-	t_go_node	*tmp;
-
-	tmp = selection;
-	if (tmp == NULL && (selection = get_go_node(go_list, id)))
-		*count += 1;
-	else
-	{
-		while (tmp->next != NULL)
-		{
-			if (id == tmp->id)
-				return ;
-			tmp = tmp->next;
-		}
-		if (id != tmp->id && (tmp->next = get_go_node(go_list, id)))
-			*count += 1;
-	}
-}*/
-
-/*void		handle_picking(t_go_node *selection, t_go_node *go_list, \
-	size_t *count)
-{
-	int				x;
-	int				y;
-	unsigned int	picked_id;
-	unsigned char	data[3];
-
-	if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(1))
-	{
-		glReadPixels(x, y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
-		picked_id = data[0] + data[1] * 256 + data[2] * 256 * 256;
-		// if hold shift -> add
-		// else clear, and add (if picked_id != 0)
-		if (picked_id != 0)
-			add_to_selection(selection, go_list, count, picked_id);
-	}
-}*/
 
 /*void		update_objects(t_env *env, double delta)
 {
@@ -74,7 +34,6 @@ static void	loop(t_env *env)
 		env->delta_time = (cur_time - last_time) / 1000.0;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		handle_events_and_input(env);
 		if (env->input.auto_rotate)
 			rotate_gameobjects(env->gameobjects.head, env->delta_time);
 		if (env->input.fade_coef)
@@ -85,7 +44,10 @@ static void	loop(t_env *env)
 				env->input.fade_coef = 0;
 		}
 		draw(env);
+		//glBindFramebuffer(GL_FRAMEBUFFER, env->pick_fbo);
+		//handle_picking() . picking when you handle mouse events ?
 		SDL_GL_SwapWindow(env->win_env.window);
+		handle_events_and_input(env);
 	}
 }
 

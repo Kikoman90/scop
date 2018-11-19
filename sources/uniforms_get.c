@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/14 13:47:20 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 19:58:53 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 20:30:55 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,13 @@ static void get_gizmos_shader_uniforms(t_shader *shader)
     shader->u_loc[4] = glGetUniformLocation(shader->prog, "tex");
 }
 
+static void get_primtive_shader_uniforms(t_shader *shader)
+{
+    shader->u_loc[3] = glGetUniformLocation(shader->prog, "rot");
+    shader->u_loc[4] = glGetUniformLocation(shader->prog, "clr");
+    shader->u_loc[5] = glGetUniformLocation(shader->prog, "localspace");
+}
+
 void		get_uniforms(t_shader *shader)
 {
     if (ft_strcmp(shader->name, "default") == 0)
@@ -68,8 +75,7 @@ void		get_uniforms(t_shader *shader)
         else if (ft_strcmp(shader->name, "gizmos") == 0)
             get_gizmos_shader_uniforms(shader);
         else
-            shader->u_loc[3] = glGetUniformLocation(shader->prog, "localspace");
-
+            get_primtive_shader_uniforms(shader);
     }
     else if (ft_strcmp(shader->name, "skybox") == 0)
     {

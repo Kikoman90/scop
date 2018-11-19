@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 22:06:56 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 18:51:45 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
 	vtx.normal = vec3_norm(get_vtx_attrib(&opv->v_seed[2], data, idx[2], "vn"));
 	if (!recalc && vtx.normal.x == 0 && vtx.normal.y == 0 && vtx.normal.z == 0)
 		recalc = 1;
-	if (idx[3] > 1 && recalc-- == 1)
+	if (idx[3] > 1 && recalc == 1)
 	{
 		vtx.normal = vec3_norm(vec3_cross(vec3_sub(\
 			go->vtx_attrib[opv->vtx_fill - idx[3]].position, \
@@ -65,6 +65,7 @@ static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
 			go->vtx_attrib[opv->vtx_fill - idx[3]].position, vtx.position)));
 		go->vtx_attrib[opv->vtx_fill - 2].normal = vtx.normal;
 		go->vtx_attrib[opv->vtx_fill - 1].normal = vtx.normal;
+		recalc = 0;
 	}
 	vtx.color = vtx_color(opv->vtx_fill, opv->color_delta);
 	return (vtx);
@@ -133,8 +134,7 @@ unsigned int		parse_faces(t_gameobject *go, t_obj_parser_var *opv, \
 	{
 		if ((w = ft_strword(parser->data, &seed)) && ft_strcmp(w, "f") == 0)
 		{
-			if ((opv->f_count = check_idx_count(parser->data, seed, 1)) < 3)
-				return (parser_error(FACE_ERROR, parser->fname, f_seed->line));
+			opv->f_count = check_idx_count(parser->data, seed, 1);
 			if (!parse_face(go, opv, parser, seed))
 			{
 				free(w);

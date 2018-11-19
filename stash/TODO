@@ -2,8 +2,13 @@
 
 S C O P  S C O P E :
 
+THERE ARE A LOT OF LEAKS RIGHT NOW BECAUSE YOU HAVENT CLEANED UP THE ENV
+
 * handles (TODO)
 * showFPS (TODO)
+
+CLEANUP (TODO) delete all gl objects and scop memory
+draw.c -> very nasty
 
 SELECTION (TODO)
 * stop auto-rotate when editing rotation of object (TODO)
@@ -26,6 +31,7 @@ HANDLES
 N - blender numpad ([1/ctrl1] = front/back view, [3/ctrl3]..., [5] ortho/perspective)
 
 clean everything up.
+check leaks !
 norminette on all.
 have a good stack of obj and mtl files for the corrector.
 

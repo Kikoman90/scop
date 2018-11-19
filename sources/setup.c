@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 22:26:58 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/19 20:03:55 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ static void			init_default(t_env *env)
 	env->materials.count = 0;
 	env->gameobjects.head = NULL;
 	env->gameobjects.count = 0;
-	env->selection.head = NULL;
-	env->selection.count = 0;
+	env->selection.list.head = NULL;
+	env->selection.list.count = 0;
 }
 
 static unsigned int	init_sdl_gl(t_win *win)
@@ -111,8 +111,18 @@ void				init_input(t_inputstate *input)
 	input->fade = 1.0f;
 	input->face_rgb = 0;
 	input->auto_rotate = 1;
-	input->localspace = 1;
-	input->selection_mode = SCOP_TRANSLATE;
+}
+
+void				init_selection(t_selection *selection)
+{
+	selection->mode = SCOP_TRANSLATE;
+	selection->localspace = 1;
+	selection->active = 0;
+	selection->type = 0;
+	selection->rot[0] = mat4x4();
+	selection->rot[1] = mat4x4();
+	selection->rot[2] = mat4x4();
+	selection->motion_axis = vec2_f(0);
 }
 
 unsigned int		init_primitives(unsigned int nb, const char *path, \
@@ -132,13 +142,17 @@ unsigned int		init_primitives(unsigned int nb, const char *path, \
 	{
 		fullpath = ft_strjoin(path, file_names[i]);
 		parse_file(&list, NULL, fullpath, parse_wavefrontobj);
-		(primitive + i)->name = ft_strdup(list.head->go->name);
-		(primitive + i)->vao = list.head->go->vao;
-		(primitive + i)->vbo = list.head->go->vbo;
-		(primitive + i++)->count = list.head->go->vtx_count;
-		list.head->go->vao = 0;
-		list.head->go->vbo = 0;
-		remove_go_node(&list, GO_ID_OFFSET, 1);
+		if (list.head && list.head->go)
+		{
+			(primitive + i)->name = ft_strdup(list.head->go->name);
+			(primitive + i)->vao = list.head->go->vao;
+			(primitive + i)->vbo = list.head->go->vbo;
+			(primitive + i)->count = list.head->go->vtx_count;
+			list.head->go->vao = 0;
+			list.head->go->vbo = 0;
+			remove_go_node(&list, GO_ID_OFFSET, 1);
+		}
+		i++;
 		free(fullpath);
 	}
 	ft_free_file_names(file_names, nb);
@@ -155,7 +169,7 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 	glGenRenderbuffers(4, &env->buffers.rbo[0]);
 	if (!generate_framebuffers(&env->buffers, WIN_W, WIN_H) ||\
 		!init_shaders(6, "resources/shaders/", &env->shaders[0]) ||\
-		!init_primitives(2, "resources/primitives/", &env->primitives[0]) ||\
+		!init_primitives(6, "resources/primitives/", &env->primitives[0]) ||\
 		!init_textures(7, "resources/textures/", &env->textures[0]) ||\
 		!init_skyboxes(4, "resources/skyboxes/", &env->skyboxes[0]) ||\
 		!init_light(&env->light, vec3_xyz(-3, 1.2f, 0), 2.5f, 20))
@@ -168,6 +182,7 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 		parse_file(&env->gameobjects, &env->materials, argv[argc], \
 			parse_wavefrontobj);
 	init_input(&env->input);
+	init_selection(&env->selection);
 	env->loop = 1;
 	return (1);
 }
