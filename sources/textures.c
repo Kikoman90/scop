@@ -6,11 +6,10 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/13 18:31:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/19 17:32:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 11:32:12 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>//
 #include "texture.h"
 
 short           	clrmap_index(t_tga_header *header, GLubyte *clrmap, \
@@ -126,12 +125,13 @@ unsigned int	init_textures(unsigned int nb, const char *path, GLuint *id)
 	char			**file_names;
 	char			*fullpath;
 
-	if (!(file_names = ft_get_file_names(path, nb)))
+	if (!(file_names = ft_get_file_names(path, nb, 0)))
 		return (0);
 	i = 0;
 	while (i < nb)
 	{
 		fullpath = ft_strjoin(path, file_names[i]);
+		glActiveTexture(GL_TEXTURE0 + TEX_TEXUNIT_OFFSET + i);
 		if (!(*(id + i) = create_texture(fullpath, get_tga_texture)))
 		{
 			free(fullpath);
@@ -165,13 +165,14 @@ unsigned int	init_skyboxes(unsigned int nb, const char *path, GLuint *id)
 	char			**file_names;
 	char			*fullpath;
 
-	if (!(file_names = ft_get_file_names(path, nb)))
+	if (!(file_names = ft_get_file_names(path, nb, 0)))
 		return (0);
 	i = 0;
 	while (i < nb)
 	{
 		fullpath = ft_strjoin_rf(path, ft_strjoin_rf(file_names[i], \
 			ft_strjoin("/", file_names[i])));
+		glActiveTexture(GL_TEXTURE0 + SKY_TEXUNIT_OFFSET + i);
 		if (!(*(id + i) = create_skybox(fullpath, get_tga_texture)))
 		{
 			free(fullpath);

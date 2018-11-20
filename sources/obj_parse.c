@@ -6,49 +6,42 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 20:10:35 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/19 18:52:15 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 20:38:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static void	init_vao_vbo(t_gameobject *go, size_t vtx_struct_size, \
-	size_t type_size)
-{
-	glGenVertexArrays(1, &go->vao);
-	glBindVertexArray(go->vao);
-	glGenBuffers(1, &go->vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, go->vbo);
-	glBufferData(GL_ARRAY_BUFFER, vtx_struct_size * go->vtx_count, \
-		&go->vtx_attrib[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
-		(void*)(2 * type_size));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vtx_struct_size, \
-		(void*)(5 * type_size));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vtx_struct_size, 0);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, vtx_struct_size, \
-		(void*)(8 * type_size));
-	glEnableVertexAttribArray(0);
-}
-
-static void	redefine_vertices(t_gameobject *go)
+static unsigned int	parse_faces(t_gameobject *go, t_obj_parser_var *opv, \
+	t_parser *parser, char *w)
 {
 	unsigned int	i;
-	t_vec3			center;
+	unsigned int	seed;
+	t_seed			*f_seed;
 
 	i = 0;
-	center.x = (go->bounds[0] + go->bounds[1]) / 2;
-	center.y = (go->bounds[2] + go->bounds[3]) / 2;
-	center.z = (go->bounds[4] + go->bounds[5]) / 2;
-	while (i < go->vtx_count)
+	f_seed = &opv->f_seed;
+	seed = f_seed->beginseed;
+	while (seed < f_seed->endseed && i < f_seed->count && parser->data[seed])
 	{
-		go->vtx_attrib[i].position = \
-			vec3_sub(go->vtx_attrib[i].position, center);
-		i++;
+		if ((w = ft_strword(parser->data, &seed)) && ft_strcmp(w, "f") == 0)
+		{
+			opv->f_count = check_idx_count(parser->data, seed, 1);
+			if (!parse_face(go, opv, parser, seed))
+			{
+				free(w);
+				return (0);
+			}
+			i += opv->f_count;
+		}
+		seed = skip_line(parser->data, seed);
+		if (f_seed->line++ && w)
+			free(w);
 	}
+	return (1);
 }
 
-static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
+static void			parse_go(t_go_list *gameobjects, t_parser *parser, \
 	t_obj_parser_var *opv)
 {
 	t_go_node		*node;
@@ -63,11 +56,7 @@ static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
 			if (!parse_faces(node->go, opv, parser, NULL))
 				clean_go_node(node, 1);
 			else
-			{
-				redefine_vertices(node->go);
-				init_vao_vbo(node->go, sizeof(t_vtx_attrib), sizeof(float));
 				add_go_node(gameobjects, node);
-			}
 		}
 	}
 	else if (opv->name)
@@ -75,8 +64,8 @@ static void	parse_go(t_go_list *gameobjects, t_parser *parser, \
 	init_opv(opv, ft_strword(parser->data, &parser->fseed), opv->mtl_offset);
 }
 
-static void	parse_attrib(t_parser *parser, t_obj_parser_var *opv, char *word, \
-	int f_attrib)
+static void			parse_attrib(t_parser *parser, t_obj_parser_var *opv, \
+	char *word, int f_attrib)
 {
 	t_seed	*seed;
 
@@ -104,7 +93,7 @@ static void	parse_attrib(t_parser *parser, t_obj_parser_var *opv, char *word, \
 		seed->count++;
 }
 
-static void	parse_mtllib(t_go_list *gameobjects, t_mtl_list *materials, \
+static void			parse_mtllib(t_go_list *gameobjects, t_mtl_list *materials,\
 	t_parser *parser)
 {
 	char	*path;
@@ -118,7 +107,7 @@ static void	parse_mtllib(t_go_list *gameobjects, t_mtl_list *materials, \
 	free(path);
 }
 
-void		parse_wavefrontobj(t_go_list *gameobjects, \
+void				parse_wavefrontobj(t_go_list *gameobjects, \
 	t_mtl_list *materials, t_parser *parser, char *word)
 {
 	t_obj_parser_var	opv;

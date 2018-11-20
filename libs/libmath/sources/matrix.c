@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/06 17:06:08 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 16:05:35 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,32 @@ t_mat4x4	compute_view(t_transform cam_transform)
 	return (mat4x4_transpose(view));
 }
 
-t_mat4x4	compute_projection(float fov, float aspect, float zn, float zf)
+t_mat4x4	compute_orthographic(float bounds[6], float aspect)
+{
+	t_mat4x4	ortho_mat;
+
+	(void)aspect;
+	ortho_mat = mat4x4();
+	/*if (aspect >= 1)
+	{
+		bounds[0] *= aspect;
+		bounds[1] *= aspect;
+	}
+	else
+	{
+		bounds[2] *= aspect;
+		bounds[3] *= aspect;
+	}*/
+	ortho_mat.m[0] = 2 / (bounds[1] - bounds[0]);
+	ortho_mat.m[5] = 2 / (bounds[3] - bounds[2]);
+	ortho_mat.m[10] = -2 / (bounds[5] - bounds[4]);
+	ortho_mat.m[12] = -(bounds[1] + bounds[0]) / (bounds[1] - bounds[0]);
+	ortho_mat.m[13] = -(bounds[3] + bounds[2]) / (bounds[3] - bounds[2]);
+	ortho_mat.m[14] = -(bounds[5] + bounds[4]) / (bounds[5] - bounds[4]);
+	return (ortho_mat);
+}
+
+t_mat4x4	compute_perspective(float fov, float aspect, float zn, float zf)
 {
 	t_mat4x4	proj_mat;
 	float		f;

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/14 13:47:20 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/19 20:30:55 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 14:29:18 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ static void get_standard_shader_uniforms(t_shader *shader)
     shader->u_loc[12] = glGetUniformLocation(shader->prog, "view_pos");
 }
 
-static void get_gizmos_shader_uniforms(t_shader *shader)
+static void get_pick_shader_uniforms(t_shader *shader)
 {
-    shader->u_loc[3] = glGetUniformLocation(shader->prog, "spherical"); 
-    shader->u_loc[4] = glGetUniformLocation(shader->prog, "tex");
+    shader->u_loc[3] = glGetUniformLocation(shader->prog, "billboard");
+    shader->u_loc[4] = glGetUniformLocation(shader->prog, "pick_clr");
 }
 
 static void get_primtive_shader_uniforms(t_shader *shader)
@@ -63,17 +63,17 @@ void		get_uniforms(t_shader *shader)
         get_default_shader_uniforms(shader);
     else if (ft_strcmp(shader->name, "standard") == 0)
         get_standard_shader_uniforms(shader);
-    else if (ft_strcmp(shader->name, "pick") == 0 ||\
-            ft_strcmp(shader->name, "gizmos") == 0 ||\
+    else if (ft_strcmp(shader->name, "billboard") == 0 ||\
+            ft_strcmp(shader->name, "pick") == 0 ||\
             ft_strcmp(shader->name, "primitive") == 0)
     {
         shader->u_loc[0] = glGetUniformLocation(shader->prog, "m");
         shader->u_loc[1] = glGetUniformLocation(shader->prog, "v");
         shader->u_loc[2] = glGetUniformLocation(shader->prog, "p");
-        if (ft_strcmp(shader->name, "pick") == 0)
-            shader->u_loc[3] = glGetUniformLocation(shader->prog, "pick_clr");
-        else if (ft_strcmp(shader->name, "gizmos") == 0)
-            get_gizmos_shader_uniforms(shader);
+        if (ft_strcmp(shader->name, "billboard") == 0)
+            shader->u_loc[3] = glGetUniformLocation(shader->prog, "tex");
+        else if (ft_strcmp(shader->name, "pick") == 0)
+            get_pick_shader_uniforms(shader);
         else
             get_primtive_shader_uniforms(shader);
     }

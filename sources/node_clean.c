@@ -6,13 +6,13 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 21:34:41 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 20:31:51 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void		clean_mtl_node(t_mtl_node *node, int free_mtl)
+void			clean_mtl_node(t_mtl_node *node, int free_mtl)
 {
 	if (free_mtl && node->mtl)
 	{
@@ -25,7 +25,7 @@ void		clean_mtl_node(t_mtl_node *node, int free_mtl)
 	free(node);
 }
 
-void		remove_mtl_node(t_mtl_list *list, unsigned int id, int free_mtl)
+void			remove_mtl_node(t_mtl_list *list, unsigned int id, int free_mtl)
 {
 	t_mtl_node		*tmp;
 	t_mtl_node		*tmp_prev;
@@ -54,7 +54,7 @@ void		remove_mtl_node(t_mtl_list *list, unsigned int id, int free_mtl)
 	}
 }
 
-void		clean_go_node(t_go_node *node, int free_go)
+void			clean_go_node(t_go_node *node, int free_go)
 {
 	if (free_go && node->go)
 	{
@@ -73,7 +73,7 @@ void		clean_go_node(t_go_node *node, int free_go)
 	free(node);
 }
 
-void		remove_go_node(t_go_list *list, unsigned int id, int free_go)
+void			remove_go_node(t_go_list *list, unsigned int id, int free_go)
 {
 	t_go_node		*tmp;
 	t_go_node		*tmp_prev;
@@ -100,5 +100,33 @@ void		remove_go_node(t_go_list *list, unsigned int id, int free_go)
 			tmp = tmp->next;
 		}
 	}
-	// need to update model matrices
+}
+
+unsigned int	remove_tr_node(t_tr_list *list, unsigned int id)
+{
+	t_tr_node   *tmp;
+	t_tr_node   *tmp_prev;
+
+	tmp = list->head;
+	tmp_prev = tmp;
+	while (tmp)
+	{
+		if (id == tmp->id)
+		{
+			if (tmp_prev == tmp)
+				list->head = tmp_prev->next;
+			else
+				tmp_prev->next = tmp->next;
+            free(tmp);
+			tmp = NULL;
+			list->count--;
+			tmp = tmp_prev->next;
+		}
+		else
+		{
+			tmp_prev = tmp;
+			tmp = tmp->next;
+		}
+	}
+	return (1);
 }

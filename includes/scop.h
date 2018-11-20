@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/19 20:54:03 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 20:39:57 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,20 @@
 
 # define GO_ID_OFFSET 0x14
 # define MTL_ID_OFFSET 0x1
+
+# define BILLBOARD_SHADER 0
+# define DEFAULT_SHADER 1
+# define PICK_SHADER 2
+# define PRIMITIVE_SHADER 3
+# define SKYBOX_SHADER 4
+# define STANDARD_SHADER 5
+
+# define SCOP_CIRCLE 0
+# define SCOP_CONE 1
+# define SCOP_CUBE 2
+# define SCOP_LINE 3
+# define SCOP_PLANE 4
+# define SCOP_SPHERE 5
 
 typedef enum			e_handlemode
 {
@@ -178,8 +192,8 @@ typedef struct			s_selection
 	int					localspace;
 	int					active;
 	int					type;
-	t_mat4x4			rot[3]; //maybe 4, for the small translation planes
-	t_vec3				colors[4]; //maybe 5
+	t_mat4x4			rot[4];
+	t_vec4				clr[4];
 	t_vec2				motion_axis;
 }						t_selection;
 
@@ -227,12 +241,6 @@ unsigned int			init_shaders(unsigned int nb, const char *path, \
 								t_shader *shader);
 
 /*
-** color.c				=> 2 functions
-*/
-t_vec3					generate_pick_clr(unsigned int id);
-t_vec4					vtx_color(unsigned int fill, float color_delta);
-
-/*
 ** parser.c				=> 5 functions
 */
 void					init_opv(t_obj_parser_var *opv, char *name, \
@@ -254,8 +262,8 @@ void					parse_wavefrontmtl(t_go_list *gameobjects, \
 /*
 ** attrib_parse.c		=> 5 functions
 */
-unsigned int			parse_faces(t_gameobject *go, t_obj_parser_var *opv, \
-							t_parser *parser, char *w);
+unsigned int			parse_face(t_gameobject *go, t_obj_parser_var *opv, \
+							t_parser *parser, unsigned int seed);
 
 /*
 ** obj_parse.c			=> 5 functions
@@ -276,20 +284,23 @@ t_material				*get_mtl(t_mtl_node *list, unsigned int id);
 t_gameobject			*get_gameobject(t_go_node *list, unsigned int id);
 
 /*
-** node_create.c		=> 4 functions
+** node_create.c		=> 5 functions
 */
 t_mtl_node				*create_mtl_node(char *name);
 t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
 							size_t ic);
+t_tr_node       		*create_tr_node(unsigned int id, \
+							t_transform *transform);
 
 /*
-** node_add.c			=> 2 functions
+** node_add.c			=> 5 functions
 */
+t_vec3					generate_pick_clr(unsigned int id);
 void					add_mtl_node(t_mtl_list *list, t_mtl_node *node);
 void					add_go_node(t_go_list *list, t_go_node *node);
 
 /*
-** node_clean.c			=> 4 functions
+** node_clean.c			=> 5 functions
 */
 void					clean_mtl_node(t_mtl_node *node, int free_mtl);
 void					remove_mtl_node(t_mtl_list *list, unsigned int id, \
@@ -297,6 +308,7 @@ void					remove_mtl_node(t_mtl_list *list, unsigned int id, \
 void					clean_go_node(t_go_node *node, int free_go);
 void					remove_go_node(t_go_list *list, unsigned int id, \
 							int free_go);
+unsigned int			remove_tr_node(t_tr_list *list, unsigned int id);
 
 /*
 ** buffers_bind.c		=> 2 functions
@@ -323,32 +335,41 @@ void					set_uniforms(t_env *env, t_shader *shader, \
 void					get_uniforms(t_shader *shader);
 
 /*
-** selection.c			=> ? functions
+** selection.c			=> 3 functions
 */
 void        			selection_transform(t_selection *selection);
 void					picking_check(t_env *env, int x, int y, Uint8 lshift);
 
 /*
-** events_handle.c		=> 4 functions
+** events_handle.c		=> 5 functions
 */
 void					handle_events_and_input(t_env *env);
 
 /*
-** update.c				=> 2 function
+** update.c				=> 3 function
 */
 void					rotate_gameobjects(t_go_node *list, double delta);
+void					update_view(t_env *env, t_vec3 d, t_handlemode mode);
 void					update_matrices(t_env *env, int update);
 
 /*
-** draw.c				=> 3 functions
+** draw_handles.c		=> 5 functions
+*/
+void					draw_translate_handles(t_env *env, t_shader *shd);
+void					draw_rotate_handles(t_env *env, t_shader *shd);
+void					draw_scale_handles(t_env *env, t_shader *shd);
+
+/*
+** draw.c				=> 5 functions
 */
 void					draw(t_env *env);
 
 /*
-** cleanup.c			=> 3 functions
+** cleanup.c			=> 4 functions
 */
 void					clear_mtl_list(t_mtl_list *list, int free_mtl);
 void					clear_go_list(t_go_list *list, int free_go);
+void					clear_tr_list(t_tr_list *list);
 unsigned int			clean_scop(t_env *env);
 
 // display.c (remove)

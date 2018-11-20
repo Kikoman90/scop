@@ -4,19 +4,13 @@ S C O P  S C O P E :
 
 THERE ARE A LOT OF LEAKS RIGHT NOW BECAUSE YOU HAVENT CLEANED UP THE ENV
 
-* handles (TODO)
+* handles (TODO) WORLDSPACE handles need fix
 * showFPS (TODO)
 
 CLEANUP (TODO) delete all gl objects and scop memory
-draw.c -> very nasty
 
 SELECTION (TODO)
 * stop auto-rotate when editing rotation of object (TODO)
-* move light
-
-HANDLES
-* scene axes and grid, objects local/world axes
-* small coordinate system in the bottom right to indicate world axes
 
 * input :
 - [Z] -> activate/deactivate auto-rotate (DONE)
@@ -27,10 +21,8 @@ HANDLES
 - [T] -> switch texture (DONE)
 - [W/E/R] -> move/rotate/scale (DONE)
 - [ESC] -> quit (DONE)
-- selection ([left mouse], [shift...) (TODO)
-N - blender numpad ([1/ctrl1] = front/back view, [3/ctrl3]..., [5] ortho/perspective)
+- selection ([lmouse], [lshift + lmouse]) (DONE)
 
-clean everything up.
 check leaks !
 norminette on all.
 have a good stack of obj and mtl files for the corrector.
@@ -46,6 +38,12 @@ remove unused libmath functions/files. from libmath.h TOO
 --------------------------------------------------------------------------------
 
 O U T  O F  S C O P E :
+
+- blender numpad ([1/ctrl1] = front/back view, ..., [5] ortho/perspective view)
+
+HANDLES
+* scene axes and grid
+* small coordinate system in the bottom right to indicate world axes
 
 SERIALIZATION !
 

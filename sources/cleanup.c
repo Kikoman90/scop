@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/14 21:40:09 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 12:40:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,31 @@ void			clear_go_list(t_go_list *list, int free_go)
 	}
 }
 
+void			clear_tr_list(t_tr_list *list)
+{
+	t_tr_node	*tmp;
+	t_tr_node	*tmp_next;
+
+	if (list)
+	{
+		tmp = list->head;
+		while (tmp)
+		{
+			tmp_next = tmp->next;
+            tmp->next = NULL;
+			free(tmp);
+            tmp = NULL;
+			list->count--;
+			tmp = tmp_next;
+		}
+		list->head = NULL;
+	}
+}
+
 unsigned int	clean_scop(t_env *env)
 {
+	clear_tr_list(&env->selection.list);
 	clear_mtl_list(&env->materials, 1);
-	//clear_go_list(&env->selection, 0);
 	clear_go_list(&env->gameobjects, 1);
 	if (env->matrices.model)
 		free(env->matrices.model);

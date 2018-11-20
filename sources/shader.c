@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/16 14:28:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 14:57:21 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 14:31:19 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ unsigned int	init_shaders(unsigned int nb, const char *path, \
 	char			**file_names;
 	char			*fullpath;
 
-	if (!(file_names = ft_get_file_names(path, nb)))
+	if (!(file_names = ft_get_file_names(path, nb, 1)))
 		return (0);
 	i = 0;
 	while (i < nb)

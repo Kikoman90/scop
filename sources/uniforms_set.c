@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/14 13:47:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/19 20:32:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 16:35:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,7 @@ static void	set_default_shader_uniforms(t_env *env, t_shader *shader, int id)
     glUniform3fv(shader->u_loc[4], 1, &env->light.color[env->input.cur_sky].x);
     glUniform1f(shader->u_loc[5], env->light.intensity);
     glUniform1f(shader->u_loc[6], env->light.range);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, env->textures[env->input.cur_tex]);
-	glUniform1i(shader->u_loc[7], 0);
+	glUniform1i(shader->u_loc[7], 1 + env->input.cur_tex);
     glUniform3fv(shader->u_loc[8], 1, &env->camera.transform.position.x);
     glUniform1f(shader->u_loc[9], env->input.fade);
     glUniform1f(shader->u_loc[10], env->input.face_rgb);
@@ -52,36 +50,31 @@ static void	set_standard_shader_uniforms(t_env *env, t_shader *shader, int id, \
 static void set_pick_shader_uniforms(t_env *env, t_shader *shader, \
     t_go_node *node)
 {
-    t_mat4x4    light_mat;
-
+    glUniformMatrix4fv(shader->u_loc[1], 1, GL_FALSE, &env->matrices.v.m[0]);
+    glUniformMatrix4fv(shader->u_loc[2], 1, GL_FALSE, &env->matrices.p.m[0]);
     if (node)
     {
         glUniformMatrix4fv(shader->u_loc[0], 1, GL_FALSE, \
             &env->matrices.model[node->id - GO_ID_OFFSET].m[0]);
-        glUniform3fv(shader->u_loc[3], 1, &node->go->pick_clr.x);
+        glUniform1i(shader->u_loc[3], 0);
+        glUniform3fv(shader->u_loc[4], 1, &node->go->pick_clr.x);
     }
     else
     {
-        light_mat = go_trs(env->light.transform);
-        glUniformMatrix4fv(shader->u_loc[0], 1, GL_FALSE, &light_mat.m[0]);
-        glUniform3fv(shader->u_loc[3], 1, &env->light.pick_clr.x);
+        glUniformMatrix4fv(shader->u_loc[0], 1, GL_FALSE, \
+            &(go_trs(env->light.transform)).m[0]);
+        glUniform1i(shader->u_loc[3], 1);        
+        glUniform3fv(shader->u_loc[4], 1, &env->light.pick_clr.x);
     }
-    glUniformMatrix4fv(shader->u_loc[1], 1, GL_FALSE, &env->matrices.v.m[0]);
-    glUniformMatrix4fv(shader->u_loc[2], 1, GL_FALSE, &env->matrices.p.m[0]);
 }
 
-static void set_gizmos_shader_uniforms(t_env *env, t_shader *shader)
+static void set_billboard_shader_uniforms(t_env *env, t_shader *shader)
 {
-    t_mat4x4    light_matrix;
-
-    light_matrix = go_trs(env->light.transform);
-    glUniformMatrix4fv(shader->u_loc[0], 1, GL_FALSE, &light_matrix.m[0]);
+    glUniformMatrix4fv(shader->u_loc[0], 1, GL_FALSE, \
+        &(go_trs(env->light.transform)).m[0]);
     glUniformMatrix4fv(shader->u_loc[1], 1, GL_FALSE, &env->matrices.v.m[0]);
     glUniformMatrix4fv(shader->u_loc[2], 1, GL_FALSE, &env->matrices.p.m[0]);
-    glUniform1i(shader->u_loc[3], 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, env->light.texture_id);
-    glUniform1i(shader->u_loc[4], 1);
+    glUniform1i(shader->u_loc[3], 0);
 }
 
 void		set_uniforms(t_env *env, t_shader *shdr, t_go_node *node)
@@ -93,22 +86,22 @@ void		set_uniforms(t_env *env, t_shader *shdr, t_go_node *node)
             get_mtl(env->materials.head, node->go->mtl_id));
     else if (ft_strcmp(shdr->name, "pick") == 0)
         set_pick_shader_uniforms(env, shdr, node);
-    else if (ft_strcmp(shdr->name, "gizmos") == 0)
-        set_gizmos_shader_uniforms(env, shdr);
+    else if (ft_strcmp(shdr->name, "billboard") == 0)
+        set_billboard_shader_uniforms(env, shdr);
     else if (ft_strcmp(shdr->name, "primitive") == 0)
     {
-        t_mat4x4 lol = go_trs(env->selection.transform);
-        glUniformMatrix4fv(shdr->u_loc[0], 1, GL_FALSE, &lol.m[0]);
+        glUniformMatrix4fv(shdr->u_loc[0], 1, GL_FALSE, \
+            &(go_trs(env->selection.transform)).m[0]);
         glUniformMatrix4fv(shdr->u_loc[1], 1, GL_FALSE, &env->matrices.v.m[0]);
         glUniformMatrix4fv(shdr->u_loc[2], 1, GL_FALSE, &env->matrices.p.m[0]);
+        //glUniformMatrix4fv(shdr->u_loc[3], 4, GL_FALSE, &env->selection.rot.m[0]);
+        //glUniform4fv(shdr->u_loc[4, 4, &env->selection.colors.x);
         glUniform1i(shdr->u_loc[5], env->selection.localspace);
     }
     else if (ft_strcmp(shdr->name, "skybox") == 0)
     {
         glUniformMatrix4fv(shdr->u_loc[0], 1, GL_FALSE, &env->matrices.v.m[0]);
         glUniformMatrix4fv(shdr->u_loc[1], 1, GL_FALSE, &env->matrices.p.m[0]);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, env->skyboxes[env->input.cur_sky]);
-        glUniform1i(shdr->u_loc[2], 2);
+        glUniform1i(shdr->u_loc[2], 8 + env->input.cur_sky);
     }
 }

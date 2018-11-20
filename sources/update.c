@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 12:15:42 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 16:29:08 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,33 @@ void	rotate_gameobjects(t_go_node *list, double delta)
 	}
 }
 
+void	update_view(t_env *env, t_vec3 d, t_handlemode mode)
+{
+	t_transform	tr;
+	t_vec3		axes[3];
+
+	tr = env->camera.transform;
+	get_matrix_axes(&axes, mat4x4_transpose(quat_to_mat4x4(tr.rotation)));
+	if (mode & SCOP_TRANSLATE)
+	{
+		d = vec3_scale(d, env->input.pan_speed * env->delta_time);
+		tr.position = vec3_add(tr.position, vec3_scale(axes[0], d.x));
+		tr.position = vec3_add(tr.position, vec3_scale(axes[1], d.y));
+		tr.position = vec3_add(tr.position, vec3_scale(axes[2], d.z));
+	}
+	else if (mode & SCOP_SCALE)
+		tr.position = vec3_add(tr.position, vec3_scale(\
+			axes[2], d.z * env->input.zoom_speed * env->delta_time));
+	else if (mode & SCOP_ROTATE)
+	{
+		d = vec3_scale(d, env->input.rot_speed * env->delta_time);
+		tr.rotation = quat_mult(tr.rotation, quat_tv(d.y, (t_vec3)VEC3_RIGHT));
+		tr.rotation = quat_mult(quat_tv(d.x, (t_vec3)VEC3_UP), tr.rotation);
+	}
+	env->camera.transform = tr;
+	env->matrices.update_mat[1] = 1;
+}
+
 void	update_matrices(t_env *env, int update)
 {
 	if (env->matrices.update_mat[0] == 1 || update == 0)
@@ -44,29 +71,26 @@ void	update_matrices(t_env *env, int update)
 	if (env->matrices.update_mat[1] == 1 || update == 1)
 	{
 		env->matrices.v = compute_view(env->camera.transform);
-		env->matrices.update_mat[1] = 0;//
+		env->matrices.update_mat[1] = 0;
 	}
 	if (env->matrices.update_mat[2] == 1 || update == 2)
 	{
-		env->matrices.p = compute_projection(env->camera.fov, \
+		/*float bounds[6];
+		bounds[0] = -(float)env->win_env.win_w / (env->camera.fov * 2.0f);
+		bounds[1] = (float)env->win_env.win_w / (env->camera.fov * 2.0f);
+		bounds[2] = -(float)env->win_env.win_h / (env->camera.fov * 2.0f);
+		bounds[3] = (float)env->win_env.win_h / (env->camera.fov * 2.0f);
+		bounds[4] = env->camera.znear;
+		bounds[5] = env->camera.zfar;
+		env->camera.fov;
+		env->camera.znear;
+		env->camera.zfar;
+
+		orthographic ()
+		env->matrices.p = compute_orthographic(bounds, (float)env->win_env.win_w / (float)env->win_env.win_h);*/
+		env->matrices.p = compute_perspective(env->camera.fov, \
 			(float)env->win_env.win_w / env->win_env.win_h, \
 			env->camera.znear, env->camera.zfar);
 		env->matrices.update_mat[2] = 0;
 	}
-		
-	/*if (env->matrices.update_mat[1] == 1 || env->matrices.update_mat[2] == 1 \
-		|| update == 1 || update == 2)
-	{
-		env->matrices.vp = \
-			mat4x4_mult(env->matrices.projection, env->matrices.view);
-		env->matrices.update_mat[1] = 0;
-		env->matrices.update_mat[2] = 0;
-	}*/
 }
-
-/*void	update_view(t_camera *camera, SDL_MouseMotionEvent motion, \
-	double delta_time, float speed)
-{
-	;
-	//camera->transform.rotation = quat_norm(camera->transform.rotation);
-}*/

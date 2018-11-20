@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/15 16:37:58 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 14:57:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 10:56:34 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,14 @@ void        ft_free_file_names(char **names, unsigned int nb)
     names = NULL;
 }
 
-char		**ft_get_file_names(const char *dir_path, unsigned int nb)
+static int	str_compare(const void *a, const void *b)
+{
+	const char * const *pa = a;
+	const char * const *pb = b;
+	return (ft_strcmp(*pa, *pb));
+}
+
+char		**ft_get_file_names(const char *dir_path, unsigned int nb, int sort)
 {
 	DIR				*dir;
 	struct dirent	*dp;
@@ -43,11 +50,11 @@ char		**ft_get_file_names(const char *dir_path, unsigned int nb)
 		if (dp->d_name[0] != '.')
 			names[i++] = ft_strdup(dp->d_name);
 	}
-	closedir(dir);
-	if (i != nb)
+	if (closedir(dir) && i != nb)
 	{
 		ft_free_file_names(names, nb);
         return (log_error_null_free(ft_strjoin(MISSING_FILE_ERROR, dir_path)));
 	}
+	(sort) ? qsort(names, nb, sizeof(char*), str_compare) : 0;
 	return (names);
 }

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/06 17:15:40 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 15:09:59 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,8 @@ float				vec3_dot(t_vec3 a, t_vec3 b);
 t_mat4x4			mat4x4(void);
 t_mat4x4			mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 t_mat4x4			compute_view(t_transform cam_transform);
-t_mat4x4			compute_projection(float fov, float aspect, float zn, \
+t_mat4x4			compute_orthographic(float bounds[6], float aspect);
+t_mat4x4			compute_perspective(float fov, float aspect, float zn, \
 						float zf);
 
 /*

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/19 18:51:45 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 20:15:58 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,23 @@ static t_vec3		get_vtx_attrib(t_seed *v_seed, char *data, \
 			free(word);
 	}
 	return ((t_vec3)VEC3_ZERO);
+}
+
+static t_vec4      vtx_color(unsigned int fill, float color_delta)
+{
+	t_vec4	color;
+	float	delta;
+
+	color = vec4_f(0.1f);
+	delta = (fill / 3.0f) * color_delta;
+	color.w += delta;
+	if ((fill + 1) % 3 == 0)
+		color.x += delta;
+	else if ((fill + 2) % 3 == 0)
+		color.y += delta;
+	else
+		color.z += delta;
+	return (color);
 }
 
 static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
@@ -92,7 +109,7 @@ static unsigned int	get_indices(unsigned int (*out_indices)[4], \
 	return (0);
 }
 
-static unsigned int	parse_face(t_gameobject *go, t_obj_parser_var *opv, \
+unsigned int		parse_face(t_gameobject *go, t_obj_parser_var *opv, \
 	t_parser *parser, unsigned int seed)
 {
 	unsigned int		idx[4];
@@ -116,35 +133,6 @@ static unsigned int	parse_face(t_gameobject *go, t_obj_parser_var *opv, \
 			idx[3] += 2;
 		}
 		idx[3]++;
-	}
-	return (1);
-}
-
-unsigned int		parse_faces(t_gameobject *go, t_obj_parser_var *opv, \
-	t_parser *parser, char *w)
-{
-	unsigned int	i;
-	unsigned int	seed;
-	t_seed			*f_seed;
-
-	i = 0;
-	f_seed = &opv->f_seed;
-	seed = f_seed->beginseed;
-	while (seed < f_seed->endseed && i < f_seed->count && parser->data[seed])
-	{
-		if ((w = ft_strword(parser->data, &seed)) && ft_strcmp(w, "f") == 0)
-		{
-			opv->f_count = check_idx_count(parser->data, seed, 1);
-			if (!parse_face(go, opv, parser, seed))
-			{
-				free(w);
-				return (0);
-			}
-			i += opv->f_count;
-		}
-		seed = skip_line(parser->data, seed);
-		if (f_seed->line++ && w)
-			free(w);
 	}
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 12:24:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/15 13:38:50 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 10:39:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int				get_shader_idx(t_shader (*tab)[6], const char *name)
 			return (i);
 		i++;
 	}
-	printf("-1\n");
 	return (-1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/19 20:03:55 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 17:25:14 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,11 @@ static t_camera		init_camera(t_vec3 pos, float fov, float zn, float zf)
 static unsigned int	init_light(t_light *light, t_vec3 pos, float intensity, \
 	float range)
 {
+	glActiveTexture(GL_TEXTURE0);
 	if (!(light->texture_id = \
 		create_texture("resources/gizmos/light.tga", get_tga_texture)))
 		return (0);
-	light->transform = init_transform_trs(pos, quat(), (t_vec3)VEC3_ONE);
+	light->transform = init_transform_trs(pos, quat(), vec3_f(0.35f));
 	light->color[0] = vec3_xyz(1.0f, 0.62f, 0.45f);
 	light->color[1] = vec3_xyz(0.5f, 0.9f, 0.67f);
 	light->color[2] = vec3_xyz(0.6f, 0.6f, 0.6f);
@@ -133,7 +134,7 @@ unsigned int		init_primitives(unsigned int nb, const char *path, \
 	char			**file_names;
 	t_go_list		list;
 
-	if (!(file_names = ft_get_file_names(path, nb)))
+	if (!(file_names = ft_get_file_names(path, nb, 1)))
 		return (0);
 	list.head = NULL;
 	list.count = 0;

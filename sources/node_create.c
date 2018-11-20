@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 21:33:44 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/20 18:25:48 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,12 @@ static t_gameobject	*create_gameobject(char *name, unsigned int mtl_id, \
 	go->vbo = 0;
 	go->mtl_id = mtl_id;
 	go->pick_clr = (t_vec3)VEC3_ZERO;
-	ft_fmemset(go->bounds, 0, 6);
+	go->bounds[0] = 2000.0f;
+	go->bounds[1] = -2000.0f;
+	go->bounds[2] = 2000.0f;
+	go->bounds[3] = -2000.0f;
+	go->bounds[4] = 2000.0f;
+	go->bounds[5] = -2000.0f;
 	return (go);
 }
 
@@ -82,4 +87,16 @@ t_go_node			*create_go_node(char *name, unsigned int mtl_id, size_t vc)
 	}
 	node->next = NULL;
 	return (node);
+}
+
+t_tr_node       	*create_tr_node(unsigned int id, t_transform *transform)
+{
+    t_tr_node   *node;
+
+    if (!(node = (t_tr_node*)malloc(sizeof(t_tr_node))))
+        return (log_error_null(MALLOC_ERROR));
+    node->id = id;
+    node->transform = transform;
+    node->next = NULL;
+    return (node);
 }

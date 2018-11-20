@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/11/19 17:00:14 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/20 20:40:36 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,6 @@ HEADERS = includes
 
 SRCS =	setup.c \
 		shader.c \
-		color.c \
 		tga_loader.c \
 		textures.c \
 		parser.c \
@@ -49,6 +48,7 @@ SRCS =	setup.c \
 		events_handle.c \
 		update.c \
 		draw.c \
+		handles_draw.c \
 		cleanup.c \
 		main.c \
 		display.c \
