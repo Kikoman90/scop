@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 15:09:59 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 20:36:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ t_vec3				vec3_v4(t_vec4 v4);
 t_vec4				vec4_f(float f);
 t_vec4				vec4_xyzw(float x, float y, float z, float w);
 t_vec4				vec4_v3w(t_vec3 v3, float w);
+void				vec4_v3(t_vec4 *v, t_vec3 v3);
 
 /*
 ** vector_basop.c	=> 4 functions

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/23 16:48:22 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/26 15:17:45 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 20:35:57 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,11 @@ t_vec4	vec4_xyzw(float x, float y, float z, float w)
 t_vec4	vec4_v3w(t_vec3 v3, float w)
 {
 	return ((t_vec4){v3.x, v3.y, v3.z, w});
+}
+
+void	vec4_v3(t_vec4 *v, t_vec3 v3)
+{
+	v->x = v3.x;
+	v->y = v3.y;
+	v->z = v3.z;
 }

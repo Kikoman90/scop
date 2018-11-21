@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 12:39:31 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 19:32:38 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,16 +49,15 @@ static void	handle_mouse_events(t_env *env, SDL_Event *event, \
 		}
 		else if (event->motion.state & SDL_BUTTON_LMASK)
 		{
-			// if a handle is selected 
-			//handle manip
+			if (env->selection.active)
+				;//handle manip;
 		}
 	}
 	else if (event->type == SDL_MOUSEBUTTONDOWN && \
 		event->button.button == SDL_BUTTON_LEFT)
 	{
-		// first -> handle intersections. if no intersection -> object selection
-		//
-		picking_check(env, event->button.x, event->button.y, kstate[SDL_SCANCODE_LSHIFT]);
+		if (!env->selection.active)
+			picking_check(env, event->button.x, event->button.y, kstate[SDL_SCANCODE_LSHIFT]);
 	}
 	else if (event->type == SDL_MOUSEBUTTONUP && \
 		event->button.button == SDL_BUTTON_LEFT)

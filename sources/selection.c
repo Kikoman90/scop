@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/19 15:40:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 20:33:39 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 20:46:04 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,14 @@ static unsigned int add_to_selection(t_selection *selection, \
     }
     selection->list.count++;
     return (1);
+}
+
+void                selection_def_colors(t_vec4 (*colors)[4])
+{
+    (*colors)[0] = vec4_v3w(vec3_norm((t_vec3)SCOP_GREY), 0.7f);
+	(*colors)[1] = vec4_v3w(vec3_norm((t_vec3)SCOP_RED), 1.0f);
+	(*colors)[2] = vec4_v3w(vec3_norm((t_vec3)SCOP_GREEN), 1.0f);
+	(*colors)[3] = vec4_v3w(vec3_norm((t_vec3)SCOP_BLUE), 1.0f);
 }
 
 void                selection_transform(t_selection *selection)

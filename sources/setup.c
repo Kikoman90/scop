@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 17:25:14 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 20:47:06 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,11 +119,23 @@ void				init_selection(t_selection *selection)
 	selection->mode = SCOP_TRANSLATE;
 	selection->localspace = 1;
 	selection->active = 0;
-	selection->type = 0;
-	selection->rot[0] = mat4x4();
-	selection->rot[1] = mat4x4();
-	selection->rot[2] = mat4x4();
-	selection->motion_axis = vec2_f(0);
+	selection->type = -1;
+	selection->offset[0] = (t_vec3)VEC3_ZERO;
+	selection->offset[1] = vec3_xyz(4, 0, 0);
+	selection->offset[2] = vec3_xyz(0, 4, 0);
+	selection->offset[3] = vec3_xyz(0, 0, 4);
+	selection->offset[4] = vec3_xyz(8, 0, 0);
+	selection->offset[5] = vec3_xyz(0, 8, 0);
+	selection->offset[6] = vec3_xyz(0, 0, 8);
+	selection->scale[0] = vec3_f(0.5f);
+	selection->scale[1] = vec3_f(0.9f);
+	selection->scale[2] = vec3_f(1.0f);
+	selection->scale[3] = vec3_f(1.005f);
+	selection->quat[0] = quat();
+	selection->quat[1] = quat_tv(-90, (t_vec3)VEC3_RIGHT);
+	selection->quat[2] = quat_tv(90, (t_vec3)VEC3_UP);
+	selection->quat[3] = quat_tv(90, (t_vec3)VEC3_FRONT);
+	selection_def_colors(&selection->colors);
 }
 
 unsigned int		init_primitives(unsigned int nb, const char *path, \

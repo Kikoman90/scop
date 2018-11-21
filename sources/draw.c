@@ -6,39 +6,11 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 20:06:28 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 13:28:46 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
-
-static void	draw_handles(t_env *env, t_shader *shader)
-{
-	float	scale;
-	
-	scale = vec3_length(vec3_sub(env->selection.transform.position, \
-		env->camera.transform.position)) * (135.0f / env->win_env.win_h);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glUseProgram(shader->prog);
-	if (env->selection.mode & SCOP_TRANSLATE)
-	{
-		env->selection.transform.scale = vec3_f(0.125f * scale);
-		set_uniforms(env, shader, NULL);
-		draw_translate_handles(env, shader);
-	}
-	else if (env->selection.mode & SCOP_ROTATE)
-	{
-		env->selection.transform.scale = vec3_f(scale);
-		set_uniforms(env, shader, NULL);
-		draw_rotate_handles(env, shader);	
-	}
-	else if (env->selection.mode & SCOP_SCALE)
-	{
-		env->selection.transform.scale = vec3_f(0.125f * scale);
-		set_uniforms(env, shader, NULL);
-		draw_scale_handles(env, shader);
-	}
-}
 
 static void	draw_skybox(t_env *env, t_shader *shader)
 {
@@ -50,6 +22,14 @@ static void	draw_skybox(t_env *env, t_shader *shader)
 	glDrawArrays(GL_TRIANGLES, 0, env->primitives[SCOP_CUBE].count);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
+}
+
+static void	draw_gizmos(t_env *env, t_shader *shader)
+{
+	glUseProgram(shader->prog);
+	set_uniforms(env, shader, NULL);
+	glBindVertexArray(env->primitives[SCOP_PLANE].vao);
+	glDrawArrays(GL_TRIANGLES, 0, env->primitives[SCOP_PLANE].count);
 }
 
 static void	draw_ms_fbo(t_env *env)
@@ -69,13 +49,14 @@ static void	draw_ms_fbo(t_env *env)
 		tmp = tmp->next;
 	}
 	draw_skybox(env, &env->shaders[SKYBOX_SHADER]);
-	shader = env->shaders[BILLBOARD_SHADER];
-	glUseProgram(shader.prog);
-	set_uniforms(env, &shader, NULL);
-	glBindVertexArray(env->primitives[SCOP_PLANE].vao);
-	glDrawArrays(GL_TRIANGLES, 0, env->primitives[SCOP_PLANE].count);
+	draw_gizmos(env, &env->shaders[BILLBOARD_SHADER]);
 	if (env->selection.list.count > 0)
-		draw_handles(env, &env->shaders[PRIMITIVE_SHADER]);
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+		draw_handles(env, &env->shaders[PRIMITIVE_SHADER], \
+			vec3_length(vec3_sub(env->selection.transform.position, \
+			env->camera.transform.position)) * (135.0f / env->win_env.win_h));
+	}
 }
 
 static void	draw_pick_fbo(t_env *env)

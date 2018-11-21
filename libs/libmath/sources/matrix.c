@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/12 19:23:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 16:05:35 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 17:36:12 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ t_mat4x4	compute_view(t_transform cam_transform)
 	return (mat4x4_transpose(view));
 }
 
+// remove me
 t_mat4x4	compute_orthographic(float bounds[6], float aspect)
 {
 	t_mat4x4	ortho_mat;

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 20:39:57 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/21 20:49:36 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 # include "parser.h"
 # include "texture.h"
+# include "intersection.h"
 
 # include <SDL2/SDL.h>
 
@@ -47,6 +48,13 @@
 # define SCOP_LINE 3
 # define SCOP_PLANE 4
 # define SCOP_SPHERE 5
+
+# define SCOP_GREY {85, 85, 85}
+# define SCOP_RED {255, 0, 0}
+# define SCOP_GREEN {0, 255, 0}
+# define SCOP_BLUE {0, 0, 255}
+# define SCOP_MOVER {65, 65, 40}
+# define SCOP_MDOWN {100, 100, 20}
 
 typedef enum			e_handlemode
 {
@@ -191,9 +199,12 @@ typedef struct			s_selection
 	t_handlemode		mode;
 	int					localspace;
 	int					active;
-	int					type;
-	t_mat4x4			rot[4];
-	t_vec4				clr[4];
+	int					type; // 0->center 1->x 2->y 3->z
+	t_vec3				offset[7];
+	t_vec3				scale[4];
+	t_quaternion		quat[4];
+	t_mat4x4			rotations[4];
+	t_vec4				colors[4];
 	t_vec2				motion_axis;
 }						t_selection;
 
@@ -335,10 +346,16 @@ void					set_uniforms(t_env *env, t_shader *shader, \
 void					get_uniforms(t_shader *shader);
 
 /*
-** selection.c			=> 3 functions
+** selection.c			=> 4 functions
 */
+void                	selection_def_colors(t_vec4 (*colors)[4]);
 void        			selection_transform(t_selection *selection);
 void					picking_check(t_env *env, int x, int y, Uint8 lshift);
+
+/*
+** handles_inter.c		=> 5 functions
+*/
+unsigned int        	handles_inter(t_env *env);
 
 /*
 ** events_handle.c		=> 5 functions
@@ -353,11 +370,9 @@ void					update_view(t_env *env, t_vec3 d, t_handlemode mode);
 void					update_matrices(t_env *env, int update);
 
 /*
-** draw_handles.c		=> 5 functions
+** draw_handles.c		=> 4 functions
 */
-void					draw_translate_handles(t_env *env, t_shader *shd);
-void					draw_rotate_handles(t_env *env, t_shader *shd);
-void					draw_scale_handles(t_env *env, t_shader *shd);
+void					draw_handles(t_env *env, t_shader *shader, float scale);
 
 /*
 ** draw.c				=> 5 functions
