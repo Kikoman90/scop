@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/14 13:47:20 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 14:29:18 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/23 18:04:07 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ static void get_primtive_shader_uniforms(t_shader *shader)
 {
     shader->u_loc[3] = glGetUniformLocation(shader->prog, "rot");
     shader->u_loc[4] = glGetUniformLocation(shader->prog, "clr");
-    shader->u_loc[5] = glGetUniformLocation(shader->prog, "localspace");
 }
 
 void		get_uniforms(t_shader *shader)

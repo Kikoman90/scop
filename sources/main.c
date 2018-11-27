@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/21 20:50:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/24 17:00:52 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,12 @@ static void	loop(t_env *env)
 		last_time = cur_time;
 		cur_time = SDL_GetTicks();
 		env->delta_time = (cur_time - last_time) / 1000.0;
-		if (env->selection.list.count > 0 && !env->selection.active)
-			handles_inter(env);
 		handle_events_and_input(env);
 		if (env->input.auto_rotate)
+		{
 			rotate_gameobjects(env->gameobjects.head, env->delta_time);
+			set_selection_transform(&env->selection);
+		}
 		if (env->input.fade_coef && ((env->input.fade = ft_fclamp(\
 			env->input.fade + env->input.fade_coef * env->delta_time, 0, 1)) \
 			== 1 || env->input.fade == 0))

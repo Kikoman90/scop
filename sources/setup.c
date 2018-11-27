@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/21 20:47:06 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/27 20:23:55 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,31 +111,31 @@ void				init_input(t_inputstate *input)
 	input->zoom_speed = 1.0f;
 	input->fade = 1.0f;
 	input->face_rgb = 0;
-	input->auto_rotate = 1;
+	input->auto_rotate = 0;// 1 PUT IT BACK TO 1 YOU MONGREL
 }
 
-void				init_selection(t_selection *selection)
+void				init_selection(t_selection *selection, t_vec3 view_axis)
 {
-	selection->mode = SCOP_TRANSLATE;
 	selection->localspace = 1;
 	selection->active = 0;
 	selection->type = -1;
-	selection->offset[0] = (t_vec3)VEC3_ZERO;
-	selection->offset[1] = vec3_xyz(4, 0, 0);
-	selection->offset[2] = vec3_xyz(0, 4, 0);
-	selection->offset[3] = vec3_xyz(0, 0, 4);
-	selection->offset[4] = vec3_xyz(8, 0, 0);
-	selection->offset[5] = vec3_xyz(0, 8, 0);
-	selection->offset[6] = vec3_xyz(0, 0, 8);
-	selection->scale[0] = vec3_f(0.5f);
-	selection->scale[1] = vec3_f(0.9f);
-	selection->scale[2] = vec3_f(1.0f);
-	selection->scale[3] = vec3_f(1.005f);
+	selection->offset[0] = vec3_f(0);
+	selection->offset[1] = vec3_xyz(8, 0, 0);
+	selection->offset[2] = vec3_xyz(0, 8, 0);
+	selection->offset[3] = vec3_xyz(0, 0, 8);
+	selection->scale[0] = vec3_f(1);
+	selection->scale[1] = vec3_f(0.58f);
+	selection->scale[2] = vec3_f(0.9f);
+	selection->scale[3] = vec3_f(0.9f);
 	selection->quat[0] = quat();
 	selection->quat[1] = quat_tv(-90, (t_vec3)VEC3_RIGHT);
 	selection->quat[2] = quat_tv(90, (t_vec3)VEC3_UP);
 	selection->quat[3] = quat_tv(90, (t_vec3)VEC3_FRONT);
-	selection_def_colors(&selection->colors);
+	selection->coplanar[0] = 0;
+	selection->coplanar[1] = 0;
+	selection->coplanar[2] = 0;
+	(void)view_axis;
+	set_selection_mode(selection, SCOP_TRANSLATE);
 }
 
 unsigned int		init_primitives(unsigned int nb, const char *path, \
@@ -187,7 +187,7 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 		!init_skyboxes(4, "resources/skyboxes/", &env->skyboxes[0]) ||\
 		!init_light(&env->light, vec3_xyz(-3, 1.2f, 0), 2.5f, 20))
 		return (0);
-	env->camera = init_camera(vec3_xyz(0, 0, 3), 90, 0.001f, 100);
+	env->camera = init_camera(vec3_xyz(0, 0, 3), FOV, ZNEAR, ZFAR);
 	env->matrices.update_mat[0] = 1;
 	env->matrices.update_mat[1] = 1;
 	env->matrices.update_mat[2] = 1;
@@ -195,7 +195,7 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 		parse_file(&env->gameobjects, &env->materials, argv[argc], \
 			parse_wavefrontobj);
 	init_input(&env->input);
-	init_selection(&env->selection);
+	init_selection(&env->selection, (t_vec3)VEC3_FRONT);
 	env->loop = 1;
 	return (1);
 }

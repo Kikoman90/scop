@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/14 13:47:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 16:35:47 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/23 18:04:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,6 @@ void		set_uniforms(t_env *env, t_shader *shdr, t_go_node *node)
             &(go_trs(env->selection.transform)).m[0]);
         glUniformMatrix4fv(shdr->u_loc[1], 1, GL_FALSE, &env->matrices.v.m[0]);
         glUniformMatrix4fv(shdr->u_loc[2], 1, GL_FALSE, &env->matrices.p.m[0]);
-        //glUniformMatrix4fv(shdr->u_loc[3], 4, GL_FALSE, &env->selection.rot.m[0]);
-        //glUniform4fv(shdr->u_loc[4, 4, &env->selection.colors.x);
-        glUniform1i(shdr->u_loc[5], env->selection.localspace);
     }
     else if (ft_strcmp(shdr->name, "skybox") == 0)
     {

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/21 20:36:16 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/27 18:09:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # define VEC3_UP {0.0f, 1.0f, 0.0f}
 # define VEC3_RIGHT {1.0f, 0.0f, 0.0f}
 # define VEC3_FRONT {0.0f, 0.0f, 1.0f}
+# define VEC3_DOWN {0.0f, -1.0f, 0.0f}
 
 # define VEC4_ZERO {0.0f, 0.0f, 0.0f, 0.0f}
 # define VEC4_ONE {1.0f, 1.0f, 1.0f, 1.0f}
@@ -107,7 +108,6 @@ float				vec3_dot(t_vec3 a, t_vec3 b);
 t_mat4x4			mat4x4(void);
 t_mat4x4			mat4x4_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 t_mat4x4			compute_view(t_transform cam_transform);
-t_mat4x4			compute_orthographic(float bounds[6], float aspect);
 t_mat4x4			compute_perspective(float fov, float aspect, float zn, \
 						float zf);
 
@@ -122,7 +122,7 @@ void				get_matrix_axes(t_vec3 (*axes)[3], t_mat4x4 mat);
 /*
 ** vector_advop.c	=> 5 functions
 */
-t_vec3				vec3_mat4x4_prod(t_mat4x4 mat, t_vec3 v);
+t_vec3				vec3_mat4x4_prod(t_mat4x4 mat, t_vec3 v, float w);
 t_vec4				vec4_mat4x4_prod(t_mat4x4 mat, t_vec4 v);
 t_mat4x4			mat4x4_mult(t_mat4x4 a, t_mat4x4 b);
 t_mat4x4			quat_to_mat4x4(t_quaternion q);
@@ -144,9 +144,7 @@ t_mat4x4			go_trs(t_transform tr);
 t_transform			init_transform(void);
 t_transform			init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
 
-// t_mat4x4			mat4x4_scale(t_vec3 s);
-// t_mat4x4			mat4x4_translate(t_vec3 t);
+int					mat4x4_inv(const t_mat4x4 mat, t_mat4x4 *inv_out);
 // t_quaternion    	quat_inv(t_quaternion q); res.w = q.w res.v = vec3_inv(q.v);
-// reference functions ? i.e. vec3_addr(t_vec3 *a, t_vec3 b) => vec3_addr(&a, b)
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/21 20:49:36 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/24 18:16:30 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@
 
 # define WIN_W 1600
 # define WIN_H 900
+
+# define FOV 90
+# define ZNEAR 0.001f
+# define ZFAR 100.0f
 
 # define SDL_INIT_ERROR "failed to initialize sdl"
 # define WIN_CREATE_ERROR "failed to create window"
@@ -54,7 +58,7 @@
 # define SCOP_GREEN {0, 255, 0}
 # define SCOP_BLUE {0, 0, 255}
 # define SCOP_MOVER {65, 65, 40}
-# define SCOP_MDOWN {100, 100, 20}
+# define SCOP_MDOWN {155, 145, 15}
 
 typedef enum			e_handlemode
 {
@@ -199,13 +203,14 @@ typedef struct			s_selection
 	t_handlemode		mode;
 	int					localspace;
 	int					active;
-	int					type; // 0->center 1->x 2->y 3->z
-	t_vec3				offset[7];
-	t_vec3				scale[4];
-	t_quaternion		quat[4];
-	t_mat4x4			rotations[4];
+	int					type;
+	t_vec3				offset[4]; // 0, offsets (default = 4) or 8 idk
+	t_vec3				scale[4]; // 1 (line), 0.5, 0.9, 0.905
+	t_quaternion		quat[4]; // 0, -90 RIGHT, 90 UP, 90 FRONT
+	t_mat4x4			rot[7];
 	t_vec4				colors[4];
 	t_vec2				motion_axis;
+	int					coplanar[3];
 }						t_selection;
 
 typedef struct			s_inputstate
@@ -286,8 +291,6 @@ void					parse_wavefrontobj(t_go_list *gameobjects, \
 /*
 ** obj_get.c			=> 5 functions
 */
-int						get_shader_idx(t_shader (*tab)[6], \
-							const char *name);
 void					get_model_matrices(t_go_node *go_list, t_mat4x4 *m);
 unsigned int			get_mtl_id(t_mtl_node *list, char *mtl_name, \
 							unsigned int mtl_offset);
@@ -346,10 +349,11 @@ void					set_uniforms(t_env *env, t_shader *shader, \
 void					get_uniforms(t_shader *shader);
 
 /*
-** selection.c			=> 4 functions
+** selection.c			=> 5 functions
 */
-void                	selection_def_colors(t_vec4 (*colors)[4]);
-void        			selection_transform(t_selection *selection);
+void                	set_selection_colors(t_selection *sel);
+void                	set_selection_mode(t_selection *sel, t_handlemode mode);// t_vec3 view_axis);
+void        			set_selection_transform(t_selection *sel);
 void					picking_check(t_env *env, int x, int y, Uint8 lshift);
 
 /*
@@ -370,7 +374,7 @@ void					update_view(t_env *env, t_vec3 d, t_handlemode mode);
 void					update_matrices(t_env *env, int update);
 
 /*
-** draw_handles.c		=> 4 functions
+** handles_draw.c		=> 4 functions
 */
 void					draw_handles(t_env *env, t_shader *shader, float scale);
 

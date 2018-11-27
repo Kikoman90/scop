@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/21 19:32:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/27 20:37:24 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,19 +49,23 @@ static void	handle_mouse_events(t_env *env, SDL_Event *event, \
 		}
 		else if (event->motion.state & SDL_BUTTON_LMASK)
 		{
-			if (env->selection.active)
-				;//handle manip;
+			;//if (env->selection.active)
+			//	;//handle manip;
 		}
 	}
 	else if (event->type == SDL_MOUSEBUTTONDOWN && \
 		event->button.button == SDL_BUTTON_LEFT)
 	{
+		handles_inter(env);
 		if (!env->selection.active)
 			picking_check(env, event->button.x, event->button.y, kstate[SDL_SCANCODE_LSHIFT]);
 	}
 	else if (event->type == SDL_MOUSEBUTTONUP && \
 		event->button.button == SDL_BUTTON_LEFT)
+	{
 		env->selection.active = 0;
+		set_selection_mode(&env->selection, env->selection.mode); //vec3_norm(vec3_v4(env->matrices.v.v[2])));
+	}
 	else if (event->type == SDL_MOUSEWHEEL)
 		update_view(env, vec3_xyz(0, 0, -event->wheel.y), SCOP_SCALE);
 }
@@ -90,19 +94,22 @@ static void	handle_key_events(t_env *env, Uint8 scancode)
 	else if (scancode == SDL_SCANCODE_Z)
 		env->input.auto_rotate = (env->input.auto_rotate) ? 0 : 1;
 	else if (scancode == SDL_SCANCODE_X)
+	{
 		env->selection.localspace = (env->selection.localspace) ? 0 : 1;
+		set_selection_transform(&env->selection);
+	}
 	else if (scancode == SDL_SCANCODE_C)
 		env->input.face_rgb = (env->input.face_rgb) ? 0 : 1;
 	else if (scancode == SDL_SCANCODE_S)
 		env->input.cur_sky += (env->input.cur_sky == 3) ? -3 : 1;
 	else if (scancode == SDL_SCANCODE_T)
-		env->input.cur_tex += (env->input.cur_tex == 5) ? -5 : 1;
+		env->input.cur_tex += (env->input.cur_tex == 6) ? -6 : 1;
 	else if (scancode == SDL_SCANCODE_W)
-		env->selection.mode = SCOP_TRANSLATE;
+		set_selection_mode(&env->selection, SCOP_TRANSLATE);
 	else if (scancode == SDL_SCANCODE_E)
-		env->selection.mode = SCOP_ROTATE;
+		set_selection_mode(&env->selection, SCOP_ROTATE);		
 	else if (scancode == SDL_SCANCODE_R)
-		env->selection.mode = SCOP_SCALE;
+		set_selection_mode(&env->selection, SCOP_SCALE);
 	else if (scancode == SDL_SCANCODE_SPACE)
 	{
 		if (env->input.fade)
@@ -118,7 +125,7 @@ void		handle_events_and_input(t_env *env)
 	const Uint8	*keyboard_state;
 
 	keyboard_state = SDL_GetKeyboardState(NULL);
-	handle_smooth_keys(env, keyboard_state); // in the loop ?
+	handle_smooth_keys(env, keyboard_state);
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_WINDOWEVENT)
@@ -132,4 +139,6 @@ void		handle_events_and_input(t_env *env)
 		else if (event.type == SDL_QUIT)
 			env->loop = 0;
 	}
+	if (env->selection.list.count > 0 && !env->selection.active)
+		handles_inter(env);
 }

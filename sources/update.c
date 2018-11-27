@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 16:29:08 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/22 15:02:02 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,19 +75,6 @@ void	update_matrices(t_env *env, int update)
 	}
 	if (env->matrices.update_mat[2] == 1 || update == 2)
 	{
-		/*float bounds[6];
-		bounds[0] = -(float)env->win_env.win_w / (env->camera.fov * 2.0f);
-		bounds[1] = (float)env->win_env.win_w / (env->camera.fov * 2.0f);
-		bounds[2] = -(float)env->win_env.win_h / (env->camera.fov * 2.0f);
-		bounds[3] = (float)env->win_env.win_h / (env->camera.fov * 2.0f);
-		bounds[4] = env->camera.znear;
-		bounds[5] = env->camera.zfar;
-		env->camera.fov;
-		env->camera.znear;
-		env->camera.zfar;
-
-		orthographic ()
-		env->matrices.p = compute_orthographic(bounds, (float)env->win_env.win_w / (float)env->win_env.win_h);*/
 		env->matrices.p = compute_perspective(env->camera.fov, \
 			(float)env->win_env.win_w / env->win_env.win_h, \
 			env->camera.znear, env->camera.zfar);

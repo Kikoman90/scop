@@ -6,17 +6,17 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/10 11:31:56 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/23 18:10:22 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/23 15:22:29 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libmath.h"
 
-t_vec3			vec3_mat4x4_prod(t_mat4x4 mat, t_vec3 v)
+t_vec3			vec3_mat4x4_prod(t_mat4x4 mat, t_vec3 v, float w)
 {
 	t_vec4	v4;
 
-	v4 = vec4_mat4x4_prod(mat, vec4_v3w(v, 1));
+	v4 = vec4_mat4x4_prod(mat, vec4_v3w(v, w));
 	return (vec3_xyz(v4.x, v4.y, v4.z));
 }
 

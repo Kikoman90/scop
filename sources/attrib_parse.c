@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 20:15:58 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/22 14:56:03 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,20 +89,20 @@ static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
 }
 
 
-static unsigned int	get_indices(unsigned int (*out_indices)[4], \
+static unsigned int	get_indices(unsigned int out_indices[4], \
 	t_obj_parser_var *opv, t_parser *parser, unsigned int *seed)
 {
 	char	*word;
 
 	if ((word = ft_strword(parser->data, seed)) != NULL)
 	{
-		(*out_indices)[0] = (unsigned int)ft_atoi(word);
-		(*out_indices)[1] = (unsigned int)ft_atoi(ft_strchr(word, '/', 1));
-		(*out_indices)[2] = (unsigned int)ft_atoi(ft_strnchr(word, '/', 2, 1));
+		out_indices[0] = (unsigned int)ft_atoi(word);
+		out_indices[1] = (unsigned int)ft_atoi(ft_strchr(word, '/', 1));
+		out_indices[2] = (unsigned int)ft_atoi(ft_strnchr(word, '/', 2, 1));
 		free(word);
-		if ((*out_indices)[0] == 0 || (*out_indices)[0] > opv->v_seed[0].count \
-			|| (*out_indices)[1] > opv->v_seed[1].count \
-			|| (*out_indices)[2] > opv->v_seed[2].count)
+		if (out_indices[0] == 0 || out_indices[0] > opv->v_seed[0].count \
+			|| out_indices[1] > opv->v_seed[1].count \
+			|| out_indices[2] > opv->v_seed[2].count)
 			return (parser_error(IDX_ERROR, parser->fname, opv->f_seed.line));
 		return (1);
 	}
@@ -118,7 +118,7 @@ unsigned int		parse_face(t_gameobject *go, t_obj_parser_var *opv, \
 	idx[3] = 0;
 	while (idx[3] < opv->f_count)
 	{
-		if (!get_indices(&idx, opv, parser, &seed))
+		if (!get_indices(idx, opv, parser, &seed))
 			return (0);
 		vtx = get_vtx(go, opv, parser->data, idx);
 		if (idx[3] < 3)

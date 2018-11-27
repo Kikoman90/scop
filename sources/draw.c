@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 17:43:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/21 13:28:46 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/27 15:41:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ static void	draw_pick_fbo(t_env *env)
 void		draw(t_env *env)
 {
 	update_matrices(env, -1);
-	selection_transform(&env->selection);
 	if (env->matrices.model && env->gameobjects.count > 0)
 	{
 		get_model_matrices(env->gameobjects.head, env->matrices.model);

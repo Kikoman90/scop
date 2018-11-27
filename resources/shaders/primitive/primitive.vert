@@ -8,23 +8,15 @@ uniform mat4    p;
 
 uniform mat4    rot[4];
 uniform vec4    clr[4];
-uniform bool    localspace;
-
-//
-// uniform mat4 rot_matrix;
-// uniform mat4 pos_scale_matrix;
-//
 
 out vec4        vColor;
 
 void main()
 {
-    if (localspace)
-        gl_Position = p * v * m * rot[gl_InstanceID] * vec4(iPosition, 1);
-    else
-        gl_Position = p * v * rot[gl_InstanceID] * vec4(iPosition, 1); //FIX THIS
+    gl_Position = p * v * m * rot[gl_InstanceID] * vec4(iPosition, 1);
     
-    // if (abs(dot(view_z, m * pos_dir)) > 0.95f)
+    // vec3 dir = 
+    // if (abs(dot(vec3(v[2]), m * pos_dir)) > 0.95f)
     // => dont draw
     
     vColor = clr[gl_InstanceID];

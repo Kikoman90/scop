@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/13 18:31:13 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 11:32:12 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/23 13:09:51 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,14 @@ GLuint				create_texture(const char *path, \
 	glGenTextures(1, &tex.id);
 	glBindTexture(GL_TEXTURE_2D, tex.id);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, tex.internal_format, tex.width, \
 		tex.height, 0, tex.format, tex.pixel_type, &tex.texels[0]);
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(\
+		GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	if (tex.format == GL_RED)
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, \
 			(GLint[]){GL_RED, GL_RED, GL_RED, GL_ALPHA});
@@ -144,20 +143,6 @@ unsigned int	init_textures(unsigned int nb, const char *path, GLuint *id)
 	ft_free_file_names(file_names, nb);
 	return (1);
 }
-
-// get primitives vao (cube, sphere, cone, circle (line_loop), line...)
-/*void			init_sky_vao(GLuint *vao_id)
-{
-	t_go_list		*list;
-	t_gameobject	*go;
-
-	list->head = NULL;
-	list->count = 0;
-	parse_file(&list, NULL, "resources/obj/cube,obj", parse_wavefrontobj);
-	go = get_gameobject(list->head, GO_ID_OFFSET);
-
-}
-*/
 
 unsigned int	init_skyboxes(unsigned int nb, const char *path, GLuint *id)
 {
