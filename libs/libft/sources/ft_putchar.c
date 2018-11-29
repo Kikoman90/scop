@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putchar.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fsidler <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/21 18:46:15 by fsidler           #+#    #+#             */
-/*   Updated: 2015/12/21 18:46:17 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 14:38:45 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,5 @@
 
 void	ft_putchar(char c)
 {
-	ft_putchar_fd(c, 1);
+	write(1, (unsigned char *)&c, 1);
 }

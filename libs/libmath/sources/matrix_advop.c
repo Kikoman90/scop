@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/10 11:31:56 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/23 15:22:29 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 14:04:59 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,49 +63,4 @@ t_mat4x4		quat_to_mat4x4(t_quaternion q)
 	mat.m[9] = 2 * (q.v.y * q.v.z + q.v.x * q.w);
 	mat.m[10] = 1 - 2 * (xx + yy);
 	return (mat);
-}
-
-t_quaternion	mat4x4_to_quat(t_mat4x4 mat)
-{
-	t_quaternion	q;
-	float			trace;
-	float			s;
-
-	trace = 1 + mat.m[0] + mat.m[5] + mat.m[10];
-	if (trace > 0.00000001f)
-	{
-		s = sqrtf(trace) * 2;
-		q.v.x = (mat.m[9] - mat.m[6]) / s;
-		q.v.y = (mat.m[2] - mat.m[8]) / s;
-		q.v.z = (mat.m[4] - mat.m[1]) / s;
-		q.w = 0.25f * s;
-	}
-	else
-	{
-		if (mat.m[0] > mat.m[5] && mat.m[0] > mat.m[10])
-		{
-			s = sqrtf(1 + mat.m[0] - mat.m[5] - mat.m[10]) * 2;
-			q.v.x = 0.25f * s;
-			q.v.y = (mat.m[4] + mat.m[1]) / s;
-			q.v.z = (mat.m[2] + mat.m[8]) / s;
-			q.w = (mat.m[9] - mat.m[6]) / s;
-		}
-		else if (mat.m[5] > mat.m[10])
-		{
-			s = sqrtf(1 + mat.m[5] - mat.m[0] - mat.m[10]) * 2;
-			q.v.x = (mat.m[4] + mat.m[1]) / s;
-			q.v.y = 0.25f * s;
-			q.v.z = (mat.m[9] + mat.m[6]) / s;
-			q.w = (mat.m[2] - mat.m[8]) / s;
-		}
-		else
-		{
-			s = sqrtf(1 + mat.m[10] - mat.m[0] - mat.m[5]) * 2;
-			q.v.x = (mat.m[2] + mat.m[8]) / s;
-			q.v.y = (mat.m[9] + mat.m[6]) / s;
-			q.v.z = 0.25f * s;
-			q.w = (mat.m[4] - mat.m[1]) / s;
-		}
-	}
-	return (q);
 }

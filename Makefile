@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/11/27 15:34:22 by fsidler          ###   ########.fr        #
+#    Updated: 2018/11/29 14:33:21 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,8 +48,6 @@ SRCS =	setup.c \
 		handles_inter.c \
 		inter1.c \
 		inter2.c \
-		solve_cubic.c \
-		solve_quartic.c \
 		events_handle.c \
 		update.c \
 		draw.c \

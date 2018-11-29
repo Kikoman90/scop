@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/21 20:44:01 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/27 20:35:27 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 16:37:07 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static unsigned int get_mouse_ray(t_env *env, t_ray *ray, int x, int y)
         mouse_down = 1;
     coord.x = (2.0f * --x - env->win_env.win_w) / env->win_env.win_w;
     coord.y = (env->win_env.win_h - 2.0f * --y) / env->win_env.win_h;
-    get_matrix_axes(&axes, \
+    get_matrix_axes(axes, \
         mat4x4_transpose(quat_to_mat4x4(env->camera.transform.rotation)));
     viewport_size.y = tanf(env->camera.fov * M_PI / 360) * env->camera.znear;
     viewport_size.x = viewport_size.y * env->win_env.win_w / env->win_env.win_h;
@@ -71,37 +71,32 @@ static void         rotate_handles_inter(t_selection *sel, t_ray ray, double *t)
     t_obj_param obj_p;
     int         i;
 
-    i = 1;
     obj_p.pos = sel->transform.position;
-    obj_p.radius = 1.0 * sel->transform.scale.x * sel->scale[3].x;
-    obj_p.height = 0.125 * LINE_RADIUS * sel->transform.scale.x;
-    //printf("line radius = %f\n", obj_p.height);
-    //*t = vec3_length(vec3_add(ray.origin, sel->transform.position));
-    while (i < 4)
-    {
-        /*obj_p.pos = vec3_mat4x4_prod(mat4x4_mult(\
-            go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_ZERO, 1);*/
-        obj_p.dir = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
-            go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_FRONT, 0));
-        if (torus_inter(ray, obj_p, t))
-            sel->type = i;
-        i++;
-    }
-    printf("after torus -> t = %f\n", *t);
     obj_p.radius = 1.0 * sel->transform.scale.x * sel->scale[2].x;
     if (sphere_inter(ray, obj_p, t))
+    {
         sel->type = 0;
-    printf("after sphere -> t = %f\n", *t);    
+        i = 1;
+        obj_p.height = 0.125 * LINE_RADIUS * sel->transform.scale.x;
+        while (i < 4)
+        {
+            obj_p.dir = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
+                go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_FRONT, 0));
+            if (circle_inter(ray, obj_p, *t))
+                sel->type = i;
+            i++;
+        }
+    }   
 }
 
 static void         scale_handles_inter(t_selection *sel, t_ray ray, double *t)
 {
     t_obj_param     obj_p;
     t_vec3          up_vec;
-    unsigned int    i;
+    int             i;
 
-    i = 0;
-    while (i < 4)
+    i = -1;
+    while (++i < 4)
     {
         obj_p.dir = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
             go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_FRONT, 0));
@@ -119,10 +114,8 @@ static void         scale_handles_inter(t_selection *sel, t_ray ray, double *t)
             go_trs(sel->transform), sel->rot[i + 3]), (t_vec3)VEC3_ZERO, 1);
         obj_p.height = 8.0 * sel->transform.scale.x * sel->scale[0].x;
         obj_p.radius = LINE_RADIUS * sel->transform.scale.x;
-        //printf("line radius = %f\n", obj_p.radius);
         if (sel->type != 0 && i > 0 && cylinder_inter(ray, obj_p, t))
             sel->type = i;
-        i++;
     }
 }
 
@@ -142,10 +135,6 @@ unsigned int        handles_inter(t_env *env)
         rotate_handles_inter(&env->selection, ray, &t);
     else if (env->selection.mode & SCOP_SCALE)
         scale_handles_inter(&env->selection, ray, &t);
-    if (t < T_MAX)
-    {
-        printf("T EQUALS %f\n", t);
-    }
     if (mouse_down && env->selection.type != -1)
     { 
         vec4_v3(&env->selection.colors[env->selection.type], \

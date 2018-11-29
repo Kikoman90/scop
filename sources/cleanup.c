@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 12:40:15 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 16:31:50 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,19 +71,36 @@ void			clear_tr_list(t_tr_list *list)
 	}
 }
 
+static void		clean_shaders_and_primitives(t_shader *shaders, \
+	t_geometry *primitives, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < n)
+	{
+		if (shaders[i].prog > 0)
+			glDeleteProgram(shaders[i].prog);
+		if (shaders[i].name)
+			free(shaders[i].name);
+		if (primitives[i].name)
+			free(primitives[i].name);
+		glDeleteBuffers(1, &primitives[i].vbo);
+		glDeleteVertexArrays(1, &primitives[i].vao);
+		i++;
+	}
+}
+
 unsigned int	clean_scop(t_env *env)
 {
+	if (env->matrices.model)
+		free(env->matrices.model);
 	clear_tr_list(&env->selection.list);
 	clear_mtl_list(&env->materials, 1);
 	clear_go_list(&env->gameobjects, 1);
-	if (env->matrices.model)
-		free(env->matrices.model);
-	if (env->shaders[0].prog > 0)
-		glDeleteProgram(env->shaders[0].prog);
-	if (env->shaders[1].prog > 0)
-		glDeleteProgram(env->shaders[1].prog);
-	if (env->shaders[2].prog > 0)
-		glDeleteProgram(env->shaders[2].prog);
+	glDeleteTextures(4, &env->skyboxes[0]);
+	glDeleteTextures(7, &env->textures[0]);
+	clean_shaders_and_primitives(env->shaders, env->primitives, 6);
 	glDeleteRenderbuffers(4, &env->buffers.rbo[0]);
 	if (env->buffers.ms_fbo > 0)
 		glDeleteFramebuffers(1, &env->buffers.ms_fbo);
@@ -95,5 +112,3 @@ unsigned int	clean_scop(t_env *env)
 		SDL_DestroyWindow(env->win_env.window);
 	return (0);
 }
-// THIS IS NOT OK, THERE ARE 6 SHADERS, AND TEXTURES AND SKYBOXES TO FREE
-// along with other stuff

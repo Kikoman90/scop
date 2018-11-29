@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/11 14:02:53 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/27 18:09:28 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 15:00:38 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 
 # define VEC4_ZERO {0.0f, 0.0f, 0.0f, 0.0f}
 # define VEC4_ONE {1.0f, 1.0f, 1.0f, 1.0f}
-# define VEC4_UP {0.0f, 1.0f, 0.0f, 0.0f}
 
 typedef struct		s_vec2
 {
@@ -112,21 +111,20 @@ t_mat4x4			compute_perspective(float fov, float aspect, float zn, \
 						float zf);
 
 /*
-** matrix_basop.c	=> 4 functions
+** matrix_basop.c	=> 5 functions
 */
 t_mat4x4			mat4x4_add(t_mat4x4 a, t_mat4x4 b);
 t_mat4x4			mat4x4_sub(t_mat4x4 a, t_mat4x4 b);
 t_mat4x4			mat4x4_transpose(t_mat4x4 mat);
-void				get_matrix_axes(t_vec3 (*axes)[3], t_mat4x4 mat);
+void				get_matrix_axes(t_vec3 axes[3], t_mat4x4 mat);
 
 /*
-** vector_advop.c	=> 5 functions
+** matrix_advop.c	=> 4 functions
 */
 t_vec3				vec3_mat4x4_prod(t_mat4x4 mat, t_vec3 v, float w);
 t_vec4				vec4_mat4x4_prod(t_mat4x4 mat, t_vec4 v);
 t_mat4x4			mat4x4_mult(t_mat4x4 a, t_mat4x4 b);
 t_mat4x4			quat_to_mat4x4(t_quaternion q);
-t_quaternion		mat4x4_to_quat(t_mat4x4 mat); // too many lines
 
 /*
 ** quaternion.c		=> 5 functions
@@ -143,8 +141,5 @@ t_vec3				vector_rot(t_quaternion q, t_vec3 v);
 t_mat4x4			go_trs(t_transform tr);
 t_transform			init_transform(void);
 t_transform			init_transform_trs(t_vec3 t, t_quaternion r, t_vec3 s);
-
-int					mat4x4_inv(const t_mat4x4 mat, t_mat4x4 *inv_out);
-// t_quaternion    	quat_inv(t_quaternion q); res.w = q.w res.v = vec3_inv(q.v);
 
 #endif

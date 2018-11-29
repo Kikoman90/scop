@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 12:23:46 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/16 22:05:33 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 16:27:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,16 @@ t_vec3				vec3_atof(char *data, unsigned int *seed, int clamp01)
 unsigned int		check_idx_count(char *data, unsigned int seed, int idx)
 {
 	unsigned int	count;
+	char			*word;
 
 	count = 0;
 	while (data[seed] != '\n' && data[seed] != '\0')
 	{
-		if (ft_strword(data, &seed))
+		if ((word = ft_strword(data, &seed)))
+		{
+			free(word);
 			count++;
+		}
 	}
 	if (idx == 1 && count > 3)
 		count = 3 + (count - 3) * 3;

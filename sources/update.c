@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/22 15:02:02 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 15:01:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	update_view(t_env *env, t_vec3 d, t_handlemode mode)
 	t_vec3		axes[3];
 
 	tr = env->camera.transform;
-	get_matrix_axes(&axes, mat4x4_transpose(quat_to_mat4x4(tr.rotation)));
+	get_matrix_axes(axes, mat4x4_transpose(quat_to_mat4x4(tr.rotation)));
 	if (mode & SCOP_TRANSLATE)
 	{
 		d = vec3_scale(d, env->input.pan_speed * env->delta_time);

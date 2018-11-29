@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 12:45:28 by fsidler           #+#    #+#             */
-/*   Updated: 2018/10/29 19:35:35 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 14:12:51 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,10 @@ float		ft_atof_f(char *s)
 	if (!s || ft_strlen(s) == 0)
 		return (0);
 	if ((env = malloc(sizeof(t_info))) == NULL)
+	{
+		free(s);
 		return (0);
+	}
 	init_value(env);
 	tmp = s;
 	while (*tmp && (*tmp == ' ' || *tmp == '\t'))

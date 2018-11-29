@@ -6,59 +6,49 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/27 15:32:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/27 15:33:29 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 14:25:36 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "intersection.h"
 
-static unsigned int caps_inter(t_inter inter, t_ray ray, double *t, \
-    int cylinder)
+static int  caps_inter(t_inter inter, t_ray ray, double *t, int cylinder)
 {
-    unsigned int    ret;
+    double          d;
     t_vec3          dist;
 
-    ret = inter.roots;
-    if (cylinder && (inter.t[0] = vec3_dot(inter.v[0], \
-        vec3_sub(inter.v[1], ray.origin)) / vec3_dot(inter.v[0], \
-        ray.dir)) >= T_MIN)
+    if (cylinder && (d = vec3_dot(inter.v[0], vec3_sub(inter.v[1], ray.origin))\
+        / vec3_dot(inter.v[0], ray.dir)) >= T_MIN && d < *t)
     {
-        dist = vec3_add(ray.origin, vec3_scale(ray.dir, inter.t[0]));
-        dist = vec3_sub(dist, inter.v[1]);
-        if (inter.t[0] < *t && vec3_dot(dist, dist) <= inter.sqrad && (ret = 1))
-            *t = inter.t[0];
+        dist = \
+            vec3_sub(vec3_add(ray.origin, vec3_scale(ray.dir, d)), inter.v[1]);
+        if (vec3_dot(dist, dist) <= inter.sqrad && (inter.ret = 1))
+            *t = d;
     }
-    if ((inter.t[0] = vec3_dot(inter.v[0], vec3_sub(inter.v[2], ray.origin)) /\
-        vec3_dot(inter.v[0], ray.dir)) >= T_MIN)
+    if ((d = vec3_dot(inter.v[0], vec3_sub(inter.v[2], ray.origin)) /\
+        vec3_dot(inter.v[0], ray.dir)) >= T_MIN && d < *t)
     {
-        dist = vec3_add(ray.origin, vec3_scale(ray.dir, inter.t[0]));
-        dist = vec3_sub(dist, inter.v[2]);
-        if (inter.t[0] < *t && vec3_dot(dist, dist) <= inter.sqrad && (ret = 1))
-            *t = inter.t[0];
+        dist = \
+            vec3_sub(vec3_add(ray.origin, vec3_scale(ray.dir, d)), inter.v[2]);
+        if (vec3_dot(dist, dist) <= inter.sqrad && (inter.ret = 1))
+            *t = d;
     }
-    return (ret);
+    return (inter.ret);
 }
 
-static void         solve_primitive_lim(t_inter *inter, t_ray ray, double *t)
+static void solve_primitive_lim(t_inter *inter, t_ray ray, double *t)
 {
-    int     i;
     t_vec3  pos;
 
-    i = inter->roots;
-    while (i--)
-    {
-        pos = vec3_add(ray.origin, vec3_scale(ray.dir, inter->t[i]));
-        if (vec3_dot(inter->v[0], vec3_sub(pos, inter->v[1])) > 0 && \
-            vec3_dot(inter->v[0], vec3_sub(pos, inter->v[2])) < 0 && \
-            inter->t[i] >= T_MIN && inter->t[i] < *t)
-            *t = inter->t[i];
-        else
-            inter->roots -= 1;
-    }
+    pos = vec3_add(ray.origin, vec3_scale(ray.dir, inter->t[0]));
+    if (vec3_dot(inter->v[0], vec3_sub(pos, inter->v[1])) > 0 && \
+        vec3_dot(inter->v[0], vec3_sub(pos, inter->v[2])) < 0)
+        *t = inter->t[0];
+    else
+        inter->ret = 0;
 }
 
-unsigned int        cone_inter(t_ray ray, t_obj_param p, double angle, \
-    double *t)
+int         cone_inter(t_ray ray, t_obj_param p, double angle, double *t)
 {
     t_inter inter;
         
@@ -76,13 +66,13 @@ unsigned int        cone_inter(t_ray ray, t_obj_param p, double angle, \
     inter.v[0] = p.dir;
     inter.v[1] = p.pos;
     inter.v[2] = vec3_add(p.pos, vec3_scale(p.dir, p.height));
-    if ((inter.roots = solve_quadratic(inter.c, inter.t)))
-        solve_primitive_lim(&inter, ray, t);
     inter.sqrad = p.radius * p.radius;
+    if ((inter.ret = solve_quadratic(inter.c, inter.t, *t)))
+        solve_primitive_lim(&inter, ray, t);
     return (caps_inter(inter, ray, t, 0));
 }
 
-unsigned int        cylinder_inter(t_ray ray, t_obj_param p, double *t)
+int         cylinder_inter(t_ray ray, t_obj_param p, double *t)
 {
     t_inter inter;
 
@@ -96,8 +86,8 @@ unsigned int        cylinder_inter(t_ray ray, t_obj_param p, double *t)
     inter.v[0] = p.dir;
     inter.v[1] = p.pos;
     inter.v[2] = vec3_add(p.pos, vec3_scale(p.dir, p.height));
-    if ((inter.roots = solve_quadratic(inter.c, inter.t)))
-        solve_primitive_lim(&inter, ray, t);
     inter.sqrad = p.radius * p.radius;
+    if ((inter.ret = solve_quadratic(inter.c, inter.t, *t)))
+        solve_primitive_lim(&inter, ray, t);
     return (caps_inter(inter, ray, t, 1));
 }

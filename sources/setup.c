@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/27 20:23:55 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 16:30:20 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,17 @@ static void			init_default(t_env *env)
 
 	env->buffers.ms_fbo = 0;
 	env->buffers.pick_fbo = 0;
-	i = 3;
-	while (i > 0)
-		env->buffers.rbo[i--] = 0;
+	ft_bzero(env->buffers.rbo, 4);
+	i = 0;
 	while (i < 6)
 	{
 		env->shaders[i].prog = 0;
 		env->primitives[i].vao = 0;
-		env->primitives[i].vbo = 0;
-		env->textures[i++] = 0;
+		env->primitives[i++].vbo = 0;
 	}
-	env->textures[i] = 0;
-	i = 0;
-	while (i < 2)
-		env->skyboxes[i++] = 0;
+	ft_bzero(env->textures, 7);
+	ft_bzero(env->skyboxes, 4);
+	env->light.texture_id = 0;
 	env->matrices.model = NULL;
 	env->materials.head = NULL;
 	env->materials.count = 0;
@@ -126,7 +123,7 @@ void				init_selection(t_selection *selection, t_vec3 view_axis)
 	selection->scale[0] = vec3_f(1);
 	selection->scale[1] = vec3_f(0.58f);
 	selection->scale[2] = vec3_f(0.9f);
-	selection->scale[3] = vec3_f(0.9f);
+	selection->scale[3] = vec3_f(0.905f);
 	selection->quat[0] = quat();
 	selection->quat[1] = quat_tv(-90, (t_vec3)VEC3_RIGHT);
 	selection->quat[2] = quat_tv(90, (t_vec3)VEC3_UP);

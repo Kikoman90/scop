@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/24 18:16:30 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 16:31:18 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ typedef struct			s_geometry
 
 typedef struct			s_shader
 {
-	const char			*name;
+	char				*name;
 	GLuint				vtx_s;
 	GLuint				frg_s;
 	GLuint				prog;
@@ -204,9 +204,9 @@ typedef struct			s_selection
 	int					localspace;
 	int					active;
 	int					type;
-	t_vec3				offset[4]; // 0, offsets (default = 4) or 8 idk
-	t_vec3				scale[4]; // 1 (line), 0.5, 0.9, 0.905
-	t_quaternion		quat[4]; // 0, -90 RIGHT, 90 UP, 90 FRONT
+	t_vec3				offset[4];
+	t_vec3				scale[4];
+	t_quaternion		quat[4];
 	t_mat4x4			rot[7];
 	t_vec4				colors[4];
 	t_vec2				motion_axis;
@@ -384,7 +384,7 @@ void					draw_handles(t_env *env, t_shader *shader, float scale);
 void					draw(t_env *env);
 
 /*
-** cleanup.c			=> 4 functions
+** cleanup.c			=> 5 functions
 */
 void					clear_mtl_list(t_mtl_list *list, int free_mtl);
 void					clear_go_list(t_go_list *list, int free_go);
