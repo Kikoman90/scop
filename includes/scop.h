@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 16:31:18 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/30 14:25:38 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,8 +209,11 @@ typedef struct			s_selection
 	t_quaternion		quat[4];
 	t_mat4x4			rot[7];
 	t_vec4				colors[4];
-	t_vec2				motion_axis;
-	int					coplanar[3];
+	t_vec3				motion_axis;
+	t_vec3				proj_axis;
+	t_vec3				view_axis;
+	t_vec3				last_pos;
+	int					coplanar[3];//
 }						t_selection;
 
 typedef struct			s_inputstate
@@ -291,6 +294,7 @@ void					parse_wavefrontobj(t_go_list *gameobjects, \
 /*
 ** obj_get.c			=> 5 functions
 */
+void            		get_mouse_ray(t_env *env, t_ray *ray, int x, int y);
 void					get_model_matrices(t_go_node *go_list, t_mat4x4 *m);
 unsigned int			get_mtl_id(t_mtl_node *list, char *mtl_name, \
 							unsigned int mtl_offset);
@@ -349,17 +353,30 @@ void					set_uniforms(t_env *env, t_shader *shader, \
 void					get_uniforms(t_shader *shader);
 
 /*
-** selection.c			=> 5 functions
+** selection_set.c		=> 4 function
 */
+void					reset_selection_aspect(t_selection *sel);
+void        			set_selection_transform(t_selection *sel, \
+							int localspace);
 void                	set_selection_colors(t_selection *sel);
-void                	set_selection_mode(t_selection *sel, t_handlemode mode);// t_vec3 view_axis);
-void        			set_selection_transform(t_selection *sel);
+void                	set_selection_mode(t_selection *sel, \
+							t_handlemode mode, int set_color);
+
+/*
+** selection.c			=> 3 functions
+*/
 void					picking_check(t_env *env, int x, int y, Uint8 lshift);
+void					init_selection(t_selection *selection);
 
 /*
 ** handles_inter.c		=> 5 functions
 */
-unsigned int        	handles_inter(t_env *env);
+unsigned int        	handles_inter(t_env *env, int x, int y, int mouse_down);
+
+/*
+** handles_manip.c		=> idk functions DKEWOIGWROUGWEU
+*/
+void					handles_manip(t_env *env, int x, int y);
 
 /*
 ** events_handle.c		=> 5 functions

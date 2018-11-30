@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 16:32:10 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/30 13:58:20 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	loop(t_env *env)
 		if (env->input.auto_rotate)
 		{
 			rotate_gameobjects(env->gameobjects.head, env->delta_time);
-			set_selection_transform(&env->selection);
+			set_selection_transform(&env->selection, env->selection.localspace);
 		}
 		if (env->input.fade_coef && ((env->input.fade = ft_fclamp(\
 			env->input.fade + env->input.fade_coef * env->delta_time, 0, 1)) \

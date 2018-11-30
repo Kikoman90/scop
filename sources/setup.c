@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 16:30:20 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/30 14:11:52 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,30 +111,6 @@ void				init_input(t_inputstate *input)
 	input->auto_rotate = 0;// 1 PUT IT BACK TO 1 YOU MONGREL
 }
 
-void				init_selection(t_selection *selection, t_vec3 view_axis)
-{
-	selection->localspace = 1;
-	selection->active = 0;
-	selection->type = -1;
-	selection->offset[0] = vec3_f(0);
-	selection->offset[1] = vec3_xyz(8, 0, 0);
-	selection->offset[2] = vec3_xyz(0, 8, 0);
-	selection->offset[3] = vec3_xyz(0, 0, 8);
-	selection->scale[0] = vec3_f(1);
-	selection->scale[1] = vec3_f(0.58f);
-	selection->scale[2] = vec3_f(0.9f);
-	selection->scale[3] = vec3_f(0.905f);
-	selection->quat[0] = quat();
-	selection->quat[1] = quat_tv(-90, (t_vec3)VEC3_RIGHT);
-	selection->quat[2] = quat_tv(90, (t_vec3)VEC3_UP);
-	selection->quat[3] = quat_tv(90, (t_vec3)VEC3_FRONT);
-	selection->coplanar[0] = 0;
-	selection->coplanar[1] = 0;
-	selection->coplanar[2] = 0;
-	(void)view_axis;
-	set_selection_mode(selection, SCOP_TRANSLATE);
-}
-
 unsigned int		init_primitives(unsigned int nb, const char *path, \
 	t_geometry *primitive)
 {
@@ -192,7 +168,7 @@ unsigned int		init_scop(t_env *env, int argc, char **argv)
 		parse_file(&env->gameobjects, &env->materials, argv[argc], \
 			parse_wavefrontobj);
 	init_input(&env->input);
-	init_selection(&env->selection, (t_vec3)VEC3_FRONT);
+	init_selection(&env->selection);
 	env->loop = 1;
 	return (1);
 }

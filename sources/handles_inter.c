@@ -6,39 +6,26 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/21 20:44:01 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 16:37:07 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/30 17:01:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-static unsigned int get_mouse_ray(t_env *env, t_ray *ray, int x, int y)
+static void     set_selection_inter(t_selection *sel, t_ray ray, t_vec3 dir, \
+    double t)
 {
-    t_vec2          viewport_size;
-    t_vec2          coord;
-    t_vec3          axes[3];
-    unsigned int    mouse_down;
-
-    mouse_down = 0;
-    if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT))
-        mouse_down = 1;
-    coord.x = (2.0f * --x - env->win_env.win_w) / env->win_env.win_w;
-    coord.y = (env->win_env.win_h - 2.0f * --y) / env->win_env.win_h;
-    get_matrix_axes(axes, \
-        mat4x4_transpose(quat_to_mat4x4(env->camera.transform.rotation)));
-    viewport_size.y = tanf(env->camera.fov * M_PI / 360) * env->camera.znear;
-    viewport_size.x = viewport_size.y * env->win_env.win_w / env->win_env.win_h;
-    ray->origin = env->camera.transform.position;
-	axes[2] = vec3_scale(axes[2], -1);
-    axes[2] = vec3_add(ray->origin, vec3_scale(axes[2], env->camera.znear));
-    axes[2] = vec3_add(axes[2], vec3_scale(axes[1], viewport_size.y * coord.y));
-    axes[2] = vec3_add(axes[2], vec3_scale(axes[0], viewport_size.x * coord.x));
-    ray->dir = vec3_norm(vec3_sub(axes[2], ray->origin));
-    return (mouse_down);
+    sel->last_pos = vec3_add(ray.origin, vec3_scale(ray.dir, t));
+    sel->view_axis = vec3_norm(vec3_sub(ray.origin, sel->last_pos));
+    sel->motion_axis = dir;
+    if ((sel->mode & SCOP_ROTATE) && sel->type > 0)
+        dir = vec3_norm(vec3_cross(\
+            dir, vec3_sub(sel->last_pos, sel->transform.position)));
+    sel->proj_axis = vec3_norm(vec3_sub(\
+        dir, vec3_scale(sel->view_axis, vec3_dot(dir, sel->view_axis))));
 }
 
-static void         translate_handles_inter(t_selection *sel, t_ray ray, \
-    double *t)
+static void     translate_handles_inter(t_selection *sel, t_ray ray, double *t)
 {
     t_obj_param     obj_p;
     unsigned int    i;
@@ -52,21 +39,21 @@ static void         translate_handles_inter(t_selection *sel, t_ray ray, \
             go_trs(sel->transform), sel->rot[i]), vec3_xyz(0, 4, 0), 1);
         obj_p.height = 4.0 * sel->transform.scale.x * sel->scale[1].x;
         obj_p.radius = 2.0 * sel->transform.scale.x * sel->scale[1].x;
-        if (cone_inter(ray, obj_p, atan(0.5), t))
-            sel->type = i;
+        if (cone_inter(ray, obj_p, atan(0.5), t) && (sel->type = i) > -1)
+            set_selection_inter(sel, ray, vec3_scale(obj_p.dir, -1), *t);
         obj_p.dir = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
             go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_UP, 0));
         obj_p.pos = vec3_mat4x4_prod(mat4x4_mult(\
             go_trs(sel->transform), sel->rot[i + 3]), (t_vec3)VEC3_ZERO, 1);
         obj_p.height = 8.0 * sel->transform.scale.x * sel->scale[0].x;
         obj_p.radius = LINE_RADIUS * sel->transform.scale.x;
-        if (cylinder_inter(ray, obj_p, t))
-            sel->type = i;
+        if (cylinder_inter(ray, obj_p, t) && (sel->type = i) > -1)
+            set_selection_inter(sel, ray, obj_p.dir, *t);
         i++;
     }
 }
 
-static void         rotate_handles_inter(t_selection *sel, t_ray ray, double *t)
+static void     rotate_handles_inter(t_selection *sel, t_ray ray, double *t)
 {
     t_obj_param obj_p;
     int         i;
@@ -76,20 +63,20 @@ static void         rotate_handles_inter(t_selection *sel, t_ray ray, double *t)
     if (sphere_inter(ray, obj_p, t))
     {
         sel->type = 0;
-        i = 1;
+        set_selection_inter(sel, ray, (t_vec3)VEC3_ZERO, *t);
         obj_p.height = 0.125 * LINE_RADIUS * sel->transform.scale.x;
-        while (i < 4)
+        i = 0;
+        while (i++ < 3)
         {
             obj_p.dir = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
                 go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_FRONT, 0));
-            if (circle_inter(ray, obj_p, *t))
-                sel->type = i;
-            i++;
+            if (circle_inter(ray, obj_p, t) && (sel->type = i) > -1)
+                set_selection_inter(sel, ray, obj_p.dir, *t);
         }
     }   
 }
 
-static void         scale_handles_inter(t_selection *sel, t_ray ray, double *t)
+static void     scale_handles_inter(t_selection *sel, t_ray ray, double *t)
 {
     t_obj_param     obj_p;
     t_vec3          up_vec;
@@ -99,34 +86,32 @@ static void         scale_handles_inter(t_selection *sel, t_ray ray, double *t)
     while (++i < 4)
     {
         obj_p.dir = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
-            go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_FRONT, 0));
-        up_vec = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
             go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_UP, 0));
+        up_vec = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
+            go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_FRONT, 0));
         obj_p.pos = vec3_mat4x4_prod(mat4x4_mult(\
             go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_ZERO, 1);
         obj_p.height = 1.0 * sel->transform.scale.x;
         obj_p.height *= (i) ? sel->scale[1].x : sel->scale[2].x;
-        if (cube_inter(ray, obj_p, up_vec, t))
-            sel->type = i;
-        obj_p.dir = vec3_norm(vec3_mat4x4_prod(mat4x4_mult(\
-            go_trs(sel->transform), sel->rot[i]), (t_vec3)VEC3_UP, 0));
+        if (cube_inter(ray, obj_p, up_vec, t) && (sel->type = i) > -1)
+            set_selection_inter(sel, ray, obj_p.dir, *t);
         obj_p.pos = vec3_mat4x4_prod(mat4x4_mult(\
             go_trs(sel->transform), sel->rot[i + 3]), (t_vec3)VEC3_ZERO, 1);
         obj_p.height = 8.0 * sel->transform.scale.x * sel->scale[0].x;
         obj_p.radius = LINE_RADIUS * sel->transform.scale.x;
-        if (sel->type != 0 && i > 0 && cylinder_inter(ray, obj_p, t))
-            sel->type = i;
+        if (sel->type != 0 && i > 0 && cylinder_inter(ray, obj_p, t) && \
+            (sel->type = i) > 0)
+            set_selection_inter(sel, ray, obj_p.dir, *t);
     }
 }
 
-unsigned int        handles_inter(t_env *env)
+unsigned int    handles_inter(t_env *env, int x, int y, int mouse_down)
 {
     t_ray   ray;
     double  t;
-    int     mouse_down;
 
     t = T_MAX;
-    mouse_down = get_mouse_ray(env, &ray, 0, 0);
+    get_mouse_ray(env, &ray, x, y);
     env->selection.type = -1;
     set_selection_colors(&env->selection);
     if (env->selection.mode & SCOP_TRANSLATE)
@@ -135,15 +120,16 @@ unsigned int        handles_inter(t_env *env)
         rotate_handles_inter(&env->selection, ray, &t);
     else if (env->selection.mode & SCOP_SCALE)
         scale_handles_inter(&env->selection, ray, &t);
-    if (mouse_down && env->selection.type != -1)
-    { 
+    if (env->selection.type == -1)
+        return (0);
+    else if (mouse_down)
+    {
         vec4_v3(&env->selection.colors[env->selection.type], \
             vec3_norm((t_vec3)SCOP_MDOWN));
         env->selection.active = 1;
-        env->input.auto_rotate = 0;
     }
-    else if (env->selection.type != -1)
+    else
         vec4_v3(&env->selection.colors[env->selection.type], \
             vec3_norm((t_vec3)SCOP_MOVER));
-    return (0);
+    return (1);
 }

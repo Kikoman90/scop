@@ -6,11 +6,12 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/21 10:18:03 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 14:02:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 18:04:27 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "intersection.h"
+#include <stdio.h>//
 
 int     solve_quadratic(double c[3], double t[2], double t_max)
 {
@@ -40,17 +41,20 @@ int     solve_quadratic(double c[3], double t[2], double t_max)
     return ((t[0] >= T_MIN && t[0] < t_max));
 }
 
-int     circle_inter(t_ray ray, t_obj_param p, double t)
+int     circle_inter(t_ray ray, t_obj_param p, double *t)
 {
     t_vec3  hit;
-    t_vec3  d;
+    //t_vec3  d;
     double  dist;
 
-    hit = vec3_add(ray.origin, vec3_scale(ray.dir, t));
-    d = vec3_sub(hit, p.pos);
-    dist = vec3_dot(p.dir, d);
+    hit = vec3_add(ray.origin, vec3_scale(ray.dir, *t));
+    dist = vec3_dot(p.dir, vec3_sub(hit, p.pos));
     if (fabs(dist) <= p.height)
+    {
+        hit = vec3_add(hit, vec3_scale(p.dir, dist));
+        *t = vec3_length(vec3_sub(hit, ray.origin));
         return (1);
+    }
     return (0);
 }
 

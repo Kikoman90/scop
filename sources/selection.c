@@ -6,72 +6,11 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/19 15:40:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/24 13:08:47 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/30 14:11:03 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
-
-void                set_selection_colors(t_selection *sel)
-{
-    if (sel->mode & SCOP_ROTATE)
-        sel->colors[0] = vec4_v3w(vec3_norm((t_vec3)SCOP_GREY), 0.65f);
-    else if (sel->mode & SCOP_SCALE)
-        sel->colors[0] = vec4_v3w(vec3_norm((t_vec3)SCOP_GREY), 1.0f);
-	sel->colors[1] = vec4_v3w(vec3_norm((t_vec3)SCOP_RED), 1.0f);
-	sel->colors[2] = vec4_v3w(vec3_norm((t_vec3)SCOP_GREEN), 1.0f);
-	sel->colors[3] = vec4_v3w(vec3_norm((t_vec3)SCOP_BLUE), 1.0f);
-}
-
-void                set_selection_mode(t_selection *sel, t_handlemode mode) // t_vec3 view_axis
-{
-    sel->mode = mode;
-    if (sel->mode & SCOP_ROTATE)
-    {
-        sel->rot[0] = mat4x4_trs(sel->offset[0], sel->quat[0], sel->scale[2]);
-        sel->rot[1] = mat4x4_trs(sel->offset[0], sel->quat[2], sel->scale[3]);
-        sel->rot[2] = mat4x4_trs(sel->offset[0], sel->quat[1], sel->scale[3]);
-        sel->rot[3] = mat4x4_trs(sel->offset[0], sel->quat[0], sel->scale[3]);
-    }
-    else if ((sel->mode & SCOP_TRANSLATE) || (sel->mode & SCOP_SCALE))
-    {
-        if (sel->mode & SCOP_SCALE)
-            sel->rot[0] = \
-                mat4x4_trs(sel->offset[0], sel->quat[0], sel->scale[2]);
-        sel->rot[1] = mat4x4_trs(sel->offset[1], sel->quat[3], sel->scale[1]);
-        sel->rot[2] = mat4x4_trs(sel->offset[2], sel->quat[0], sel->scale[1]);
-        sel->rot[3] = mat4x4_trs(sel->offset[3], sel->quat[1], sel->scale[1]);
-        sel->rot[4] = mat4x4_trs(sel->offset[0], sel->quat[3], sel->scale[0]);
-        sel->rot[5] = mat4x4_trs(sel->offset[0], sel->quat[0], sel->scale[0]);
-        sel->rot[6] = mat4x4_trs(sel->offset[0], sel->quat[1], sel->scale[0]);
-    }
-    //(void)view_axis;
-    //set_selection_coplanars(sel, view_axis);
-    set_selection_colors(sel);
-}
-
-void                set_selection_transform(t_selection *sel)
-{
-    t_transform tr;
-    t_tr_node   *tmp;
-
-    tr.position = (t_vec3)VEC3_ZERO;
-    tr.rotation = quat();
-    tmp = sel->list.head;
-    while (tmp && tmp->next)
-    {
-        tr.position = vec3_add(tr.position, tmp->transform->position);
-        tmp = tmp->next;
-    }
-    if (tmp)
-    {
-        tr.position = vec3_add(tr.position, tmp->transform->position);
-        if (sel->localspace)
-            tr.rotation = tmp->transform->rotation;
-    }
-    tr.position = vec3_scale(tr.position, 1.0f / sel->list.count);
-    sel->transform = tr;
-}
 
 static unsigned int add_to_selection(t_selection *selection, \
     t_transform *transform, unsigned int id, Uint8 lshift)
@@ -115,14 +54,37 @@ void		        picking_check(t_env *env, int x, int y, Uint8 lshift)
 	if (picked_id == 1)
     {
         add_to_selection(&env->selection, &env->light.transform, 1, lshift);
-        set_selection_transform(&env->selection);
+        set_selection_transform(&env->selection, env->selection.localspace);
     }
 	else if (picked_id != 0 &&\
         (go = get_gameobject(env->gameobjects.head, picked_id)))
     {
         add_to_selection(&env->selection, &go->transform, picked_id, lshift);
-        set_selection_transform(&env->selection);
+        set_selection_transform(&env->selection, env->selection.localspace);
     }
     else if (!lshift)
         clear_tr_list(&env->selection.list);
+}
+
+void				init_selection(t_selection *selection)
+{
+	selection->localspace = 1;
+	selection->active = 0;
+	selection->type = -1;
+	selection->offset[0] = vec3_f(0);
+	selection->offset[1] = vec3_xyz(8, 0, 0);
+	selection->offset[2] = vec3_xyz(0, 8, 0);
+	selection->offset[3] = vec3_xyz(0, 0, 8);
+	selection->scale[0] = vec3_f(1);
+	selection->scale[1] = vec3_f(0.58f);
+	selection->scale[2] = vec3_f(0.9f);
+	selection->scale[3] = vec3_f(0.905f);
+	selection->quat[0] = quat();
+	selection->quat[1] = quat_tv(-90, (t_vec3)VEC3_RIGHT);
+	selection->quat[2] = quat_tv(90, (t_vec3)VEC3_UP);
+	selection->quat[3] = quat_tv(90, (t_vec3)VEC3_FRONT);
+	selection->coplanar[0] = 0;
+	selection->coplanar[1] = 0;
+	selection->coplanar[2] = 0;
+	set_selection_mode(selection, SCOP_TRANSLATE, 1);
 }

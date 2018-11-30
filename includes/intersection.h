@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/21 18:24:25 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 13:55:04 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 18:04:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,12 @@ typedef struct  s_obj_param
 int             solve_quadratic(double c[3], double t[2], double t_max);
 int             sphere_inter(t_ray ray, t_obj_param p, double *t);
 int             cube_inter(t_ray ray, t_obj_param p, t_vec3 up_vec, double *t);
-int             circle_inter(t_ray ray, t_obj_param p, double t);
+int             circle_inter(t_ray ray, t_obj_param p, double *t);
 
 /*
 ** inter2.c     => 4 functions
 */
+int             plane_inter(t_ray ray, t_vec3 pos, t_vec3 dir, double *t);
 int             cone_inter(t_ray ray, t_obj_param p, double angle, double *t);
 int             cylinder_inter(t_ray ray, t_obj_param p, double *t);
 

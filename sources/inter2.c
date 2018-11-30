@@ -6,11 +6,22 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/27 15:32:36 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 14:25:36 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/11/29 17:51:53 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "intersection.h"
+
+int         plane_inter(t_ray ray, t_vec3 pos, t_vec3 dir, double *t)
+{
+    double  t0;
+
+    t0 = vec3_dot(dir, vec3_sub(pos, ray.origin)) / vec3_dot(dir, ray.dir);
+    if (t0 < T_MIN || t0 >= *t)
+        return (0);
+    *t = t0;
+    return (1);
+}
 
 static int  caps_inter(t_inter inter, t_ray ray, double *t, int cylinder)
 {
