@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/10 11:36:52 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/22 14:54:03 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 19:26:11 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ typedef struct	s_tga_header
 unsigned int	get_tga_texture(t_texture *out_tex, const char *path);
 
 /*
-** textures.c	=> 6 functions
+** textures.c	=> 5 functions
 */
 short			clrmap_index(t_tga_header *header, GLubyte *clrmap, \
 					GLubyte *data, short *pixel);
@@ -67,7 +67,7 @@ unsigned int	texture_format(t_texture *tex, GLenum format, \
 					GLint internal_format, unsigned int bpp);
 GLuint			create_texture(const char *path, \
 					unsigned int (get_texture)(t_texture *, const char *));
-unsigned int	init_textures(unsigned int nb, const char *path, GLuint *id);
-unsigned int	init_skyboxes(unsigned int nb, const char *path, GLuint *id);
+GLuint			create_skybox(const char *path, \
+					unsigned int (get_texture)(t_texture *, const char *));
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 13:04:29 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 16:27:17 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 19:01:57 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,21 +40,21 @@ static t_vec3		get_vtx_attrib(t_seed *v_seed, char *data, \
 	return ((t_vec3)VEC3_ZERO);
 }
 
-static t_vec4      vtx_color(unsigned int fill, float color_delta)
+static t_vtx_attrib	vtx_color(t_vtx_attrib *vtx, unsigned int fill, \
+	float color_delta)
 {
-	t_vec4	color;
 	float	delta;
 
-	color = vec4_f(0.1f);
+	vtx->color = vec4_f(0.1f);
 	delta = (fill / 3.0f) * color_delta;
-	color.w += delta;
+	vtx->color.w += delta;
 	if ((fill + 1) % 3 == 0)
-		color.x += delta;
+		vtx->color.x += delta;
 	else if ((fill + 2) % 3 == 0)
-		color.y += delta;
+		vtx->color.y += delta;
 	else
-		color.z += delta;
-	return (color);
+		vtx->color.z += delta;
+	return (*vtx);
 }
 
 static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
@@ -84,10 +84,8 @@ static t_vtx_attrib	get_vtx(t_gameobject *go, t_obj_parser_var *opv, \
 		go->vtx_attrib[opv->vtx_fill - 1].normal = vtx.normal;
 		recalc = 0;
 	}
-	vtx.color = vtx_color(opv->vtx_fill, opv->color_delta);
-	return (vtx);
+	return (vtx_color(&vtx, opv->vtx_fill, opv->color_delta));
 }
-
 
 static unsigned int	get_indices(unsigned int out_indices[4], \
 	t_obj_parser_var *opv, t_parser *parser, unsigned int *seed)

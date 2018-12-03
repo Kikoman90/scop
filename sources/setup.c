@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/11 10:38:04 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/30 14:11:52 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 19:18:53 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,26 +80,7 @@ static t_camera		init_camera(t_vec3 pos, float fov, float zn, float zf)
 	return (cam);
 }
 
-static unsigned int	init_light(t_light *light, t_vec3 pos, float intensity, \
-	float range)
-{
-	glActiveTexture(GL_TEXTURE0);
-	if (!(light->texture_id = \
-		create_texture("resources/gizmos/light.tga", get_tga_texture)))
-		return (0);
-	light->transform = init_transform_trs(pos, quat(), vec3_f(0.35f));
-	light->color[0] = vec3_xyz(1.0f, 0.62f, 0.45f);
-	light->color[1] = vec3_xyz(0.5f, 0.9f, 0.67f);
-	light->color[2] = vec3_xyz(0.6f, 0.6f, 0.6f);
-	light->color[3] = vec3_xyz(0.3f, 0.6f, 0.92f);
-	light->intensity = intensity;
-	light->range = range;
-	light->id = 1;
-	light->pick_clr = generate_pick_clr(light->id);
-	return (1);
-}
-
-void				init_input(t_inputstate *input)
+static void			init_input(t_inputstate *input)
 {
 	input->cur_tex = 0;
 	input->cur_sky = 2;
@@ -108,41 +89,7 @@ void				init_input(t_inputstate *input)
 	input->zoom_speed = 1.0f;
 	input->fade = 1.0f;
 	input->face_rgb = 0;
-	input->auto_rotate = 0;// 1 PUT IT BACK TO 1 YOU MONGREL
-}
-
-unsigned int		init_primitives(unsigned int nb, const char *path, \
-	t_geometry *primitive)
-{
-	unsigned int	i;
-	char			*fullpath;
-	char			**file_names;
-	t_go_list		list;
-
-	if (!(file_names = ft_get_file_names(path, nb, 1)))
-		return (0);
-	list.head = NULL;
-	list.count = 0;
-	i = 0;
-	while (i < nb)
-	{
-		fullpath = ft_strjoin(path, file_names[i]);
-		parse_file(&list, NULL, fullpath, parse_wavefrontobj);
-		if (list.head && list.head->go)
-		{
-			(primitive + i)->name = ft_strdup(list.head->go->name);
-			(primitive + i)->vao = list.head->go->vao;
-			(primitive + i)->vbo = list.head->go->vbo;
-			(primitive + i)->count = list.head->go->vtx_count;
-			list.head->go->vao = 0;
-			list.head->go->vbo = 0;
-			remove_go_node(&list, GO_ID_OFFSET, 1);
-		}
-		i++;
-		free(fullpath);
-	}
-	ft_free_file_names(file_names, nb);
-	return (1);
+	input->auto_rotate = 1;
 }
 
 unsigned int		init_scop(t_env *env, int argc, char **argv)

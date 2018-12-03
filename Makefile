@@ -6,7 +6,7 @@
 #    By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/30 19:54:25 by fsidler           #+#    #+#              #
-#    Updated: 2018/11/30 12:38:24 by fsidler          ###   ########.fr        #
+#    Updated: 2018/12/03 19:24:43 by fsidler          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ DIR_OBJS = tmp
 HEADERS = includes
 
 SRCS =	setup.c \
+		init.c \
 		shader.c \
 		tga_loader.c \
 		textures.c \
@@ -56,7 +57,6 @@ SRCS =	setup.c \
 		handles_draw.c \
 		cleanup.c \
 		main.c \
-		display.c \
 
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.c=.o))
 

@@ -6,11 +6,29 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/26 15:43:49 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 15:01:00 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 19:07:51 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
+
+void	handle_window_events(t_env *env, SDL_Event *event)
+{
+	int	w;
+	int	h;
+
+	if (event->window.event == SDL_WINDOWEVENT_CLOSE)
+		env->loop = 0;
+	else if (event->window.event == SDL_WINDOWEVENT_RESIZED)
+	{
+		SDL_GetWindowSize(env->win_env.window, &w, &h);
+		glViewport(0, 0, w, h);
+		generate_framebuffers(&env->buffers, w, h);
+		env->win_env.win_w = w;
+		env->win_env.win_h = h;
+		env->matrices.update_mat[2] = 1;
+	}
+}
 
 void	rotate_gameobjects(t_go_node *list, double delta)
 {

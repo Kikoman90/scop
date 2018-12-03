@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/04 15:14:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/30 14:25:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 19:40:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ typedef struct			s_selection
 	int					active;
 	int					type;
 	t_vec3				offset[4];
-	t_vec3				scale[4];
+	t_vec3				scale[6];
 	t_quaternion		quat[4];
 	t_mat4x4			rot[7];
 	t_vec4				colors[4];
@@ -213,7 +213,7 @@ typedef struct			s_selection
 	t_vec3				proj_axis;
 	t_vec3				view_axis;
 	t_vec3				last_pos;
-	int					coplanar[3];//
+	int					coplanar[3];
 }						t_selection;
 
 typedef struct			s_inputstate
@@ -252,6 +252,18 @@ typedef struct			s_env
 ** setup.c				=> 5 functions
 */
 unsigned int			init_scop(t_env *env, int argc, char **argv);
+
+/*
+** init.c				=> 5 functions
+*/
+unsigned int			init_light(t_light *light, t_vec3 pos, \
+							float intensity, float range);
+unsigned int			init_primitives(unsigned int nb, const char *path, \
+							t_geometry *primitives);
+unsigned int			init_textures(unsigned int nb, const char *path, \
+							GLuint *id);
+unsigned int			init_skyboxes(unsigned int nb, const char *path, \
+							GLuint *id);
 
 /*
 ** shader.c				=> 5 functions
@@ -294,7 +306,7 @@ void					parse_wavefrontobj(t_go_list *gameobjects, \
 /*
 ** obj_get.c			=> 5 functions
 */
-void            		get_mouse_ray(t_env *env, t_ray *ray, int x, int y);
+void					get_mouse_ray(t_env *env, t_ray *ray, int x, int y);
 void					get_model_matrices(t_go_node *go_list, t_mat4x4 *m);
 unsigned int			get_mtl_id(t_mtl_node *list, char *mtl_name, \
 							unsigned int mtl_offset);
@@ -307,7 +319,7 @@ t_gameobject			*get_gameobject(t_go_node *list, unsigned int id);
 t_mtl_node				*create_mtl_node(char *name);
 t_go_node				*create_go_node(char *name, unsigned int mtl_id, \
 							size_t ic);
-t_tr_node       		*create_tr_node(unsigned int id, \
+t_tr_node				*create_tr_node(unsigned int id, \
 							t_transform *transform);
 
 /*
@@ -335,7 +347,7 @@ unsigned int			generate_framebuffers(t_gl_buffers *buffers, \
 							unsigned int win_w, unsigned int win_h);
 
 /*
-** get_uniforms.c		=> 4 functions
+** get_uniforms.c		=> 5 functions
 */
 void					get_uniforms(t_shader *shader);
 
@@ -346,20 +358,13 @@ void					set_uniforms(t_env *env, t_shader *shader, \
 							t_go_node *node);
 
 /*
-** uniforms.c			=> 4 functions
-*/
-void					set_uniforms(t_env *env, t_shader *shader, \
-							t_go_node *node);
-void					get_uniforms(t_shader *shader);
-
-/*
 ** selection_set.c		=> 4 function
 */
 void					reset_selection_aspect(t_selection *sel);
-void        			set_selection_transform(t_selection *sel, \
+void					set_selection_transform(t_selection *sel, \
 							int localspace);
-void                	set_selection_colors(t_selection *sel);
-void                	set_selection_mode(t_selection *sel, \
+void					set_selection_colors(t_selection *sel);
+void					set_selection_mode(t_selection *sel, \
 							t_handlemode mode, int set_color);
 
 /*
@@ -371,12 +376,12 @@ void					init_selection(t_selection *selection);
 /*
 ** handles_inter.c		=> 5 functions
 */
-unsigned int        	handles_inter(t_env *env, int x, int y, int mouse_down);
+unsigned int			handles_inter(t_env *env, int x, int y, int mouse_down);
 
 /*
-** handles_manip.c		=> idk functions DKEWOIGWROUGWEU
+** handles_manip.c		=> 5 functions
 */
-void					handles_manip(t_env *env, int x, int y);
+void					handles_manip(t_env *env, t_vec2 motion, t_vec2 pos);
 
 /*
 ** events_handle.c		=> 5 functions
@@ -384,8 +389,9 @@ void					handles_manip(t_env *env, int x, int y);
 void					handle_events_and_input(t_env *env);
 
 /*
-** update.c				=> 3 function
+** update.c				=> 4 function
 */
+void					handle_window_events(t_env *env, SDL_Event *event);
 void					rotate_gameobjects(t_go_node *list, double delta);
 void					update_view(t_env *env, t_vec3 d, t_handlemode mode);
 void					update_matrices(t_env *env, int update);
@@ -407,15 +413,5 @@ void					clear_mtl_list(t_mtl_list *list, int free_mtl);
 void					clear_go_list(t_go_list *list, int free_go);
 void					clear_tr_list(t_tr_list *list);
 unsigned int			clean_scop(t_env *env);
-
-// display.c (remove)
-void					display_vec3(const char *p, t_vec3 v);
-void					display_mat4x4(t_mat4x4 mat, const char *msg);
-void					display_quaternion(t_quaternion q, const char *msg);
-void					display_material(t_material *mtl);
-void					display_mtl_list(t_mtl_node *list);
-void					display_gameobject(t_gameobject *obj);
-void					display_go_list(t_go_node *list);
-//
 
 #endif

@@ -6,29 +6,11 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 11:15:06 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/30 14:25:20 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 19:08:33 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
-
-static void	handle_window_events(t_env *env, SDL_Event *event)
-{
-	int	w;
-	int	h;
-
-	if (event->window.event == SDL_WINDOWEVENT_CLOSE)
-		env->loop = 0;
-	else if (event->window.event == SDL_WINDOWEVENT_RESIZED)
-	{
-		SDL_GetWindowSize(env->win_env.window, &w, &h);
-		glViewport(0, 0, w, h);
-		generate_framebuffers(&env->buffers, w, h);
-		env->win_env.win_w = w;
-		env->win_env.win_h = h;
-		env->matrices.update_mat[2] = 1;
-	}
-}
 
 static void	handle_mouse_button(t_env *env, SDL_Event event, \
 	const Uint8 *kstate)
@@ -64,14 +46,15 @@ static void	handle_mouse_motion(t_env *env, SDL_Event event, \
 		if (kstate[SDL_SCANCODE_LSHIFT] || kstate[SDL_SCANCODE_RSHIFT])
 			update_view(env, vec3_xyz(\
 				-event.motion.xrel, event.motion.yrel, 0), SCOP_TRANSLATE);
-		else if (kstate[SDL_SCANCODE_LCTRL] || kstate[SDL_SCANCODE_RCTRL])		
+		else if (kstate[SDL_SCANCODE_LCTRL] || kstate[SDL_SCANCODE_RCTRL])
 			update_view(env, vec3_xyz(0, 0, event.motion.yrel), SCOP_SCALE);
 		else
 			update_view(env, vec3_xyz(\
 				-event.motion.xrel, -event.motion.yrel, 0), SCOP_ROTATE);
 	}
 	else if ((event.motion.state & SDL_BUTTON_LMASK) && env->selection.active)
-		handles_manip(env, event.motion.x, event.motion.y); // kstate[SDL_SCANCODE_CTRL] or alt for snapping
+		handles_manip(env, vec2_xy(event.motion.xrel, event.motion.yrel), \
+			vec2_xy(event.motion.x, event.motion.y));
 	else if (env->selection.list.count > 0)
 		handles_inter(env, event.motion.x, event.motion.y, 0);
 }
@@ -109,7 +92,7 @@ static void	handle_key_press(t_env *env, Uint8 scancode)
 	else if (scancode == SDL_SCANCODE_W)
 		set_selection_mode(&env->selection, SCOP_TRANSLATE, 1);
 	else if (scancode == SDL_SCANCODE_E)
-		set_selection_mode(&env->selection, SCOP_ROTATE, 1);		
+		set_selection_mode(&env->selection, SCOP_ROTATE, 1);
 	else if (scancode == SDL_SCANCODE_R)
 		set_selection_mode(&env->selection, SCOP_SCALE, 1);
 	else if (scancode == SDL_SCANCODE_SPACE)

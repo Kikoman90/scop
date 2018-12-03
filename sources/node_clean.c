@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/18 16:48:51 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 20:31:51 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 18:31:12 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,8 @@ void			remove_go_node(t_go_list *list, unsigned int id, int free_go)
 
 unsigned int	remove_tr_node(t_tr_list *list, unsigned int id)
 {
-	t_tr_node   *tmp;
-	t_tr_node   *tmp_prev;
+	t_tr_node	*tmp;
+	t_tr_node	*tmp_prev;
 
 	tmp = list->head;
 	tmp_prev = tmp;
@@ -117,7 +117,7 @@ unsigned int	remove_tr_node(t_tr_list *list, unsigned int id)
 				list->head = tmp_prev->next;
 			else
 				tmp_prev->next = tmp->next;
-            free(tmp);
+			free(tmp);
 			tmp = NULL;
 			list->count--;
 			tmp = tmp_prev->next;

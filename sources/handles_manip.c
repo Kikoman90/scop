@@ -6,145 +6,114 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 17:06:07 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/30 18:56:33 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 18:24:34 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-// SCOP_TRANSLATE, SCOP_ROTATE, SCOP_SCALE sel_transform();
-void        sel_transform(t_selection *sel, t_vec3 delta)
+static void	sel_transform(t_selection *sel, t_vec3 delta, t_quaternion q)
 {
-    t_tr_node   *tmp;
+	t_tr_node	*tmp;
+	t_vec3		ratio;
 
-    tmp = sel->list.head;
-    while (tmp)
-    {
-        if (sel->mode & SCOP_TRANSLATE)
-            tmp->transform->position = \
-                vec3_add(tmp->transform->position, delta);
-        else if (tmp->id != 1 && (sel->mode & SCOP_ROTATE)) //
-            ; //
-        else if (tmp->id != 1)
-            tmp->transform->scale = vec3_add(tmp->transform->scale, delta);
-        tmp = tmp->next;
-    }
+	tmp = sel->list.head;
+	while (tmp)
+	{
+		if (sel->mode & SCOP_TRANSLATE)
+			tmp->transform->position = \
+				vec3_add(tmp->transform->position, delta);
+		else if (tmp->id != 1 && (sel->mode & SCOP_ROTATE))
+			tmp->transform->rotation = quat_mult(tmp->transform->rotation, q);
+		else if (tmp->id != 1)
+		{
+			ratio = vec3_norm(tmp->transform->scale);
+			tmp->transform->scale.x += delta.x * fabsf(ratio.x);
+			tmp->transform->scale.y += delta.y * fabsf(ratio.y);
+			tmp->transform->scale.z += delta.z * fabsf(ratio.z);
+		}
+		tmp = tmp->next;
+	}
 }
 
-void        selection_rotate(t_selection *sel, t_quaternion rot)
+static void	t_manip(t_selection *sel, t_ray ray, double t)
 {
-    t_tr_node   *tmp;
+	float	delta;
+	t_vec3	pos;
+	t_vec3	sub;
+	t_vec3	delta_v;
 
-    tmp = sel->list.head;
-    while (tmp)
-    {
-        if (tmp->id != 1)
-            tmp->transform->rotation = quat_mult(tmp->transform->rotation, rot);
-        tmp = tmp->next;
-    }
+	if (!plane_inter(ray, sel->last_pos, sel->view_axis, &t))
+		return ;
+	pos = vec3_add(ray.origin, vec3_scale(ray.dir, t));
+	sub = vec3_sub(pos, sel->last_pos);
+	delta = vec3_dot(sel->proj_axis, sub);
+	delta_v = vec3_scale(sel->motion_axis, delta);
+	sel_transform(sel, delta_v, quat());
+	sel->last_pos = pos;
 }
 
-static void t_manip(t_selection *sel, t_ray ray)
+static void	r_manip(t_selection *sel, t_ray ray, double t)
 {
-    double  t;
-    float   delta;
-    t_vec3  pos;
-    t_vec3  delta_v;
+	float			delta;
+	t_vec3			pos;
+	t_vec3			sub;
+	t_quaternion	delta_q;
 
-    t = T_MAX;
-    if (!plane_inter(ray, sel->last_pos, sel->view_axis, &t))
-        return ;
-    pos = vec3_add(ray.origin, vec3_scale(ray.dir, t));
-    delta = vec3_dot(sel->proj_axis, vec3_sub(pos, sel->last_pos));
-    delta_v = vec3_scale(sel->motion_axis, delta);
-    sel_transform(sel, delta_v);
-    sel->last_pos = pos;
+	if (!plane_inter(ray, sel->last_pos, sel->view_axis, &t))
+		return ;
+	pos = vec3_add(ray.origin, vec3_scale(ray.dir, t));
+	sub = vec3_sub(pos, sel->last_pos);
+	delta = (360.0f * vec3_length(sub)) / \
+		(2.0f * M_PI * sel->transform.scale.x * sel->scale[4].x);
+	if (sel->type == 0)
+		sel->motion_axis = vec3_norm(vec3_cross(sel->view_axis, sub));
+	else
+		delta *= vec3_dot(sel->proj_axis, vec3_norm(sub));
+	delta_q = quat_tv(-delta, sel->motion_axis);
+	sel_transform(sel, (t_vec3)VEC3_ZERO, delta_q);
+	sel->last_pos = pos;
 }
 
-static void r_manip(t_selection *sel, t_ray ray)
+static void	s_manip(t_selection *sel, t_ray ray, t_vec3 motion, double t)
 {
-    double          t;
-    float           delta;
-    t_vec3          pos;
-    t_quaternion    delta_q;
+	float	delta;
+	t_vec3	pos;
+	t_vec3	sub;
+	t_vec3	delta_v;
 
-    t = T_MAX;
-    if (!plane_inter(ray, sel->last_pos, sel->view_axis, &t))
-        return ;
-    pos = vec3_add(ray.origin, vec3_scale(ray.dir, t));    
-    delta = (360.0f * vec3_length(vec3_sub(pos, sel->last_pos))) / \
-        (2.0f * M_PI * sel->transform.scale.x * sel->scale[2].x);
-    if (sel->type == 0)
-        sel->motion_axis = vec3_norm(\
-            vec3_cross(sel->view_axis, vec3_sub(pos, sel->last_pos)));
-    else
-        delta *= vec3_dot(sel->proj_axis, vec3_norm(vec3_sub(pos, sel->last_pos)));
-    delta_q = quat_tv(-delta, sel->motion_axis);
-    selection_rotate(sel, delta_q);
-    sel->last_pos = pos;
+	if (!plane_inter(ray, sel->last_pos, sel->view_axis, &t))
+		return ;
+	pos = vec3_add(ray.origin, vec3_scale(ray.dir, t));
+	sub = vec3_sub(pos, sel->last_pos);
+	delta = (sel->type) ? vec3_dot(sel->proj_axis, sub) : vec3_length(sub) * \
+		vec3_dot(vec3_norm(vec3_xyz(0.5f, 0.5f, 0)), motion);
+	sel->scale[1].y += (sel->type == 0 || sel->type == 1) ? delta / 8.0f : 0;
+	sel->scale[2].y += (sel->type == 0 || sel->type == 2) ? delta / 8.0f : 0;
+	sel->scale[3].y += (sel->type == 0 || sel->type == 3) ? delta / 8.0f : 0;
+	sel->offset[1].x += (sel->type == 0 || sel->type == 1) ? delta : 0;
+	sel->offset[2].y += (sel->type == 0 || sel->type == 2) ? delta : 0;
+	sel->offset[3].z += (sel->type == 0 || sel->type == 3) ? delta : 0;
+	delta_v = (sel->type) ? vec3_f(0) : vec3_f(delta);
+	if (sel->type)
+		*(&delta_v.x + (sel->type - 1)) = delta;
+	sel_transform(sel, delta_v, quat());
+	sel->last_pos = pos;
 }
 
-// FIND A WAY. JUST FIND A WAY. AND THEN CLEAN EVERYTHING UP AND LETS GET ON WITH IT
-// LETS GET ON WITH IT !
-// https://youtu.be/K5M4hiat8WI?t=2274
-// https://youtu.be/K5M4hiat8WI?t=2274
-// https://youtu.be/K5M4hiat8WI?t=2274
-static void s_manip(t_selection *sel, t_ray ray)
+void		handles_manip(t_env *env, t_vec2 motion, t_vec2 pos)
 {
-    double  t;
-    float   delta;
-    t_vec3  pos;
-    t_vec3  delta_v;
+	t_ray	ray;
+	double	t;
 
-    t = T_MAX;
-    if (!plane_inter(ray, sel->last_pos, sel->view_axis, &t))
-        return ;
-    pos = vec3_add(ray.origin, vec3_scale(ray.dir, t));
-    if (sel->type == 0)
-    {
-        delta_v = vec3_sub(pos, sel->last_pos);
-        delta = vec3_length(delta_v);
-        //delta = vec3_sub(delta_v, vec3_scale(sel->view_axis, vec3_dot(delta_v, sel->view_axis)));
-        //delta_v = vec3_f(delta);
-        sel->offset[1].x += 8 * delta;
-        sel->offset[2].y += 8 * delta;
-        sel->offset[3].z += 8 * delta;
-        sel->scale[0] = vec3_add(sel->scale[0], delta_v);
-    }
-    else
-    {
-        delta = vec3_dot(sel->proj_axis, vec3_sub(pos, sel->last_pos));
-        delta_v = vec3_scale(sel->motion_axis, delta);
-        if (sel->type == 1)
-        {
-            sel->scale[0].x += delta;
-            sel->offset[sel->type].x += 8 * delta;
-        }
-        else if (sel->type == 2)
-        {
-            sel->scale[0].y += delta;
-            sel->offset[sel->type].y += 8 * delta;
-        }
-        else
-        {
-            sel->scale[0].z += delta;
-            sel->offset[sel->type].z += 8 * delta;   
-        }
-    }
-    sel_transform(sel, delta_v);
-    sel->last_pos = pos;
-}
-
-void        handles_manip(t_env *env, int x, int y)
-{
-    t_ray   ray;
-
-    get_mouse_ray(env, &ray, x, y);
-    if (env->selection.mode & SCOP_TRANSLATE)
-        t_manip(&env->selection, ray);
-    else if (env->selection.mode & SCOP_ROTATE)
-        r_manip(&env->selection, ray);
-    else if (env->selection.mode & SCOP_SCALE)
-        s_manip(&env->selection, ray);
-    set_selection_mode(&env->selection, env->selection.mode, 0);
+	t = T_MAX;
+	get_mouse_ray(env, &ray, pos.x, pos.y);
+	if (env->selection.mode & SCOP_TRANSLATE)
+		t_manip(&env->selection, ray, t);
+	else if (env->selection.mode & SCOP_ROTATE)
+		r_manip(&env->selection, ray, t);
+	else if (env->selection.mode & SCOP_SCALE)
+		s_manip(&env->selection, ray, \
+				vec3_norm(vec3_xyz(motion.x, -motion.y, 0)), t);
+	set_selection_mode(&env->selection, env->selection.mode, 0);
 }

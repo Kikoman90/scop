@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 19:25:19 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/20 18:25:48 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 18:32:00 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,14 +89,14 @@ t_go_node			*create_go_node(char *name, unsigned int mtl_id, size_t vc)
 	return (node);
 }
 
-t_tr_node       	*create_tr_node(unsigned int id, t_transform *transform)
+t_tr_node			*create_tr_node(unsigned int id, t_transform *transform)
 {
-    t_tr_node   *node;
+	t_tr_node	*node;
 
-    if (!(node = (t_tr_node*)malloc(sizeof(t_tr_node))))
-        return (log_error_null(MALLOC_ERROR));
-    node->id = id;
-    node->transform = transform;
-    node->next = NULL;
-    return (node);
+	if (!(node = (t_tr_node*)malloc(sizeof(t_tr_node))))
+		return (log_error_null(MALLOC_ERROR));
+	node->id = id;
+	node->transform = transform;
+	node->next = NULL;
+	return (node);
 }

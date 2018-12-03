@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/13 16:39:59 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/29 16:31:50 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 18:17:16 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,9 @@ void			clear_tr_list(t_tr_list *list)
 		while (tmp)
 		{
 			tmp_next = tmp->next;
-            tmp->next = NULL;
+			tmp->next = NULL;
 			free(tmp);
-            tmp = NULL;
+			tmp = NULL;
 			list->count--;
 			tmp = tmp_next;
 		}

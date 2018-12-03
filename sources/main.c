@@ -6,14 +6,16 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/30 19:14:08 by fsidler           #+#    #+#             */
-/*   Updated: 2018/11/30 13:58:20 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/03 18:30:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scop.h"
 
-void __attribute__((constructor)) begin(); //remove after checking leaks
-void __attribute__((destructor)) end(); // remove after checking leaks
+/*
+** void __attribute__((constructor)) begin(); //remove after checking leaks
+** void __attribute__((destructor)) end(); // remove after checking leaks
+*/
 
 static void	loop(t_env *env)
 {
