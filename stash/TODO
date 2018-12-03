@@ -2,15 +2,7 @@
 
 S C O P  S C O P E :
 
-THERE ARE A LOT OF LEAKS RIGHT NOW BECAUSE YOU HAVENT CLEANED UP THE ENV
-
-* handles (TODO) WORLDSPACE handles need fix
 * showFPS (TODO)
-
-CLEANUP (TODO) delete all gl objects and scop memory
-
-SELECTION (TODO)
-* stop auto-rotate when editing rotation of object (TODO)
 
 * input :
 - [Z] -> activate/deactivate auto-rotate (DONE)
@@ -23,15 +15,9 @@ SELECTION (TODO)
 - [ESC] -> quit (DONE)
 - selection ([lmouse], [lshift + lmouse]) (DONE)
 
-check leaks !
-norminette on all.
 have a good stack of obj and mtl files for the corrector.
 
 remove .vscode before finishing the project
-remove display.c
-remove stash folder content except TODO
-remove unused libft functions/files. from libft.h TOO
-remove unused libmath functions/files. from libmath.h TOO
 
 --------------------------------------------------------------------------------
 
