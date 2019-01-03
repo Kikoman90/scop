@@ -18,7 +18,7 @@ src="https://github.com/Kikoman90/scop/blob/master/screenshots/scop_2.gif" width
 <table width="100%">
 <thead>
 <tr>
-<td width="55%" height="60px" align="center" cellpadding="0">
+<td width="65%" height="60px" align="center" cellpadding="0">
 <strong>Description</strong>
 </td>
 <td width="35%" align="center" cellpadding="0">
@@ -33,19 +33,19 @@ src="https://github.com/Kikoman90/scop/blob/master/screenshots/scop_2.gif" width
 </tr>
 <tr>
 <td valign="top" height="30px">orbit camera</td>
-<td valign="top" align="center"><kbd>&nbsp;left click&nbsp;</kbd></td>
+<td valign="top" align="center"><span>(hold)</span><kbd>&nbsp;right-click&nbsp;</kbd></td>
 </tr>
 <tr>
 <td valign="top" height="30px">pan camera</td>
-<td valign="top" align="center"><kbd>&nbsp;shift&nbsp;</kbd> <span>+</span> <kbd>&nbsp;left click&nbsp;</kbd></td>
+<td valign="top" align="center"><kbd>&nbsp;shift&nbsp;</kbd> <span>+ (hold)</span> <kbd>&nbsp;right-click&nbsp;</kbd></td>
 </tr>
 <tr>
 <td valign="top" height="30px">zoom camera</td>
-<td valign="top" align="center"><kbd>&nbsp;ctrl&nbsp;</kbd> <span>+</span> <kbd>&nbsp;left click&nbsp;</kbd></td>
+<td valign="top" align="center"><kbd>&nbsp;ctrl&nbsp;</kbd> <span>+ (hold)</span> <kbd>&nbsp;right-click&nbsp;</kbd></td>
 </tr>
 <tr>
-<td valign="top" height="30px">move down</td>
-<td valign="top" align="center"><kbd>&nbsp;s&nbsp;</kbd> <kbd>&nbsp;▼&nbsp;</kbd></td>
+<td valign="top" height="30px">select object (hold <kdb>&nbsp;shift&nbsp;</kbd> for multi-selection)</td>
+<td valign="top" align="center"><kbd>&nbsp;left-click&nbsp;</kbd></td>
 </tr>
 <tr>
 <td valign="top" height="30px">shoot</td>
