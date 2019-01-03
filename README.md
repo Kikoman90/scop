@@ -7,11 +7,11 @@ As a bonus, I added multisample anti-aliasing and object picking by using render
 ## preview
 
 <img align="center"
-src="https://github.com/Kikoman90/scop/blob/master/screenshots/scop_1.gif" width="100%" height="544px" />
+src="https://github.com/Kikoman90/scop/blob/master/screenshots/scop_1.png" width="100%" height="544px" />
 <br />
 <br />
 <img align="center"
-src="https://github.com/Kikoman90/scop/blob/master/screenshots/scop_2.gif" width="100%" height="544px" />
+src="https://github.com/Kikoman90/scop/blob/master/screenshots/scop_2.png" width="100%" height="544px" />
 
 ## Input
 
