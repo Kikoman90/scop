@@ -18,10 +18,10 @@ src="https://github.com/Kikoman90/scop/blob/master/screenshots/scop_2.gif" width
 <table width="100%">
 <thead>
 <tr>
-<td width="65%" height="60px" align="center" cellpadding="0">
+<td width="55%" height="60px" align="center" cellpadding="0">
 <strong>Description</strong>
 </td>
-<td width="15%" align="center" cellpadding="0">
+<td width="35%" align="center" cellpadding="0">
 <span style="width:70px">&nbsp;</span><strong>Key(s)</strong><span style="width:50px">&nbsp;</span>
 </td>
 </tr>
